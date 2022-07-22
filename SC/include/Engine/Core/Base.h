@@ -1,0 +1,19 @@
+#pragma once
+
+#include "Platform.h"
+#include <memory>
+
+#ifdef SC_DEBUG
+	#if defined(SC_USE__asm__)
+		#define SC_ASSERT(x) if (!(x)) __asm__("int $3")
+	#elif defined(SC_PLATFORM_WINDOWS)
+		#define SC_ASSERT() if (!(x)) __debugbreak()
+	#else
+		#include <signal.h>
+		#define SC_ASSERT(x) if (!(x)) raise(SIGTRAP)
+	#endif
+#else
+	#define SC_ASSERT(x)
+#endif
+
+#include "Engine/Debug/Debug.h"

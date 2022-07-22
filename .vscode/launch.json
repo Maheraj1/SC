@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/SandBox/bin/SandBox_",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/SandBox/bin",
+            "environment": [],
+            "externalConsole": true,
+            "targetArchitecture": "x86_64",
+            
+            "osx": {
+                "MIMode": "lldb",
+            },
+            "windows": {
+                "MIMode": "gdb"
+            },
+
+            "preLaunchTask": "Build SandBox"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "files.exclude": {
+        "**/.cache": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[cpp]": {
+        "editor.insertSpaces": false,
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true,
+        // "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    },
+    "prettier.useTabs": true,
+    "[glsl]": {
+        "editor.insertSpaces": false,
+        "editor.autoSurround": "languageDefined",
+        "editor.autoClosingBrackets": "always"
+    },
+    "[makefile]": {
+        "editor.insertSpaces": false,
+        "editor.autoClosingBrackets": "always",
+        "editor.autoClosingQuotes": "always",
+        "editor.autoClosingDelete": "always",
+    },
+    "C_Cpp.errorSquiggles": "Enabled", 
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "cSpell.words": [
+        "Dloadproc",
+        "Wwindow",
+        "fvec",
+        "dvec"
+    ]
+}

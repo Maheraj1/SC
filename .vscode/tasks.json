@@ -1,0 +1,84 @@
+{
+    
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build SC Debug",
+            "type": "shell",
+            "command": "make -j4",
+            "options": {
+                "cwd": "${workspaceFolder}/SC"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+
+        {
+            "label": "Build SC Release",
+            "type": "shell",
+            "command": "make clean && make TYPE=1 -j4",
+            "options": {
+                "cwd": "${workspaceFolder}/SC"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build SandBox",
+            "type": "shell",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/SandBox"
+            },
+            "dependsOn": "Build SC Debug",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Run SandBox",
+            "command": "${workspaceFolder}/SandBox/bin/SandBox",
+            "dependsOn": "Build SandBox",
+            "options": {
+                "cwd": "${workspaceFolder}/SandBox/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clean SandBox",
+            "command": "make clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SandBox"
+            },
+            "dependsOn": "Clean SC",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean SC",
+            "command": "make clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SC"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Project",
+            "dependsOn": "Clean SandBox",
+            "problemMatcher": [],
+        }
+    ],
+    "inputs": [
+        {
+            "id": "Max-Threads",
+            "type": "promptString",
+            "description": "Max threads to use in multithreading",
+            "default": "4"
+        }
+    ],
+}
