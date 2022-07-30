@@ -14,6 +14,11 @@ namespace SC
         Debug::Log(text, DebugLogColor::Green);
     }
 
+    void Debug::Info(std::string text, std::string from)
+    {
+        Debug::Log('(' + from + "): " + text, DebugLogColor::Green);
+    }
+
     void Debug::Error(std::string text)
     {
         std::cout << "\e[" << (int)DebugLogColor::Red << 'm' << "(Error): " << text.c_str() << "\e[0m" << std::endl;

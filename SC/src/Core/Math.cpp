@@ -14,6 +14,22 @@ namespace SC
     // }
 
 
+    float Math::Lerp(float a, float b, float t)
+    {
+        return a + t * (b - a);
+    }
+
+    Vector2f Math::Lerp(Vector2f a, Vector2f b, float t)
+    {
+        return a + t * (b - a);
+    }
+
+    Vector3f Math::Lerp(Vector3f a, Vector3f b, float t)
+    {
+        return a + t * (b - a);
+    }
+
+
     Vector3f operator/(Vector3i vec, float n)
     {
         float x, y, z;
@@ -23,6 +39,54 @@ namespace SC
         z = vec.z / n;
 
         return {x, y, z};
+    }
+
+    namespace UnitLiterals {
+        long double operator"" _km(long double n) 
+        {
+            return n/1000;
+        }
+
+        long double operator"" _ham(long double n) 
+        {
+            return n/100;
+        }
+
+        long double operator"" _dam(long double n) 
+        {
+            return n/10;
+        }
+
+        long double operator"" _m(long double n) 
+        {
+            return n;
+        }
+
+        long double operator"" _cm(long double n) 
+        {
+            return n*10;
+        }
+
+        long double operator"" _dm(long double n) 
+        {
+            return n*100;
+        }
+
+        long double operator"" _mm(long double n) 
+        {
+            return n*1000;
+        }
+
+        long double operator"" _um(long double n) 
+        {
+            return n*10000;
+        }
+
+        void Test()
+        {
+            auto a = 10.0_km;
+        }
+
     }
 };
 

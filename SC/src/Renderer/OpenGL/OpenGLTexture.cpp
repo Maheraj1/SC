@@ -39,7 +39,7 @@ namespace SC
 			data = stbi_load(fp, &width, &height, &nrChannels, 3 + (int)alpha); // if alpha is true then it will have int value of 1
 		} else 
 		{
-			data = (unsigned char*)&white_square_data;
+			data = (unsigned char*)0xffffff;
 		}
 
 		if (data == nullptr) return;
@@ -54,7 +54,8 @@ namespace SC
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		stbi_image_free(data);
+		if (data != (unsigned char*)0xffffff)
+			stbi_image_free(data);
 	}
 
 	void Texture::SetAttribute(TextureParameters param, TextureProperties value)
@@ -110,6 +111,11 @@ namespace SC
 	{
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_id);
+	}
+
+	void Texture::SetData(unsigned char* data, unsigned int size)
+	{
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGB, GL_UNSIGNED_BYTE, data);
 	}
 
 	uint Texture::GetTextureID() { return m_id; }

@@ -21,6 +21,7 @@ namespace SC
 
 		Matrix4 GetViewProjection();
 		void ReCalculateViewProjection();
+		float size = 5.0f;
 
 		friend class Component<Camera>;
 	};
