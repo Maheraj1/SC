@@ -26,18 +26,30 @@ namespace SC
 		if (AutoGenerateTexture) for (auto& [name, tex]: Resources::m_textures) tex.Generate();
 		SceneManager::GetCurrentScene().Start();
 
-		// std::future<void> RenderThread;
+		#ifdef SC_USE_THREADS
+		std::thread RenderThread = std::thread(Internal::Renderer::StartBatch, &SceneManager::GetCurrentScene().m_objs);
+		#endif
 
 		while (Running)
 		{	
-			// RenderThread = std::async(std::launch::async, Internal::Renderer::StartBatch, &SceneManager::GetCurrentScene().m_objs);
+			Internal::Renderer::RenderT = true;
 			Time::Update();
 			SceneManager::GetCurrentScene().Update();
+			#ifdef SC_USE_THREADS
+			if (!Internal::Renderer::done)
+			{
+				using namespace std::chrono_literals;
+				std::this_thread::sleep_for(1us);
+			}
+			#else
 			Internal::Renderer::StartBatch(&SceneManager::GetCurrentScene().m_objs);
-			// RenderThread.wait();
+			#endif
 			window.OnUpdate();
 			SceneManager::GetCurrentScene().CleanFrame();
 		}
+		Internal::Renderer::Run = false;
+
+		Debug::Info("Closing Application", "SC::Application");
 	}
 
 	Application::Application(AppSettings settings)

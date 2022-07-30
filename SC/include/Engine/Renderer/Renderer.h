@@ -15,7 +15,10 @@ namespace SC::Internal
 		static const int MAX_BATCH_COUNT = 1000;
 		static const int MAX_TEXTURE_SLOT_USAGE = 10;
 		
+		static bool done;
+		static bool Run;
 		static bool WireFrameMode;
+		static bool RenderT;
 
 		static unsigned int VAO;
 		static unsigned int ErrorShaderID;
@@ -112,9 +115,12 @@ namespace SC::Internal
 struct Vert
 {
 	std::array<SC::Vector2f, 4> pos;
-	std::array<SC::Vector2i, 4> texCoords;
+	std::array<SC::Vector2f, 4> texCoords;
 	std::array<SC::ColorF, 4> color;
 	std::array<int, 4> tex;
+	void A(){
+		auto i = sizeof(color);
+	}
 };
 
 struct Dat

@@ -79,6 +79,8 @@ namespace SC
 			Debug::Error("Failed to create OpenGL Window (version: " + std::to_string(OpenGLVersion[0]) + '.' + std::to_string(OpenGLVersion[1]) + " Core", "Window::OpenGLWindowCreationError");
 		}
 
+		Debug::Info("Created OpenGL Window", "SC::OpenGLWidnow");
+
 		glfwMakeContextCurrent(window);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
@@ -95,8 +97,8 @@ namespace SC
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
-		Debug::Info((std::string)"(OpenGL Version): " + (const char*)glGetString(GL_VERSION));
-		Debug::Info((std::string)"(OpenGL Renderer): " + (const char*)glGetString(GL_RENDERER));
+		Debug::Info((std::string)"OpenGL Version - " + (const char*)glGetString(GL_VERSION), "SC::OpenGLWindow");
+		Debug::Info((std::string)"OpenGL Renderer - " + (const char*)glGetString(GL_RENDERER), "SC::OpenGLWindow");
 
 		Internal::Renderer::Init();
 		s_windowInstanceCount++;
@@ -117,6 +119,7 @@ namespace SC
 	{
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(.1f, .1f, .1f, .1f);
 
 		Internal::Renderer::Render();
 

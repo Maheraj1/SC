@@ -53,6 +53,7 @@ namespace SC {
 		unsigned int GetTextureID();
 		void SetAttribute(TextureParameters param, TextureProperties value);
 		void Bind(unsigned int slot = 0);
+		void SetData(unsigned char* data, unsigned int size);
 
 		friend class Resources;
 	};

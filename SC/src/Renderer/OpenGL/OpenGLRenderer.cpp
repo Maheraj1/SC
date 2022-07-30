@@ -12,6 +12,7 @@
 #include <glad/glad.h>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -23,7 +24,14 @@ namespace SC::Internal
 
 	unsigned int Renderer::VAO;
 	unsigned int Renderer::ErrorShaderID;
+	
+	bool Renderer::done = false;
+	bool Renderer::Run = true;
 	bool Renderer::WireFrameMode = false;
+	bool Renderer::RenderT = false;
+	static bool* _RenderT = &Renderer::RenderT;
+	static bool* _done = &Renderer::done;
+	static bool* Run = &Renderer::Run;
 
 	static uint VBO, EBO;
 	static unsigned int UBO_MVP;
@@ -33,14 +41,18 @@ namespace SC::Internal
 	static Matrix4 proj;
 	static const Matrix4* _proj_ = &proj;
 
+	static uint texW;
+
 	// using this variables to let the multithread function use it
 	static const uint _MBC = Renderer::MAX_BATCH_COUNT;
 	static const uint _MTS = Renderer::MAX_TEXTURE_SLOT_USAGE;
 
 	void RenderBatch(const std::vector<Entity>* objs)
 	{
+		#if SC_USE_THREADS
 		std::mutex m;
 		std::lock_guard<std::mutex> lg(m);
+		#endif
 		std::vector<Batch> batches = {Batch()};
 
 		uint currentBatch = 0;
@@ -91,10 +103,10 @@ namespace SC::Internal
 			batches[currentBatch].shader = sr->shader->GetShaderID();
 			
 			// Set all Vertex Positions
-			BatchEnt.pos[BatchEnt.entC + 0] = (Vector2f)(Vector4f( 1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel() * (*_proj_));
-			BatchEnt.pos[BatchEnt.entC + 1] = (Vector2f)(Vector4f( 1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel() * (*_proj_));
-			BatchEnt.pos[BatchEnt.entC + 2] = (Vector2f)(Vector4f(-1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel() * (*_proj_));
-			BatchEnt.pos[BatchEnt.entC + 3] = (Vector2f)(Vector4f(-1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel() * (*_proj_));
+			BatchEnt.pos[BatchEnt.entC + 0] = (Vector2f)(Vector4f( 1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel());
+			BatchEnt.pos[BatchEnt.entC + 1] = (Vector2f)(Vector4f( 1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel());
+			BatchEnt.pos[BatchEnt.entC + 2] = (Vector2f)(Vector4f(-1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel());
+			BatchEnt.pos[BatchEnt.entC + 3] = (Vector2f)(Vector4f(-1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel());
 
 			// Set all Color Values
 			for (int i = 0; i < 4; i++) BatchEnt.color[BatchEnt.entC + i] = ((Vector3i)sr->color)/255.0f;
@@ -118,7 +130,7 @@ namespace SC::Internal
 				ind[v + 5] = 3;
 			}
 			
-			std::array<Vector2i, _MBC * 4> texCoords;
+			std::array<Vector2f, _MBC * 4> texCoords;
 
 			for (int i2 = 0; i2 < batches[i].entities.entC; i2 += 4) {
 				texCoords[i2 + 0] = {1, 1};
@@ -158,24 +170,26 @@ namespace SC::Internal
 		for (const BatchData &batch : batchData)
 		{
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, 32 * MAX_BATCH_COUNT, batch.pos.data()));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 32 * MAX_BATCH_COUNT, 64 * MAX_BATCH_COUNT, batch.texCoords.data()));
-			auto _dat = batch.color.data();
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 112 * MAX_BATCH_COUNT, _dat));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 112 * MAX_BATCH_COUNT, 128 * MAX_BATCH_COUNT, batch.tex.data()));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 32 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, batch.texCoords.data()));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, batch.color.data()));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 112 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT, batch.tex.data()));
 			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, batch.indices.data()));
 			
-			if (Resources::currentShader != batch.shader) glUseProgram(batch.shader);
-
-			int _tex[Renderer::MAX_TEXTURE_SLOT_USAGE];
+			// if (Resources::currentShader != batch.shader) {
+				glUseProgram(batch.shader);
+			// 	Resources::currentShader = batch.shader;
+			// }
+			
+			int32_t tex[MAX_TEXTURE_SLOT_USAGE];
 
 			for (int i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
 			{
 				GLCall(glActiveTexture(GL_TEXTURE0 + i));
-				GLCall(glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0 + batch.Textures[i].TexID));
-				_tex[i] = batch.Textures[i].TexID;
+				GLCall(glBindTexture(GL_TEXTURE_2D, batch.Textures[i].TexID));
+				tex[i] = i;
 			}
 
-			GLCall(glUniform1iv(glGetUniformLocation(batch.shader, "tex"), Renderer::MAX_TEXTURE_SLOT_USAGE, &_tex[0]));
+			GLCall(glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex));
 			
 			GLCall(glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0));
 		}
@@ -195,11 +209,11 @@ namespace SC::Internal
 		glGenBuffers(1, &VBO);
 		glGenBuffers(1, &EBO);
 		
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, 128 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 24 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, 128 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8, 0);
@@ -294,7 +308,7 @@ void main() {
 layout (location = 0) in vec2  i_pos;
 layout (location = 1) in vec2  i_texCoords;
 layout (location = 2) in vec3  i_color;
-layout (location = 3) in int   i_tex;
+layout (location = 3) in float i_tex;
 
 out VS_OUT {
 	vec2 texCoords;
@@ -311,7 +325,7 @@ void main() {
 	gl_Position = proj * vec4(i_pos.xy, 1.0, 1.0);
 	vs_out.texCoords = i_texCoords;
 	vs_out.color = i_color;
-	vs_out.tex = float(i_tex);
+	vs_out.tex = i_tex;
 }
 #shader frag
 #version 410 core
@@ -325,24 +339,11 @@ in VS_OUT
 	float tex;
 } fs_in;
 
-uniform sampler2D[10] tex;
+uniform sampler2D u_textures[10];
 
 void main() {
-
-	o_color = vec4(fs_in.color / 255, 1.0);
-	switch(int(fs_in.tex))
-	{
-		case  0: o_color *= texture(tex[ 0], fs_in.texCoords); break;
-		case  1: o_color *= texture(tex[ 1], fs_in.texCoords); break;
-		case  2: o_color *= texture(tex[ 2], fs_in.texCoords); break;
-		case  3: o_color *= texture(tex[ 3], fs_in.texCoords); break;
-		case  4: o_color *= texture(tex[ 4], fs_in.texCoords); break;
-		case  5: o_color *= texture(tex[ 5], fs_in.texCoords); break;
-		case  6: o_color *= texture(tex[ 6], fs_in.texCoords); break;
-		case  7: o_color *= texture(tex[ 7], fs_in.texCoords); break;
-		case  8: o_color *= texture(tex[ 8], fs_in.texCoords); break;
-		case  9: o_color *= texture(tex[ 9], fs_in.texCoords); break;
-	}
+	int i = int(fs_in.tex);
+	o_color = texture(u_textures[i], fs_in.texCoords) * vec4(fs_in.color, 1.0);
 })");
 	}
 

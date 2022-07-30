@@ -69,11 +69,18 @@ namespace SC
         static void Log(std::string text, DebugLogColor color = DebugLogColor::White, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
 
         /**
-         * @brief Method for logging text like info
+         * @brief Method for logging info
          * 
          * @param text text to be logged
          */
         static void Info(std::string text);
+
+        /**
+         * @brief Method for logging info
+         * 
+         * @param text text to be logged
+         */
+        static void Info(std::string text, std::string from);
 
         /**
          * @brief Method for Error Loging

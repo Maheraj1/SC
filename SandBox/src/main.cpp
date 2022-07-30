@@ -20,11 +20,12 @@ class CameraMovement: public Script
 
 		void Update()
 		{
-			if (Input::GetKey(KeyCode::D)) entity->transform.position.x += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::A)) entity->transform.position.x -= 1.0f * Time::deltaTime;
+			Vector2f move;
+			if (Input::GetKey(KeyCode::A)) entity->transform.position.x += 1.0f * Time::deltaTime;
+			if (Input::GetKey(KeyCode::D)) entity->transform.position.x -= 1.0f * Time::deltaTime;
 			
-			if (Input::GetKey(KeyCode::W)) entity->transform.position.y += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::S)) entity->transform.position.y -= 1.0f * Time::deltaTime;
+			if (Input::GetKey(KeyCode::S)) entity->transform.position.y += 1.0f * Time::deltaTime;
+			if (Input::GetKey(KeyCode::W)) entity->transform.position.y -= 1.0f * Time::deltaTime;
 		}
 	friend class Component<CameraMovement>;
 };
@@ -32,34 +33,29 @@ class CameraMovement: public Script
 class SpriteMovement: public Script
 {
 	private:
-		void Start() { }
-
-		void Update()
-		{
-			if (Input::GetKey(KeyCode::H)) entity->transform.position.x += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::F)) entity->transform.position.x -= 1.0f * Time::deltaTime;
-			
-			if (Input::GetKey(KeyCode::T)) entity->transform.position.y += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::G)) entity->transform.position.y -= 1.0f * Time::deltaTime;
-		}
+		void Start()  { }
+		void Update() { }
 	friend class Component<SpriteMovement>;
 };
 
 
-int main()
+void PreAppRun()
 {
 	Application::AutoGenerateTexture = true;
  	Scene& scene = SceneManager::AddScene();
 	
 	Entity& ent = scene.AddEntity("Test");
-	ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Render.png");
+	ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Square0.png");
 	ent.AddComponent<SpriteMovement>();
+
 	// ent.transform.scale = Vector2(10, 10);
 
 	Entity& cam = scene.AddEntity("Camera");
 	cam.AddComponent<Camera>();
 	cam.AddComponent<CameraMovement>();
+}
 
-	Application app;
-	app.Run();
+int main()
+{
+	RunApp();
 }

@@ -19,7 +19,7 @@ namespace SC
 
 	void Camera::ReCalculateViewProjection()
 	{
-		Matrix4 proj = glm::ortho(-16.0f, 16.0f, 9.0f, -9.0f);
+		Matrix4 proj = glm::ortho(-16.0f/size, 16.0f/size, 9.0f/size, -9.0f/size);
 		Matrix4 view = entity->transform.GetModel(false);
 		ViewProjection = view * proj;
 		Internal::Renderer::SetMVP(ViewProjection);

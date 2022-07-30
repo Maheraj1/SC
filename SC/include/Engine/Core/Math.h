@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 // #include "box2d/b2_math.h"
 
+#include <chrono>
 #include <string>
 
 namespace SC
@@ -22,7 +23,7 @@ namespace SC
     typedef glm::vec<3, uint8_t> Color;
     typedef glm::vec<3, short> Color16;
 
-    typedef glm::fvec3  ColorF;
+    typedef glm::fvec3 ColorF;
     typedef glm::dvec3 ColorD;
 
     typedef glm::mat4 Matrix4;
@@ -32,6 +33,26 @@ namespace SC
     typedef Vector4f Vector4;
 
     Vector3f operator/(Vector3i vec, float n);
+
+    struct Math 
+    {
+        static constexpr double PI = 22.0f/7;
+
+        static float Lerp(float a, float b, float t);
+        static Vector2f Lerp(Vector2f a, Vector2f b, float t);
+        static Vector3f Lerp(Vector3f a, Vector3f b, float t);
+    };
+
+    namespace UnitLiterals {
+        long double operator"" _km(long double n);
+        long double operator"" _ham(long double n);
+        long double operator"" _dam(long double n);
+        long double operator"" _m(long double n);
+        long double operator"" _cm(long double n);
+        long double operator"" _dm(long double n);
+        long double operator"" _mm(long double n);
+        long double operator"" _um(long double n);
+    }
 
     /**
      * @brief Convertor of glm::vec2/Vector2 to box2dVec2 
