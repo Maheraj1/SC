@@ -33,6 +33,11 @@ namespace SC
             {
                 script.Update();
             }
+
+            virtual void _FixedUpdate() override
+            {
+                script.FixedUpdate();
+            }
             
             virtual void _Awake() override
             {

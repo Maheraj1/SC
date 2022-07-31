@@ -99,6 +99,7 @@ namespace SC
 	private:
 		void Start();
 		void Update();
+		void FixedUpdate();
 		void Awake();
 		void Destroy();
 		void ResetComponentEntityPtr();

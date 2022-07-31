@@ -5,6 +5,7 @@
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Camera.h"
 #include "Engine/Input/KeyCode.h"
+#include "Engine/Physics/RigidBody.h"
 #include "Engine/Resources/Resources.h"
 #include <Engine/SC.h>
 #include <Engine/Scene/SceneManager.h>
@@ -46,7 +47,8 @@ void PreAppRun()
 	
 	Entity& ent = scene.AddEntity("Test");
 	ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Square0.png");
-	ent.AddComponent<SpriteMovement>();
+	auto& rb = ent.AddComponent<RigidBody>();
+	rb.type = RigidBodyType::Dynamic;
 
 	// ent.transform.scale = Vector2(10, 10);
 

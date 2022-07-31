@@ -42,6 +42,13 @@ namespace SC
 		}
 	}
 
+	void Scene::FixedUpdate() {
+		for (Entity& objs : m_objs)
+		{
+			objs.FixedUpdate();
+		}
+	}
+
 	void Scene::DestroyEntity(Entity *ent)
 	{
 		DestroyList.push_back(ent);

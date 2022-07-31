@@ -26,6 +26,14 @@ namespace SC
         }
     }
 
+    void Entity::FixedUpdate() 
+    {
+        for (auto &&com : components)
+        {
+            com->_FixedUpdate();
+        }
+    }
+
     void Entity::ResetComponentEntityPtr()
     {
         for (int i = 0; i < components.size(); i++) {

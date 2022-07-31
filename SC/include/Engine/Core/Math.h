@@ -3,11 +3,10 @@
 #include "Core.h"
 
 #include "glm/glm.hpp"
-// #include "box2d/b2_math.h"
 
 #include <chrono>
 #include <string>
-
+struct b2Vec2;
 namespace SC
 {
     // Type defines
@@ -60,7 +59,7 @@ namespace SC
      * @param vec glm::vec2/Vector2 to convert
      * @return b2Vec2
      */
-    // b2Vec2 SC_API ToBox2dVector2(Vector2f vec);
+    b2Vec2 SC_API ToBox2dVector2(Vector2f vec);
 
     /**
      * @brief Convertor of box2dVec2 to glm::vec2/Vector2
@@ -68,7 +67,7 @@ namespace SC
      * @param vec box2dVec2 to convert
      * @return @ref Vector2
      */
-    // Vector2f SC_API FromBox2dVector2(b2Vec2 vec);
+    Vector2f SC_API FromBox2dVector2(b2Vec2 vec);
 };
 
 namespace std {
@@ -79,6 +78,5 @@ namespace std {
     string to_string(SC::Vector4f val);
     string to_string(SC::Vector4i val);
     
-    // string to_string(b2Vec2 val);
-    // string to_string(b2Vec3 val);
+    string to_string(b2Vec2 val);
 }
