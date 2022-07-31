@@ -4,6 +4,7 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Camera.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Input/KeyCode.h"
 #include "Engine/Resources/Resources.h"
 #include <Engine/SC.h>
@@ -16,7 +17,10 @@ using namespace SC;
 class CameraMovement: public Script
 {
 	private:
-		void Start() { }
+		Camera* cam;
+		void Start() {
+			cam = GetComponentPtr<Camera>();
+		 }
 
 		void Update()
 		{
@@ -26,6 +30,9 @@ class CameraMovement: public Script
 			
 			if (Input::GetKey(KeyCode::S)) entity->transform.position.y += 1.0f * Time::deltaTime;
 			if (Input::GetKey(KeyCode::W)) entity->transform.position.y -= 1.0f * Time::deltaTime;
+
+			if (Input::GetKeyDown(KeyCode::Z)) cam->size += 1;
+			if (Input::GetKeyDown(KeyCode::X)) cam->size -= 1;
 		}
 	friend class Component<CameraMovement>;
 };
