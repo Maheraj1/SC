@@ -18,7 +18,7 @@ namespace SC
             
         public:
             Component()
-            :IComponent(typeid(T).name()), script(T()) { }
+            :IComponent(), script(T()) { }
 
             ~Component() {
                 script.OnDestroy();

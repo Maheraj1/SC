@@ -37,5 +37,7 @@ namespace SC
         friend class Application;
         friend class Internal::Renderer;
         friend class Camera;
+        friend class Time;
+        friend class Physics;
     };
 };

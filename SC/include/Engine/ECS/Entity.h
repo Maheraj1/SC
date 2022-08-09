@@ -49,8 +49,11 @@ namespace SC
 		T& GetComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
-				if (strcmp(components[i]->ScriptName, typeid(T).name()) == 0)
-					return dynamic_cast<Component<T>*>(components[i])->GetScript();
+			{
+				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
+				if (com != nullptr)
+					return com->GetScript();
+			}
 
 			Debug::Error("Instance of Script Not Found", (std::string)"Entity::GetComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");
 			throw Errors::ScriptInstanceNotFound();
@@ -63,11 +66,23 @@ namespace SC
 		}
 
 		template<typename T>
+		T* TryGetComponent() const
+		{
+			for (int i = 0; i < components.capacity(); i++) 
+			{
+				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
+				if (com != nullptr)
+					return com->GetScriptPtr();
+			}
+			return nullptr;
+		}
+
+		template<typename T>
 		bool HasComponent() const
 		{
-			for (int i = 0; i < components.size(); i++)
+			for (int i = 0; i < components.capacity(); i++) 
 			{
-				if (strcmp(components[i]->ScriptName, typeid(T).name()) == 0) return true;
+				if (dynamic_cast<Component<T>*>(components[i]) != nullptr) return true;
 			}
 			return false;
 		}
@@ -75,14 +90,11 @@ namespace SC
 		template<typename T>
 		void RemoveComponent()
 		{
-			for (int i = 0; i < components.size(); i++)
+			for (int i = 0; i < components.capacity(); i++) 
 			{
-				if (strcmp(components[i]->ScriptName, typeid(T).name()) == 0)
-				{
-					delete components[i];
-					components.erase(components.begin() + i);
+				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
+				if (com != nullptr)
 					return;
-				}
 			}
 
 			Debug::Error("Instance of Script Not Found", (std::string)"Entity::RemoveComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");

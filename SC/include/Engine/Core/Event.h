@@ -5,12 +5,14 @@
 
 namespace SC
 {
+	struct EventArgs {};
+
 	/**
 	 * @brief A class for Event handling inspired by C# event system
 	 * 
 	 * @tparam T Type to be used as data
 	*/
-	template<typename T>
+	template<typename T = EventArgs>
 	class EventHandler
 	{
 		private:
@@ -32,7 +34,12 @@ namespace SC
 				funcs.push_back(func);
 			}
 
-			void Call(T Args)
+			/**
+			 * @brief Calls all the fuctions in the list/ Triggers the event
+			 * 
+			 * @param Args 
+			 */
+			void Call(T Args = {})
 			{
 				for (auto &&func : funcs)
 				{
@@ -40,7 +47,7 @@ namespace SC
 				}
 			}
 
-			void operator()(T args)
+			void operator()(T args = {})
 			{
 				Call(args);
 			}

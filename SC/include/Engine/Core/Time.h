@@ -11,7 +11,7 @@ namespace SC
     class SC_API Time
     {
     private:
-        static int fps_;
+        static float fps_;
         static double time_;
         static double deltaTime_;
     public:
@@ -19,8 +19,9 @@ namespace SC
         // FPS Things
         static int targetFps;
         static bool CalculateFps;
+        static bool LimitFPS;
         
-        static const int& fps;
+        static const float& fps;
         static const double& time;
         static const double& deltaTime;
 

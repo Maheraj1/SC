@@ -6,9 +6,8 @@ namespace SC {
 	class IComponent
     {
     private:
-        const char* ScriptName;
     public:
-        IComponent(const char* ScriptName):ScriptName(ScriptName) { }
+        IComponent() { }
         virtual ~IComponent() = default;
 
         virtual void _Start() = 0;

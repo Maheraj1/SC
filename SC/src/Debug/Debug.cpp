@@ -6,7 +6,9 @@ namespace SC
 {
     void Debug::Log(std::string text, DebugLogColor color, DebugLogBackGroundColor bg)
     {
+        #ifdef SC_DEBUG
         std::cout << "\e[" << (int)bg << ';' << (int)color << 'm' << text.c_str() << "\e[0m" << std::endl;
+        #endif
     }
 
     void Debug::Info(std::string text)
@@ -21,17 +23,17 @@ namespace SC
 
     void Debug::Error(std::string text)
     {
-        std::cout << "\e[" << (int)DebugLogColor::Red << 'm' << "(Error): " << text.c_str() << "\e[0m" << std::endl;
+        Log((std::string)"(Error): " + text.c_str(), DebugLogColor::Red);
     }
 
     void Debug::Error(std::string text, std::string errorType)
     {
-        std::cout << "\e[" << (int)DebugLogColor::Red << 'm' << '(' << errorType.c_str() << "): " << text.c_str() << "\e[0m" << std::endl;
+        Log('(' + errorType + "): " + text, DebugLogColor::Red);
     }
 
     void Debug::Warning(std::string text)
     {
-        std::cout << "\e[" << (int)DebugLogColor::Yellow << 'm' << '(' << "Warning: " << ')' << text.c_str() << "\e[0m" << std::endl;
+        Log("(Warning): " + text, DebugLogColor::Yellow);
     }
 
     void Debug::Assert(bool condition)

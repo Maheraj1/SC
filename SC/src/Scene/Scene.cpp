@@ -1,5 +1,8 @@
 #include "Engine/Scene/Scene.h"
+#include "Engine/Scene/SceneManager.h"
 #include "Engine/ECS/IComponent.h"
+#include "Engine/Physics/RigidBody.h"
+#include "Engine/Debug/Timmer.h"
 
 namespace SC
 {

@@ -9,8 +9,8 @@ namespace SC
 	Matrix4 Transform::GetModel(bool useScale) const
 	{
 		Matrix4 model(1.0f);
-		model = glm::translate(model, Vector3f(position.x, position.y, 0.0f));
-		model = glm::rotate(model, rotation, Vector3f(0.0f, 0.0f, 1.0f));
+		model = glm::translate(model, Vector3f(position.x, position.y, 1.0f));
+		model = glm::rotate(model, glm::radians(rotation), Vector3f(0.0f, 0.0f, 1.0f));
 		if (useScale)
 			model = glm::scale(model, Vector3f(scale.x, scale.y, 1.0f));
 		return model;

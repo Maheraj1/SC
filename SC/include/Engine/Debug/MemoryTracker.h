@@ -4,7 +4,8 @@
 
 namespace SC::Debugger {
 	namespace Internal {
-		void LogMemory(unsigned long size);
+		void LogMemory(long size);
+		void ReduceMemory(long size);
 	}
 	class Memory
 	{
@@ -15,7 +16,8 @@ namespace SC::Debugger {
 		~Memory() = delete;
 
 		static long long int GetHeapMemoryAmount();
-		friend void Internal::LogMemory(unsigned long size);
+		friend void Internal::LogMemory(long size);
+		friend void Internal::ReduceMemory(long size);
 	};
 
 }

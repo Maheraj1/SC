@@ -7,9 +7,13 @@
 #include "Engine/Renderer/OpenGL/OpenGLErrors.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Debug/MemoryTracker.h"
+#include "Engine/Debug/Timmer.h"
 
+#include "glm/fwd.hpp"
 #include <glm/gtc/type_ptr.hpp>
+
 #include <glad/glad.h>
+
 #include <mutex>
 #include <string>
 #include <thread>
@@ -103,13 +107,14 @@ namespace SC::Internal
 			batches[currentBatch].shader = sr->shader->GetShaderID();
 			
 			// Set all Vertex Positions
-			BatchEnt.pos[BatchEnt.entC + 0] = (Vector2f)(Vector4f( 1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel());
-			BatchEnt.pos[BatchEnt.entC + 1] = (Vector2f)(Vector4f( 1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel());
-			BatchEnt.pos[BatchEnt.entC + 2] = (Vector2f)(Vector4f(-1.0f, -1.0f, 0.0, 1.0) * ent.transform.GetModel());
-			BatchEnt.pos[BatchEnt.entC + 3] = (Vector2f)(Vector4f(-1.0f,  1.0f, 0.0, 1.0) * ent.transform.GetModel());
+			BatchEnt.pos[BatchEnt.entC * 4 + 0] = (ent.transform.GetModel(true) * Vector4f(-1.0f, -1.0f, 1.0f, 1.0f));
+			BatchEnt.pos[BatchEnt.entC * 4 + 1] = (ent.transform.GetModel(true) * Vector4f( 1.0f, -1.0f, 1.0f, 1.0f));
+			BatchEnt.pos[BatchEnt.entC * 4 + 2] = (ent.transform.GetModel(true) * Vector4f( 1.0f,  1.0f, 1.0f, 1.0f));
+			BatchEnt.pos[BatchEnt.entC * 4 + 3] = (ent.transform.GetModel(true) * Vector4f(-1.0f,  1.0f, 1.0f, 1.0f));
 
 			// Set all Color Values
-			for (int i = 0; i < 4; i++) BatchEnt.color[BatchEnt.entC + i] = ((Vector3i)sr->color)/255.0f;
+			for (int i = 0; i <= 3; i++)
+				BatchEnt.color[(BatchEnt.entC * 4) + i] = ((Vector3i)sr->color)/255.0f;
 
 			BatchEnt.entC++;
 		}
@@ -120,23 +125,25 @@ namespace SC::Internal
 		{
 			std::array<uint, _MBC * 6> ind;
 
-			for (int v = 0; v * 6 < batches[i].entities.entC; v += 6) {
-				ind[v + 0] = 0;
-				ind[v + 1] = 1;
-				ind[v + 2] = 3;
+			for (int v = 0; v/6 < batches[i].entities.entC; v += 6) {
+				ind[v + 0] = 0 + ((v / 6 ) * 4);
+				ind[v + 1] = 1 + ((v / 6 ) * 4);
+				ind[v + 2] = 3 + ((v / 6 ) * 4);
 
-				ind[v + 3] = 1;
-				ind[v + 4] = 2;
-				ind[v + 5] = 3;
+				ind[v + 3] = 1 + ((v / 6 ) * 4);
+				ind[v + 4] = 2 + ((v / 6 ) * 4);
+				ind[v + 5] = 3 + ((v / 6 ) * 4);
 			}
 			
 			std::array<Vector2f, _MBC * 4> texCoords;
 
-			for (int i2 = 0; i2 < batches[i].entities.entC; i2 += 4) {
-				texCoords[i2 + 0] = {1, 1};
-				texCoords[i2 + 1] = {1, 0};
-				texCoords[i2 + 2] = {0, 0};
-				texCoords[i2 + 3] = {0, 1};
+			int offset = 0;
+			for (int i2 = 0; i2 < batches[i].entities.entC; i2++) {
+				texCoords[offset + 0] = {0, 0};
+				texCoords[offset + 1] = {1, 0};
+				texCoords[offset + 2] = {1, 1};
+				texCoords[offset + 3] = {0, 1};
+				offset += 4;
 			}
 
 			batchData.emplace_back(batches[i].entities.pos,
@@ -169,30 +176,33 @@ namespace SC::Internal
 
 		for (const BatchData &batch : batchData)
 		{
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, 32 * MAX_BATCH_COUNT, batch.pos.data()));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 32 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, batch.texCoords.data()));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, batch.color.data()));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 112 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT, batch.tex.data()));
-			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, batch.indices.data()));
+			if (batch.size <= 0) continue;
+
+			glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * MAX_BATCH_COUNT, &batch.pos[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, &batch.texCoords[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 96 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, &batch.color[0]);
+			glBufferSubData(GL_ARRAY_BUFFER, 144 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT,&batch.tex[0]);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &batch.indices[0]);
 			
-			// if (Resources::currentShader != batch.shader) {
+			if (Resources::currentShader != batch.shader) {
 				glUseProgram(batch.shader);
-			// 	Resources::currentShader = batch.shader;
-			// }
+				Resources::currentShader = batch.shader;
+			}
 			
 			int32_t tex[MAX_TEXTURE_SLOT_USAGE];
 
 			for (int i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
 			{
-				GLCall(glActiveTexture(GL_TEXTURE0 + i));
-				GLCall(glBindTexture(GL_TEXTURE_2D, batch.Textures[i].TexID));
+				glActiveTexture(GL_TEXTURE0 + i);
+				glBindTexture(GL_TEXTURE_2D, batch.Textures[i].TexID);
 				tex[i] = i;
 			}
 
-			GLCall(glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex));
-			
-			GLCall(glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0));
+			glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex);
+
+			glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0);
 		}
+		batchData.clear();
 	}
 
 	void Renderer::Init()
@@ -213,22 +223,22 @@ namespace SC::Internal
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 24 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, 128 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, 160 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8, 0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, 0);
 		glEnableVertexAttribArray(0);
 		
 		// texCoords
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8, reinterpret_cast<void*>(32 * MAX_BATCH_COUNT)); // 8 Positions 4 bytes each = 32 bytes
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8, reinterpret_cast<void*>(64 * MAX_BATCH_COUNT)); // 16 Positions 4 bytes each = 64 bytes
 		glEnableVertexAttribArray(1);
 
 		// color
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12, reinterpret_cast<void*>(64 * MAX_BATCH_COUNT)); // 8 Coords 4 bytes each = 32 bytes + last (32 bytes) = 64
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12, reinterpret_cast<void*>(96 * MAX_BATCH_COUNT)); // 8 Coords 4 bytes each = 32 bytes + last (64 bytes) = 96
 		glEnableVertexAttribArray(2);
 
 		// texIndex
-		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 4, reinterpret_cast<void*>(112 * MAX_BATCH_COUNT)); // 4 Colors 12 byte each = 48 bytes + last (64 bytes) = 112
+		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 4, reinterpret_cast<void*>(144 * MAX_BATCH_COUNT)); // 4 Colors 12 byte each = 48 bytes + last (96 bytes) = 144
 		glEnableVertexAttribArray(3);
 
 		/// Error Shader
@@ -268,39 +278,6 @@ void main() {
 		glDeleteShader(vs);
 		glDeleteShader(fs);
 
-		// Hard coded solid color shader
-		Resources::AddShader("SolidColor").Compile(R"(#shader vert
-#version 410 core
-
-layout (location = 0) in vec2 i_pos;
-layout (location = 2) in vec3 i_color;
-
-layout(std140) uniform Matrix
-{
-	mat4 proj;
-};
-
-out VS_OUT {
-	vec3 color;
-} vs_out;
-
-void main() {
-	gl_Position = proj * vec4(i_pos.xy, 0.0, 1.0);
-	vs_out.color = i_color;
-}
-#shader frag
-#version 410 core
-
-out vec4 o_color;
-
-in VS_OUT {
-	vec3 color;
-} fs_in;
-
-void main() {
-	o_color = vec4(fs_in.color, 1.0);
-})");
-
 		// Hard coded texture shader
 		Resources::AddShader("Sprite").Compile(R"(#shader vert
 #version 410 core
@@ -322,7 +299,7 @@ layout(std140) uniform Matrix
 };
 
 void main() {
-	gl_Position = proj * vec4(i_pos.xy, 1.0, 1.0);
+	gl_Position = proj * vec4(i_pos.xy, 0.0, 1.0);
 	vs_out.texCoords = i_texCoords;
 	vs_out.color = i_color;
 	vs_out.tex = i_tex;

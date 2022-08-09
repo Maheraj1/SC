@@ -13,13 +13,6 @@
 
 namespace SC
 {
-    namespace Internal {
-        template<typename T>
-        std::array<std::function<void(void)>, 4> GetScriptFunctions(T& script) 
-        { 
-            return script.GetFunctions();
-        }
-    }
 	/**
      * @brief Script for logic
      */
@@ -48,18 +41,17 @@ namespace SC
         template<typename T>
         T* GetComponentPtr()  {return entity->GetComponentPtr<T>();}
 
+        template<typename T>
+        T* TryGetComponent()  {return entity->TryGetComponent<T>();}
+
         // Scripting Api functions
         
-        void Start()     { }
-        void Awake()     { }
-        void Update()    { }
-        void OnDestroy() { }
-    private:
+        void Start()       { }
+        void Awake()       { }
+        void Update()      { }
+        void OnDestroy()   { }
         void Destroy(Entity* ent);
-
+    private:
         void serialize() {} // TODO: serialization
-        std::array<std::function<void(void)>, 4> GetFunctions();
-
-        friend std::array<std::function<void(void)>, 4> Internal::GetScriptFunctions<Script>(Script& script);
     };
 }
