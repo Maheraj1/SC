@@ -21,7 +21,6 @@ namespace SC
         void Start();
         void Awake();
         void Update();
-        void FixedUpdate();
     public:
         Scene();
         ~Scene();
@@ -39,5 +38,6 @@ namespace SC
         friend class Internal::Renderer;
         friend class Camera;
         friend class Time;
+        friend class Physics;
     };
 };

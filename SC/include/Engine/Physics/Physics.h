@@ -13,15 +13,22 @@ namespace SC {
 	class SC_API Physics
 	{
 		public:
-			static float FixedTimeStep;
 			static Vector2f gravity;
+			static b2World* GetPhysicsWorld();
 		private:
 			static void Init();
 			static void Update();
 			static void ShutDown();
-			static b2World& GetWorld();
+			static void Step(float dt);
+			static void UpdateData();
+			static void UpdatePositions();
+			static std::vector<RigidBody*> rigidBodies;
+			static b2World* world;
+		
 		friend class Application;
 		friend class RigidBody;
+		friend class Collider;
 		friend class Time;
+		friend class Window;
 	};
 }

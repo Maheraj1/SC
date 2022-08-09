@@ -1,13 +1,18 @@
 #include "Engine/Core/Application.h"
+#include "Engine/Core/Math.h"
 #include "Engine/ECS/Transform.h"
 #include "Engine/Physics/Physics.h"
+#include "Engine/Physics/RigidBody.h"
 #include "Engine/Resources/Resources.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Debug/Debug.h"
+#include "Engine/Debug/Timmer.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Renderer/Renderer.h"
 #include "b2_world.h"
+#include "b2_body.h"
+#include <chrono>
 #include <thread>
 #include <future>
 
@@ -35,13 +40,11 @@ namespace SC
 		Debug::Info("Starting Graphics", "SC::Application");
 
 		while (Running)
-		{	
+		{
 			// RenderThread = std::async(std::launch::async, Internal::Renderer::StartBatch, &SceneManager::GetCurrentScene().m_objs);
 			Time::Update();
-			Time::FixedUpdate();
 			
 			Internal::Renderer::StartBatch(&SceneManager::GetCurrentScene().m_objs);
-			
 			window.OnUpdate();
 			SceneManager::GetCurrentScene().CleanFrame();
 		}

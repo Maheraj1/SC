@@ -1,6 +1,8 @@
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Time.h"
+#include "Engine/Physics/Physics.h"
+#include "b2_world.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/Window.h"
@@ -21,7 +23,7 @@ namespace SC
 	{
 		m_data.VSync = enabled;
 		if (enabled) Time::targetFps = glfwGetVideoMode(glfwGetPrimaryMonitor())->refreshRate;
-		else Time::targetFps = 60;
+		else Time::targetFps = 100;
 	}
 
 	bool Window::IsVSync()
@@ -97,6 +99,8 @@ namespace SC
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
+		glfwSwapInterval(0);
+
 		Debug::Info((std::string)"OpenGL Version - " + (const char*)glGetString(GL_VERSION), "SC::OpenGLWindow");
 		Debug::Info((std::string)"OpenGL Renderer - " + (const char*)glGetString(GL_RENDERER), "SC::OpenGLWindow");
 
@@ -119,9 +123,10 @@ namespace SC
 	{
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(.1f, .1f, .1f, .1f);
-
+		glClearColor(.1f, .1f, .1f, 1.0f);
+		
 		Internal::Renderer::Render();
+		Physics::GetPhysicsWorld()->DebugDraw();
 
 		glfwSwapBuffers(glfw_window);
 	}

@@ -69,6 +69,15 @@ namespace SC
         static void Log(std::string text, DebugLogColor color = DebugLogColor::White, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
 
         /**
+         * @brief Method for logging text with colors
+         * 
+         * @param text text to be printed
+         * @param color color of text (optional)
+         * @param bg background color of text (optional)
+         */
+        static void Log(std::string text, const char* file, const char* line, DebugLogColor color = DebugLogColor::White, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
+
+        /**
          * @brief Method for logging info
          * 
          * @param text text to be logged

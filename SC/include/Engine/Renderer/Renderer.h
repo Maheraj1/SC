@@ -42,7 +42,7 @@ namespace SC::Internal
 		void operator++();
 		void operator--();
 
-		std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> pos;
+		std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos;
 		std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color;
 		std::array<float, Renderer::MAX_BATCH_COUNT * 4> textureIndex;
 		uint32_t entC;
@@ -88,7 +88,7 @@ namespace SC::Internal
 	{
 	public:
 	
-		BatchData(std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> pos,
+		BatchData(std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos,
 				  std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> texCoords,
 				   std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color,
 					std::array<float, Renderer::MAX_BATCH_COUNT * 4> tex, 
@@ -101,7 +101,7 @@ namespace SC::Internal
 		   { }
 		~BatchData() { }
 
-		std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> pos;
+		std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos;
 		std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> texCoords;
 		std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color;
 		std::array<float, Renderer::MAX_BATCH_COUNT * 4> tex;
@@ -111,19 +111,3 @@ namespace SC::Internal
 		uint size;
 	};
 }
-
-struct Vert
-{
-	std::array<SC::Vector2f, 4> pos;
-	std::array<SC::Vector2f, 4> texCoords;
-	std::array<SC::ColorF, 4> color;
-	std::array<int, 4> tex;
-	void A(){
-		auto i = sizeof(color);
-	}
-};
-
-struct Dat
-{
-	Vert dat[SC::Internal::Renderer::MAX_BATCH_COUNT];
-};

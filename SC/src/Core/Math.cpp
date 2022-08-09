@@ -84,12 +84,6 @@ namespace SC
         {
             return n*10000;
         }
-
-        void Test()
-        {
-            auto a = 10.0_km;
-        }
-
     }
 };
 

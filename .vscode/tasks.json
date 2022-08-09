@@ -17,7 +17,7 @@
         {
             "label": "Build SC Release",
             "type": "shell",
-            "command": "make clean && make TYPE=1 -j4",
+            "command": "make TYPE=1 -j4",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },
@@ -33,6 +33,19 @@
                 "cwd": "${workspaceFolder}/SandBox"
             },
             "dependsOn": "Build SC Debug",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build SandBox Release",
+            "type": "shell",
+            "command": "make",
+            "args": ["TYPE=1"],
+            "options": {
+                "cwd": "${workspaceFolder}/SandBox"
+            },
+            "dependsOn": "Build SC Release",
             "problemMatcher": [
                 "$gcc"
             ]

@@ -39,22 +39,34 @@ namespace SC
 			data = stbi_load(fp, &width, &height, &nrChannels, 3 + (int)alpha); // if alpha is true then it will have int value of 1
 		} else 
 		{
-			data = (unsigned char*)0xffffff;
+			data = nullptr;
 		}
 
-		if (data == nullptr) return;
+		if (data != nullptr)
+		{
+			GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
+			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, width, height, 0, IFormat, GL_UNSIGNED_BYTE, data));
 
-		GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
-		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, width, height, 0, IFormat, GL_UNSIGNED_BYTE, data));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}else {
+			uint dat = 0xffffff;
+			GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
+			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, width, height, 0, IFormat, GL_UNSIGNED_INT, &dat));
 
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		glBindTexture(GL_TEXTURE_2D, 0);
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 
-		if (data != (unsigned char*)0xffffff)
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		if (data != nullptr)
 			stbi_image_free(data);
 	}
 

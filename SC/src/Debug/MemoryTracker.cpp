@@ -4,9 +4,19 @@
 
 long long int SC::Debugger::Memory::HeapMemory;
 
-void SC::Debugger::Internal::LogMemory(unsigned long size)
+long long int SC::Debugger::Memory::GetHeapMemoryAmount()
+{
+	return SC::Debugger::Memory::HeapMemory;
+}
+
+void SC::Debugger::Internal::LogMemory(long size)
 {
 	SC::Debugger::Memory::HeapMemory += size;
+}
+
+void SC::Debugger::Internal::ReduceMemory(long size)
+{
+	SC::Debugger::Memory::HeapMemory -= size;
 }
 
 void* operator new(unsigned long size)
@@ -18,7 +28,7 @@ void* operator new(unsigned long size)
 
 void operator delete(void* ptr, unsigned long size) noexcept
 {
-	SC::Debugger::Internal::LogMemory(-size);
+	SC::Debugger::Internal::ReduceMemory(size);
 	free(ptr);
 }
 
@@ -31,7 +41,7 @@ void* operator new[](unsigned long size)
 
 void operator delete[](void* ptr, unsigned long size) noexcept
 {
-	SC::Debugger::Internal::LogMemory(-size);
+	SC::Debugger::Internal::ReduceMemory(size);
 	free(ptr);
 }
 

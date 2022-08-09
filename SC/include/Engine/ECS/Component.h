@@ -18,7 +18,7 @@ namespace SC
             
         public:
             Component()
-            :IComponent(typeid(T).name()), script(T()) { }
+            :IComponent(), script(T()) { }
 
             ~Component() {
                 script.OnDestroy();
@@ -32,11 +32,6 @@ namespace SC
             virtual void _Update() override
             {
                 script.Update();
-            }
-
-            virtual void _FixedUpdate() override
-            {
-                script.FixedUpdate();
             }
             
             virtual void _Awake() override
