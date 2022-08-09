@@ -5,6 +5,7 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Camera.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Input/KeyCode.h"
 #include "Engine/Physics/BoxCollider.h"
 #include "Engine/Physics/CircleCollider.h"
