@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Math.h"
 #include "Engine/ECS/Script.h"
-#include "Engine/Scene/Collider.h"
+#include "Collider.h"
 
 struct b2Fixture;
 struct b2PolygonShape;
