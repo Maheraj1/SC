@@ -25,6 +25,7 @@ namespace SC
 
 	public:
 		Entity(std::string name = "New Entity");
+		Entity(std::string name, UUID id);
 
 		~Entity() { }
 
@@ -33,7 +34,7 @@ namespace SC
 		template<typename T>
 		T& AddComponent()
 		{
-			Component<T>* com = new Component<T>();
+			Component<T>* com = new Component<T>(T::template GetName<T>());
 			com->GetScript().entity = this;
 			components.push_back(com);
 			return com->GetScript();
@@ -99,6 +100,13 @@ namespace SC
 
 			Debug::Error("Instance of Script Not Found", (std::string)"Entity::RemoveComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");
 			throw Errors::ScriptInstanceNotFound();
+		}
+
+		void AddComponents(std::vector<std::string> tn)
+		{
+			for (int i = 0; i < tn.size(); i++) {
+				
+			}
 		}
 
 		bool operator==(Entity& ent)

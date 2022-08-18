@@ -18,6 +18,7 @@ namespace SC {
 
 	void Physics::Init()
 	{
+		if (world != nullptr) delete world;
 		world = new b2World(ToBox2dVector2(Physics::gravity));
 	}
 
@@ -27,7 +28,9 @@ namespace SC {
 	}
 
 	void Physics::ShutDown() { 
+		if (world == nullptr) return;
 		delete world;
+		world = nullptr;
 	}
 
 	void Physics::UpdateData()
@@ -40,8 +43,8 @@ namespace SC {
 		auto& objs = SceneManager::GetCurrentScene().m_objs;
 
 		for (int i = 0; i < objs.size(); i++) {
-			auto* rb = objs[i].TryGetComponent<RigidBody>();
-			if (!rb) continue;
+			RigidBody* rb = objs[i].TryGetComponent<RigidBody>();
+			if (rb == nullptr) continue;
 			objs[i].transform.position = FromBox2dVector2(rb->body->GetPosition());
 			objs[i].transform.rotation = rb->body->GetAngle();
 		}

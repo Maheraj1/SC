@@ -4,6 +4,7 @@
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Debug/Timmer.h"
 
+#include "Engine/Serialization/SerializedData.h"
 #include "glm/ext/matrix_transform.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -48,5 +49,15 @@ namespace SC
 	void Camera::OnDestroy()
 	{
 		instance = nullptr;
+	}
+
+	void Camera::Serialize() const
+	{
+		SC_ADD_PARAMETER(size);
+	}
+
+	void Camera::DeSerialize()
+	{
+		SC_GET_PARAMETER(size);
 	}
 }

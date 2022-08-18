@@ -1,22 +1,31 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-
 #include "Engine/ECS/Component.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/Transform.h"
+#include "Engine/Serialization/SerializableObject.h"
 #include "Engine/ECS/Entity.h"
 
 #include <array>
 #include <functional>
 #include <iostream>
+#include <unordered_map>
 
 namespace SC
 {
+    namespace Internal {
+        struct ComponentData
+        {
+            static std::vector<const char*> components;
+            static std::unordered_map<const char*, int> NameToComponents;
+        };
+    }
+
 	/**
      * @brief Script for logic
      */
-    class Script
+    class Script: public Serialization::SerializableObject
     {
 
     public:
@@ -27,22 +36,22 @@ namespace SC
         // Entity Functions
 
         template<typename T>
-        T& AddComponent() {return entity->AddComponent<T>();}
+        inline T& AddComponent() {return entity->AddComponent<T>();}
 
         template<typename T>
-        void RemoveComponent() {return entity->RemoveComponent<T>();}
+        inline void RemoveComponent() {return entity->RemoveComponent<T>();}
 
         template<typename T>
-        T& GetComponent()  {return entity->GetComponent<T>();}
+        inline T& GetComponent()  {return entity->GetComponent<T>();}
 
         template<typename T>
-        T* AddComponentPtr() {return entity->AddComponentPtr<T>();}
+        inline T* AddComponentPtr() {return entity->AddComponentPtr<T>();}
 
         template<typename T>
-        T* GetComponentPtr()  {return entity->GetComponentPtr<T>();}
+        inline T* GetComponentPtr()  {return entity->GetComponentPtr<T>();}
 
         template<typename T>
-        T* TryGetComponent()  {return entity->TryGetComponent<T>();}
+        inline T* TryGetComponent()  {return entity->TryGetComponent<T>();}
 
         // Scripting Api functions
         
@@ -51,7 +60,16 @@ namespace SC
         void Update()      { }
         void OnDestroy()   { }
         void Destroy(Entity* ent);
-    private:
-        void serialize() {} // TODO: serialization
+
+        inline void Serial() {_Serialize();}
+        inline void DeSerial() {_DeSerialize();}
+
+        template<typename T>
+        static inline const char* GetName() { return Internal::ComponentData::components[GetRegistryID<T>()]; }
+        
+        template<typename T>
+        static inline int GetRegistryID() { return Internal::ComponentData::NameToComponents[typeid(T).name()]; }
+
+        friend class Component<Script>;
     };
 }

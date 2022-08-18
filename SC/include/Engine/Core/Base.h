@@ -23,3 +23,25 @@
 
 #include "Engine/Debug/Debug.h"
 
+// use only in source files
+#define SC_REGISTER_COMPONENT(x) \
+SC::Internal::ComponentData::components.push_back(#x);\
+SC::Internal::ComponentData::NameToComponents.try_emplace(typeid(x).name(), SC::Internal::ComponentData::components.size()-1)
+
+#define SC_COMPONENT_FUNC(x)\
+if (strcmp(str, #x) == 0) {\
+	ent->AddComponent<x>();\
+	return;\
+}\
+
+#define SC_COMPONENT_FUNC_BASE()\
+namespace SC::Internal::Components {\
+void AddComponent(const char* str, SC::Entity* ent)\
+{\
+SC_COMPONENT_FUNC(RigidBody);\
+SC_COMPONENT_FUNC(SpriteRenderer);\
+SC_COMPONENT_FUNC(BoxCollider);\
+SC_COMPONENT_FUNC(CircleCollider);\
+SC_COMPONENT_FUNC(Camera);\
+
+#define SC_COMPONENT_FUNC_END() };}

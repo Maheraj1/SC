@@ -28,6 +28,8 @@ namespace SC
         Entity& AddEntity(std::string name);
         Entity* AddEntityPtr(std::string name);
 
+        Entity& AddEntity(std::string name, UUID id);
+
         void DestroyEntity(Entity* ent);
 
         void CleanFrame();

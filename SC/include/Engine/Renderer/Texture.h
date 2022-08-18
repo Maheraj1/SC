@@ -38,7 +38,7 @@ namespace SC {
 	class SC_API Texture
 	{
 	private:
-		unsigned int m_id;
+		unsigned int m_id = 0;
 		unsigned int TextureW[2];
 		unsigned int TextureF[2];
 		unsigned int Format;

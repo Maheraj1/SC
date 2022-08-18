@@ -30,5 +30,6 @@ namespace SC {
 		friend class Collider;
 		friend class Time;
 		friend class Window;
+		friend class SceneSerializer;
 	};
 }

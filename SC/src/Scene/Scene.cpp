@@ -8,7 +8,7 @@ namespace SC
 {
 	Entity& Scene::AddEntity(std::string name)
 	{
-		m_objs.push_back(name);
+		m_objs.emplace_back(name);
 		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
 		for (int i = 0; i < m_objs.size();i++) {
 			m_objs[i].ResetComponentEntityPtr();
@@ -18,12 +18,17 @@ namespace SC
 
 	Entity* Scene::AddEntityPtr(std::string name)
 	{
-		m_objs.push_back(name);
+		return &AddEntity(name);
+	}
+
+	Entity& Scene::AddEntity(std::string name, UUID id)
+	{
+		m_objs.emplace_back(name, id);
 		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
 		for (int i = 0; i < m_objs.size();i++) {
 			m_objs[i].ResetComponentEntityPtr();
 		}
-		return &m_objs[m_objs.size()-1];
+		return m_objs.at(m_objs.size()-1);
 	}
 
 	void Scene::Start() {

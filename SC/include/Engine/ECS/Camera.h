@@ -15,6 +15,9 @@ namespace SC
 		void Start();
 		void Update();
 		void OnDestroy();
+
+		virtual void Serialize() const override;
+		virtual void DeSerialize() override;
 	public:
 		Camera()  { }
 		~Camera() { }

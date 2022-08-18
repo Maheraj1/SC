@@ -4,6 +4,7 @@
 #include "Engine/ECS/Script.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
+
 #include "glm/detail/qualifier.hpp"
 
 namespace SC
@@ -11,9 +12,12 @@ namespace SC
 	class SpriteRenderer: public Script
 	{
 	private:
-		
+		void Serialize() const override;
+		void DeSerialize() override;
 	public:
-		SpriteRenderer()  { }
+		SpriteRenderer()
+		:shader(nullptr), texture(nullptr)
+		{ }
 		~SpriteRenderer() { }
 
 		void Start();

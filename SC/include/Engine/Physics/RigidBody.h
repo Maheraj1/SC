@@ -35,6 +35,8 @@ namespace SC {
 		void FixedUpdate();
 		void OnDestroy();
 		void Awake();
+		void Serialize() const override;
+		void DeSerialize() override;
 
 		friend class Component<RigidBody>;
 		friend class Physics;

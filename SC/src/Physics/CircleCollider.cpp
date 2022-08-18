@@ -39,4 +39,24 @@ namespace SC {
 		fixture->SetSensor(IsTrigger);
 		shape->m_radius = size;
 	}
+
+	void CircleCollider::Serialize() const
+	{
+		SC_ADD_PARAMETER(Density);
+		SC_ADD_PARAMETER(Friction);
+		SC_ADD_PARAMETER(Restitution);
+		SC_ADD_PARAMETER(RestitutionThreshold);
+		SC_ADD_PARAMETER(IsTrigger);
+		SC_ADD_PARAMETER(size);
+	}
+
+	void CircleCollider::DeSerialize()
+	{
+		SC_GET_PARAMETER(Density);
+		SC_GET_PARAMETER(Friction);
+		SC_GET_PARAMETER(Restitution);
+		SC_GET_PARAMETER(RestitutionThreshold);
+		SC_GET_PARAMETER(IsTrigger);
+		SC_GET_PARAMETER(size);
+	}
 }

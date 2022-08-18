@@ -8,6 +8,5 @@ inline void RunApp()
 {
 	SC::Debug::Info("Starting Engine", "SC::Application");
 	SC::Application app;
-	PreAppRun();
-	app.Run();
+	app.Run(PreAppRun);
 }

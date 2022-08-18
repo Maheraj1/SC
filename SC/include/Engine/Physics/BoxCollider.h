@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Math.h"
 #include "Engine/ECS/Script.h"
-#include "Engine/Scene/Collider.h"
+#include "Collider.h"
 
 struct b2Fixture;
 struct b2PolygonShape;
@@ -25,6 +25,8 @@ namespace SC {
 			void ApplyParameters();
 		private:
 			void Start();
+			void Serialize() const override;
+			void DeSerialize() override;
 
 			RigidBody* rb;
 			b2Fixture* fixture;

@@ -5,7 +5,7 @@
         {
             "label": "Build SC Debug",
             "type": "shell",
-            "command": "make -j4",
+            "command": "make -j8",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },
@@ -17,7 +17,7 @@
         {
             "label": "Build SC Release",
             "type": "shell",
-            "command": "make TYPE=1 -j4",
+            "command": "make TYPE=1 -j8",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },

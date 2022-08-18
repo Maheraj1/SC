@@ -2,6 +2,7 @@
 #include "Engine/Core/Math.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/Physics/Physics.h"
+#include "Engine/Serialization/SerializedData.h"
 #include "b2_body.h"
 #include "b2_fixture.h"
 #include "b2_math.h"
@@ -31,12 +32,13 @@ namespace SC {
 
 	RigidBody::RigidBody() { }
 
-	RigidBody::~RigidBody() { }
-
-	void RigidBody::OnDestroy()
-	{
+	RigidBody::~RigidBody() { 
 		Physics::world->DestroyBody(body);
 		Physics::rigidBodies.erase(Physics::rigidBodies.begin() + physicsID);
+	}
+
+	void RigidBody::OnDestroy() {
+
 	}
 
 	void RigidBody::FixedUpdate()
@@ -56,5 +58,20 @@ namespace SC {
 		body->SetTransform(ToBox2dVector2(pos), entity->transform.rotation);
 		
 		OnApplyParameters({});
+	}
+
+	void RigidBody::Serialize() const
+	{
+		SC_ADD_PARAMETER(mass);
+		int type = (int)this->type;
+		SC_ADD_PARAMETER(type);
+	}
+	
+	void RigidBody::DeSerialize()
+	{
+		int type;
+		SC_GET_PARAMETER(mass);
+		SC_GET_PARAMETER(type);
+		this->type = (RigidBodyType)type;
 	}
 }

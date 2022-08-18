@@ -1,48 +1,72 @@
+#include <Engine/SC.h>
+
 #include "Engine/Core/Application.h"
+#include "Engine/Core/Base.h"
 #include "Engine/Core/Math.h"
+
 #include "Engine/Debug/Debug.h"
+#include <Engine/Debug/Timmer.h>
+
 #include "Engine/ECS/Component.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Camera.h"
+#include <Engine/ECS/Script.h>
+
 #include "Engine/Input/Input.h"
 #include "Engine/Input/KeyCode.h"
+
 #include "Engine/Physics/BoxCollider.h"
 #include "Engine/Physics/CircleCollider.h"
 #include "Engine/Physics/RigidBody.h"
+
 #include "Engine/Resources/Resources.h"
-#include <Engine/SC.h>
+
+#include "Engine/Scene/SceneSerializer.h"
 #include <Engine/Scene/SceneManager.h>
-#include <Engine/ECS/Script.h>
-#include <Engine/Debug/Timmer.h>
+
+#include "Engine/Serialization/SerializedData.h"
+
 #include <string>
 
 using namespace SC;
 
 class CameraMovement: public Script
 {
+	public:
+		float speed = 2.0f;
+		int i = 0;
 	private:
 		Camera* cam;
 		Vector2f move = {0, 0};
 
 		void Start() { 
-			cam = GetComponentPtr<Camera>();
-			move= entity->transform.position;
+			cam  = GetComponentPtr<Camera>();
+			move = entity->transform.position;
 		}
 
 		void Update()
 		{
 
-			if (Input::GetKey(KeyCode::A)) move.x += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::D)) move.x -= 1.0f * Time::deltaTime;
+			if (Input::GetKey(KeyCode::A)) move.x += 1.0f * speed * Time::deltaTime;
+			if (Input::GetKey(KeyCode::D)) move.x -= 1.0f * speed * Time::deltaTime;
 			
-			if (Input::GetKey(KeyCode::S)) move.y += 1.0f * Time::deltaTime;
-			if (Input::GetKey(KeyCode::W)) move.y -= 1.0f * Time::deltaTime;
+			if (Input::GetKey(KeyCode::S)) move.y += 1.0f * speed * Time::deltaTime;
+			if (Input::GetKey(KeyCode::W)) move.y -= 1.0f * speed * Time::deltaTime;
 
 			if (Input::GetKeyDown(KeyCode::Z)) cam->size += 1;
 			if (Input::GetKeyDown(KeyCode::X)) cam->size -= 1;
 
 			entity->transform.position = Math::Lerp(entity->transform.position, move, Time::deltaTime * 2.0f);
+		}
+
+		virtual void Serialize() const override { 
+			SC_ADD_PARAMETER(speed);
+		}
+
+		virtual void DeSerialize() override
+		{
+			SC_GET_PARAMETER(speed);
 		}
 	friend class Component<CameraMovement>;
 };
@@ -61,46 +85,58 @@ class SpriteMovement: public Script
 	friend class Component<SpriteMovement>;
 };
 
+SC_COMPONENT_FUNC_BASE()
+SC_COMPONENT_FUNC(SpriteMovement)
+SC_COMPONENT_FUNC(CameraMovement)
+SC_COMPONENT_FUNC_END();
 
 void PreAppRun()
 {
 	Application::AutoGenerateTexture = true;
- 	Scene& scene = SceneManager::AddScene();
 	
-	{
-		Entity& ent = scene.AddEntity("Test");
-		ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Square0.png");
-		ent.transform.position = { 2.0f, 5.0f };
-		auto& rb = ent.AddComponent<RigidBody>();
-		rb.type = RigidBodyType::Dynamic;
-		rb.mass = 1.0f;
+	SC_REGISTER_COMPONENT(CameraMovement);
+	SC_REGISTER_COMPONENT(SpriteMovement);
 
-		auto& coll = ent.AddComponent<BoxCollider>();
-	}
+	SceneSerializer::DeserializeText("test.yaml");
 
-	{
-		Entity& ent = scene.AddEntity("Ground");
-		ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
-		ent.AddComponent<RigidBody>();
-		ent.AddComponent<BoxCollider>().size = Vector2f(5.0f, 1.0f);
-		ent.transform.scale = Vector2f(5.0f, 1.0f);
-		ent.transform.position.y = -5;
-	}
+ 	// Scene& scene = SceneManager::AddScene();
+	
+	// {
+	// 	Entity& ent = scene.AddEntity("Test");
+	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Square0.png");
+	// 	ent.transform.position = { 2.0f, 5.0f };
+	// 	auto& rb = ent.AddComponent<RigidBody>();
+	// 	rb.type = RigidBodyType::Dynamic;
+	// 	rb.mass = 1.0f;
 
-	{
-		Entity& ent = scene.AddEntity("Ball");
-		ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
-		auto& rb = ent.AddComponent<RigidBody>();
-		rb.type = RigidBodyType::Dynamic;
-		rb.mass = 10.0f;
-		ent.AddComponent<CircleCollider>().size = 1.0f;
-		ent.transform.scale = Vector2f(1.0f, 1.0f);
-		ent.transform.position.y = 5;
-	}
+	// 	auto& coll = ent.AddComponent<BoxCollider>();
+	// }
 
-	Entity& cam = scene.AddEntity("Camera");
-	cam.AddComponent<Camera>();
-	cam.AddComponent<CameraMovement>();
+	// {
+	// 	Entity& ent = scene.AddEntity("Ground");
+	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
+	// 	ent.AddComponent<RigidBody>();
+	// 	ent.AddComponent<BoxCollider>().size = Vector2f(5.0f, 1.0f);
+	// 	ent.transform.scale = Vector2f(5.0f, 1.0f);
+	// 	ent.transform.position.y = -5;
+	// }
+
+	// {
+	// 	Entity& ent = scene.AddEntity("Ball");
+	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
+	// 	auto& rb = ent.AddComponent<RigidBody>();
+	// 	rb.type = RigidBodyType::Dynamic;
+	// 	rb.mass = 10.0f;
+	// 	ent.AddComponent<CircleCollider>().size = 1.0f;
+	// 	ent.transform.scale = Vector2f(1.0f, 1.0f);
+	// 	ent.transform.position.y = 5;
+	// }
+
+	// Entity& cam = scene.AddEntity("Camera");
+	// cam.AddComponent<Camera>();
+	// cam.AddComponent<CameraMovement>().i = 1;
+
+	// SceneSerializer::SerializeText("test.yaml");
 }
 
 int main()

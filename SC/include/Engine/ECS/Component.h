@@ -3,8 +3,9 @@
 #include "Engine/Core/Core.h"
 #include "Engine/ECS/IComponent.h"
 
-#include <functional>
 #include <iostream>
+#include <unordered_map>
+#include <vector>
 
 namespace SC
 {
@@ -17,8 +18,8 @@ namespace SC
             T script;
             
         public:
-            Component()
-            :IComponent(), script(T()) { }
+            Component(const char* name)
+            :script(T()), IComponent(name) { }
 
             ~Component() {
                 script.OnDestroy();
@@ -37,6 +38,16 @@ namespace SC
             virtual void _Awake() override
             {
                 script.Awake();
+            }
+
+            virtual void _Serialize() override
+            {
+                script.Serial();
+            }
+
+            virtual void _DeSerialize() override
+            {
+                script.DeSerial();
             }
 
             virtual void SetEntity(Entity* ent) override

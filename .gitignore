@@ -2,6 +2,9 @@
 SandBox_
 *.o
 *.dylib
+*.so
+*.dll
+*.lib
 *.a
 *.tmp
 *.log

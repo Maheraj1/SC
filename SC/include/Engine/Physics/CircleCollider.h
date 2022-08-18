@@ -2,7 +2,7 @@
 
 #include "Engine/Core/Math.h"
 #include "Engine/ECS/Script.h"
-#include "Engine/Scene/Collider.h"
+#include "Collider.h"
 
 struct b2Fixture;
 struct b2CircleShape;
@@ -13,7 +13,6 @@ namespace SC {
 	class SC_API CircleCollider: public Script, public Collider
 	{
 		public:
-			Vector2f offset = Vector2f(0.0f, 0.0f);
 			float size = 1.0f;
 
 			float Friction = .5f;
@@ -25,6 +24,8 @@ namespace SC {
 			void ApplyParameters();
 		private:
 			void Start();
+			void Serialize() const override;
+			void DeSerialize() override;
 
 			RigidBody* rb;
 			b2Fixture* fixture;

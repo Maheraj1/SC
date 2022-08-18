@@ -51,12 +51,10 @@ namespace SC::Internal
 	static const uint _MBC = Renderer::MAX_BATCH_COUNT;
 	static const uint _MTS = Renderer::MAX_TEXTURE_SLOT_USAGE;
 
-	void RenderBatch(const std::vector<Entity>* objs)
+	void Renderer::StartBatch(const std::vector<Entity> *objs)
 	{
-		#if SC_USE_THREADS
-		std::mutex m;
-		std::lock_guard<std::mutex> lg(m);
-		#endif
+		// std::mutex m;
+		// std::lock_guard<std::mutex> lg(m);
 		std::vector<Batch> batches = {Batch()};
 
 		uint currentBatch = 0;
@@ -156,11 +154,6 @@ namespace SC::Internal
 											batches[i].entities.entC
 									   );
 		}
-	}
-
-	void Renderer::StartBatch(const std::vector<Entity> *objs)
-	{
-		RenderBatch(objs);
 	}
 
 	void Renderer::Render()

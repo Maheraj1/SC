@@ -1,4 +1,5 @@
 #include "Engine/ECS/SpriteRenderer.h"
+#include "Engine/Core/Math.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Resources/Resources.h"
 
@@ -13,14 +14,21 @@ namespace SC
 		color.g = 255;
 	}
 
-	void SpriteRenderer::Start()
+	void SpriteRenderer::Start() { 
+		if (shader == nullptr) shader = Resources::GetShaderPtr("Sprite");
+		if (texture == nullptr) texture = Resources::GetTexturePtr("Square");
+	}
+
+	void SpriteRenderer::Serialize() const
 	{
-		shader = Resources::GetShaderPtr("Sprite");
-		if (texture == nullptr)
-		{
-			texture = Resources::AddTexturePtr("Square", "Sq.png");
-			// texture->SetAttribute(TextureParameters::Format, TextureProperties::FormatRGB);
-			texture->Generate();
-		}
+		Color16 color = (Color16)this->color;
+		SC_ADD_PARAMETER(color);
+	}
+
+	void SpriteRenderer::DeSerialize()
+	{
+		Color16 col;
+		SC_ADD_PARAMETER(col);
+		this->color = (Color)col;
 	}
 }

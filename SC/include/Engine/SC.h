@@ -4,9 +4,8 @@
 	#include "Engine/Debug/MemoryTracker.h"
 #endif
 
-namespace SC {};
-
 #include "Input/Input.h"
 #include "Core/Time.h"
 #include "Core/Application.h"
 #include "Core/EntryPoint.h"
+#include "Serialization/SerializedData.h"

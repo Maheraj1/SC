@@ -56,7 +56,7 @@ namespace SC
 		}else {
 			uint dat = 0xffffff;
 			GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
-			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, width, height, 0, IFormat, GL_UNSIGNED_INT, &dat));
+			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, 1, 1, 0, IFormat, GL_UNSIGNED_INT, &dat));
 
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));

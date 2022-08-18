@@ -51,7 +51,7 @@ namespace SC
 		 * @brief Runs The Application
 		 * 
 		 */
-		void Run();
+		void Run(void(*func)(void));
 
 		/**
 		 * @brief Close Window
