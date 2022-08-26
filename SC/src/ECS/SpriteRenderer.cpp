@@ -27,8 +27,8 @@ namespace SC
 
 	void SpriteRenderer::DeSerialize()
 	{
-		Color16 col;
-		SC_ADD_PARAMETER(col);
-		this->color = (Color)col;
+		Color16 color;
+		SC_GET_PARAMETER(color);
+		this->color = (Color)color;
 	}
 }

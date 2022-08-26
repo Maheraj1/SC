@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Common.h"
 #include "Engine/Core/Core.h"
 #include "Engine/ECS/IComponent.h"
 
@@ -18,7 +19,7 @@ namespace SC
             T script;
             
         public:
-            Component(const char* name)
+            Component(const char* name = Common::EmptyString)
             :script(T()), IComponent(name) { }
 
             ~Component() {

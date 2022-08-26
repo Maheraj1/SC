@@ -74,7 +74,9 @@ class CameraMovement: public Script
 class SpriteMovement: public Script
 {
 	private:
-		void Start()  { }
+		void Start()  {
+			
+		 }
 		void Update() { 
 			if (Input::GetKey(KeyCode::G)) entity->transform.position.x += 1.0f * Time::deltaTime;
 			if (Input::GetKey(KeyCode::J)) entity->transform.position.x -= 1.0f * Time::deltaTime;
@@ -85,11 +87,6 @@ class SpriteMovement: public Script
 	friend class Component<SpriteMovement>;
 };
 
-SC_COMPONENT_FUNC_BASE()
-SC_COMPONENT_FUNC(SpriteMovement)
-SC_COMPONENT_FUNC(CameraMovement)
-SC_COMPONENT_FUNC_END();
-
 void PreAppRun()
 {
 	Application::AutoGenerateTexture = true;
@@ -97,9 +94,8 @@ void PreAppRun()
 	SC_REGISTER_COMPONENT(CameraMovement);
 	SC_REGISTER_COMPONENT(SpriteMovement);
 
-	SceneSerializer::DeserializeText("test.yaml");
-
- 	// Scene& scene = SceneManager::AddScene();
+ 	Scene& scene = SceneManager::AddScene("test.yaml");
+	scene.Load();
 	
 	// {
 	// 	Entity& ent = scene.AddEntity("Test");

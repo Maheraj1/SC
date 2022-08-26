@@ -81,7 +81,6 @@ namespace SC::Serialization {
 		static void GetValue(double& dat, const char* name);
 
 		static void GetValue(std::string& dat, const char* name);
-		static void GetValue(char& dat, const char* name);
 
 		static void GetValue(Vector2f& dat, const char* name);
 		static void GetValue(Vector2i& dat, const char* name);

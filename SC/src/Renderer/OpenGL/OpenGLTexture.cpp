@@ -54,9 +54,9 @@ namespace SC
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}else {
-			uint dat = 0xffffff;
+			uint dat = 0xffffffff;
 			GLCall(glBindTexture(GL_TEXTURE_2D, m_id));
-			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, Format, 1, 1, 0, IFormat, GL_UNSIGNED_INT, &dat));
+			GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, &dat));
 
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 			GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));

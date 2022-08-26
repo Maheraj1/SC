@@ -2,7 +2,10 @@
 
 #include "Application.h"
 
+namespace SC::Internal::Components {extern void ComponentsFunc();}
+
 extern void PreAppRun();
+
 
 inline void RunApp()
 {

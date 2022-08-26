@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Core.h"
 #include "Engine/Core/Math.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/Scene/Scene.h"
@@ -9,7 +10,7 @@
 namespace SC::Internal
 {
 	class BatchData;
-	class Renderer
+	class SC_API Renderer
 	{
 	public:
 		static const int MAX_BATCH_COUNT = 1000;
@@ -33,7 +34,7 @@ namespace SC::Internal
 		Renderer() {}
 	};
 
-	class EntityBatchArray
+	class SC_API EntityBatchArray
 	{
 	public:
 		EntityBatchArray();
@@ -48,7 +49,7 @@ namespace SC::Internal
 		uint32_t entC;
 	};
 
-	class BatchTextureConnection
+	class SC_API BatchTextureConnection
 	{
 		private:
 			uint64_t entIDs[Renderer::MAX_BATCH_COUNT];
@@ -73,7 +74,7 @@ namespace SC::Internal
 	 * @brief A Batch data storage to use to arrange data
 	 * 
 	 */
-	struct Batch
+	struct SC_API Batch
 	{
 		EntityBatchArray entities;
 		std::array<BatchTextureConnection, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures;
@@ -84,7 +85,7 @@ namespace SC::Internal
 	 * @brief A Batch Data that contains raw data about the batch
 	 * 
 	 */
-	class BatchData
+	class SC_API BatchData
 	{
 	public:
 	

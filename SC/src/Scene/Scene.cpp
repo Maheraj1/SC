@@ -1,8 +1,10 @@
 #include "Engine/Scene/Scene.h"
+#include "Engine/Core/Application.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/Physics/RigidBody.h"
 #include "Engine/Debug/Timmer.h"
+#include "Engine/Scene/SceneSerializer.h"
 
 namespace SC
 {
@@ -67,6 +69,19 @@ namespace SC
 		}
 	}
 
-	Scene::Scene()  { }
+	void Scene::Save()
+	{
+		SC_Serialize(*this);
+	}
+
+	void Scene::Load()
+	{
+		SC_DeSerialize(*this);
+		if (!Application::PlayerLoopStarted) return;
+		Awake();
+		Start();
+	}
+
+	Scene::Scene(const char* FilePath):FilePath(FilePath)  { }
 	Scene::~Scene() { }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+#include "Engine/Core/SCObject.h"
 #include "Engine/ECS/Component.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/Transform.h"
@@ -15,17 +16,18 @@
 namespace SC
 {
     namespace Internal {
-        struct ComponentData
+        struct SC_API ComponentData
         {
             static std::vector<const char*> components;
             static std::unordered_map<const char*, int> NameToComponents;
+            static std::unordered_map<std::string, void(*)(Entity*)> NameToFunc;
         };
     }
 
 	/**
      * @brief Script for logic
      */
-    class Script: public Serialization::SerializableObject
+    class SC_API Script: public Serialization::SerializableObject, public SCObject
     {
 
     public:
@@ -63,12 +65,6 @@ namespace SC
 
         inline void Serial() {_Serialize();}
         inline void DeSerial() {_DeSerialize();}
-
-        template<typename T>
-        static inline const char* GetName() { return Internal::ComponentData::components[GetRegistryID<T>()]; }
-        
-        template<typename T>
-        static inline int GetRegistryID() { return Internal::ComponentData::NameToComponents[typeid(T).name()]; }
 
         friend class Component<Script>;
     };

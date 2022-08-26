@@ -480,11 +480,6 @@ namespace SC::Serialization
 		if (name == nullptr) throw std::runtime_error("name of parameter is required");
 		dat = (*currentNode)[name].as<std::string>();
 	}
-	void SerializedData::GetValue(char& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		dat = (*currentNode)[name].as<char>();
-	}
 
 	void SerializedData::GetValue(Vector2f& dat, const char* name)
 	{

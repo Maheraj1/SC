@@ -9,6 +9,8 @@
 #include "Engine/Core/Errors.h"
 #include "Engine/Core/UUID.h"
 
+#include <array>
+#include <list>
 #include <vector>
 #include <type_traits>
 #include <exception>
@@ -17,7 +19,8 @@
 
 namespace SC
 {
-	class Entity
+	struct Script;
+	class SC_API Entity
 	{
 	public:
 		std::string name;
@@ -32,21 +35,24 @@ namespace SC
 		uint64_t GetUUID() const;
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T& AddComponent()
 		{
-			Component<T>* com = new Component<T>(T::template GetName<T>());
+			Component<T>* com = new Component<T>();
 			com->GetScript().entity = this;
 			components.push_back(com);
 			return com->GetScript();
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* AddComponentPtr()
 		{
 			return &AddComponent<T>();
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T& GetComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -61,12 +67,14 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* GetComponentPtr() const
 		{
 			return &GetComponent<T>();
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* TryGetComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -79,6 +87,7 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		bool HasComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -89,6 +98,7 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		void RemoveComponent()
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -100,13 +110,6 @@ namespace SC
 
 			Debug::Error("Instance of Script Not Found", (std::string)"Entity::RemoveComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");
 			throw Errors::ScriptInstanceNotFound();
-		}
-
-		void AddComponents(std::vector<std::string> tn)
-		{
-			for (int i = 0; i < tn.size(); i++) {
-				
-			}
 		}
 
 		bool operator==(Entity& ent)

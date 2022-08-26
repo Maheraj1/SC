@@ -25,7 +25,12 @@ namespace SC
 		Serialization::SerializedData::emt = emt;
 	}
 
-	void SceneSerializer::SerializeText(const std::string filePath)
+	void SceneSerializer::SerializeBinary(const Scene& scene)
+	{
+		
+	}
+
+	void SceneSerializer::SerializeText(const Scene& scene)
 	{
 		emt = new YAML::Emitter;
 		Serialization::SerializedData::emt = emt;
@@ -36,8 +41,6 @@ namespace SC
 			*emt << com;
 		}
 		*emt << YAML::EndSeq;
-		
-		Scene& scene = SceneManager::GetCurrentScene();
 
 		*emt << YAML::Key << "ComponentsRegistered" << YAML::Value << Internal::ComponentData::components.size();
 		
@@ -66,7 +69,7 @@ namespace SC
 		*emt << YAML::EndSeq;
 		*emt << YAML::EndMap;
 
-		std::ofstream f(filePath);
+		std::ofstream f(scene.FilePath);
 		f << emt->c_str();
 		
 		delete emt;
@@ -81,26 +84,26 @@ namespace SC
 		return false;
 	}
 
-	bool SceneSerializer::DeserializeText(const std::string filePath, void(*func)(const char*, Entity*))
+	bool SceneSerializer::DeserializeText(Scene& scene)
 	{
 		Physics::ShutDown();
 		YAML::Node data;
 		try
 		{
-			data = YAML::LoadFile(filePath);
+			data = YAML::LoadFile(scene.FilePath);
 		} catch (YAML::ParserException e)
 		{
-			Debug::Error("Failed to load " + filePath + " scene", "SC::SceneSerializer::DeserializeText");
+			Debug::Error("Failed to load " + (std::string)scene.FilePath + " scene", "SC::SceneSerializer::DeserializeText");
 			return false;
 		}
 		if (!data["Version"]) return false;
+
 		Debug::Info((std::string)"Current Scene Loader Version " + version + " Scene file version " + data["Version"].as<std::string>(), "SC::SceneSerializer::DeserializeText");
 		
 		auto dat = data["Objects"];
 		if (dat)
 		{
 			int comC = data["ComponentsRegistered"].as<int>();
-			Scene& scene = SceneManager::AddScene();
 
 			auto com = data["Components"];
 			if (!data["Components"].IsSequence()) return false;
@@ -113,6 +116,7 @@ namespace SC
 				auto& _ent = scene.AddEntity(name, uid);
 				auto trans = ent["Transform"];
 				Serialization::SerializedData::currentNode = &trans;
+				_ent.transform._DeSerialize();
 				
 				for (int i = 0; i < ent["Components"].size(); i++)
 				{
@@ -121,8 +125,9 @@ namespace SC
 					if (IsInComponents(name))
 					{
 						auto scr = ent["Components"][i];
+						auto scrN = scr["Name"].as<std::string>();
 						Serialization::SerializedData::currentNode = &scr;
-						func(name, &_ent);
+						Internal::ComponentData::NameToFunc.at(scrN)(&_ent);
 						_ent.components[i]->_DeSerialize();
 					}
 				}

@@ -15,5 +15,6 @@ namespace SC {
 	namespace Internal {
         std::vector<const char*> ComponentData::components;
 		std::unordered_map<const char*, int> ComponentData::NameToComponents;
+		std::unordered_map<std::string, void(*)(Entity*)> ComponentData::NameToFunc;
     }
 }

@@ -2,10 +2,14 @@
 
 #include "Core.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-volatile"
 #include "glm/glm.hpp"
+#pragma GCC diagnostic pop
 
 #include <chrono>
 #include <string>
+
 struct b2Vec2;
 namespace SC
 {

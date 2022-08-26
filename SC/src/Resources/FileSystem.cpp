@@ -3,19 +3,18 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-// #include <filesystem>
+#include <filesystem>
 
 namespace SC
 {
 	void FileSystem::CreateDirectory(const char* path)
 	{
-		// std::filesystem::create_directory(path);
+		std::filesystem::create_directory(path);
 	}
 
 	bool FileSystem::DirectoryExists(const char* path)
 	{
-		// return std::filesystem::exists(path);
-		return false;
+		return std::filesystem::exists(path);
 	}
 
 	void FileSystem::CreateFile(const char* path)
@@ -26,8 +25,7 @@ namespace SC
 
 	bool FileSystem::FileExists(const char* path)
 	{
-		// return std::filesystem::exists(path);
-		return false;
+		return std::filesystem::exists(path);
 	}
 
 	const char* FileSystem::ReadFile(const char* path)
@@ -35,7 +33,7 @@ namespace SC
 		std::ifstream file(path);
 		char* data;
 
-		file >> data;
+		file.read(data, std::filesystem::file_size(path));
 		file.close();
 		return data;
 	}

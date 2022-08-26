@@ -29,6 +29,8 @@ namespace SC
 {
 	Application* Application::s_instance = nullptr;
 	bool Application::AutoGenerateTexture = true;
+	bool Application::PlayerLoopStarted = false;
+	
 	AppSettings::AppSettings(WindowProps windowProperties)
 	{
 		this->WindowProperties = windowProperties;
@@ -45,24 +47,24 @@ namespace SC
 		SC_REGISTER_COMPONENT(SpriteRenderer);
 
 		Resources::AddTexture("Square");
+		SceneSerializer::Init();
 
-		func();
 
 		Physics::Init();
 		Debug::Info("Initalized Physics Engine", "SC::Application");
 		
 		if (AutoGenerateTexture) for (auto& [name, tex]: Resources::m_textures) tex.Generate();
+		
+		func();
 
-		SceneSerializer::Init();
 		SceneManager::GetCurrentScene().Awake();
 		SceneManager::GetCurrentScene().Start();
 
-		std::future<void> RenderThread;
-		Debug::Info("Starting Graphics", "SC::Application");
+		PlayerLoopStarted = true;
+		Debug::Info("Starting PlayerLoop", "SC::Application");
 
 		while (Running)
 		{
-			// RenderThread = std::async(std::launch::async, Internal::Renderer::StartBatch, &SceneManager::GetCurrentScene().m_objs);
 			Time::Update();
 			
 			Internal::Renderer::StartBatch(&SceneManager::GetCurrentScene().m_objs);
