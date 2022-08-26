@@ -2,10 +2,14 @@
 
 #include "Core.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-volatile"
 #include "glm/glm.hpp"
+#pragma GCC diagnostic pop
 
 #include <chrono>
 #include <string>
+
 struct b2Vec2;
 namespace SC
 {
@@ -33,9 +37,10 @@ namespace SC
 
     Vector3f operator/(Vector3i vec, float n);
 
-    struct Math 
+    struct SC_API Math
     {
-        static constexpr double PI = 22.0f/7;
+        static constexpr float PI = 22.0f/7;
+        static constexpr float RAD = PI/180.0f;
 
         static float Lerp(float a, float b, float t);
         static Vector2f Lerp(Vector2f a, Vector2f b, float t);
@@ -71,12 +76,12 @@ namespace SC
 };
 
 namespace std {
-    string to_string(SC::Vector2f val);
-    string to_string(SC::Vector2i val);
-    string to_string(SC::Vector3f val);
-    string to_string(SC::Vector3i val);
-    string to_string(SC::Vector4f val);
-    string to_string(SC::Vector4i val);
+    string SC_API to_string(SC::Vector2f val);
+    string SC_API to_string(SC::Vector2i val);
+    string SC_API to_string(SC::Vector3f val);
+    string SC_API to_string(SC::Vector3i val);
+    string SC_API to_string(SC::Vector4f val);
+    string SC_API to_string(SC::Vector4i val);
     
-    string to_string(b2Vec2 val);
+    string SC_API to_string(b2Vec2 val);
 }

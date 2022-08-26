@@ -1,5 +1,6 @@
 #include "Engine/ECS/Transform.h"
 #include "Engine/Core/Math.h"
+#include "Engine/Serialization/SerializedData.h"
 #include "glm/ext/matrix_transform.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -23,4 +24,18 @@ namespace SC
 	Transform::Transform(Vector2 position, float rotation, Vector2 scale)
 	:position(position), rotation(0), scale(scale)
 	{ }
+
+	void Transform::Serialize() const
+	{
+		SC_ADD_PARAMETER(position);
+		SC_ADD_PARAMETER(rotation);
+		SC_ADD_PARAMETER(scale);
+	}
+
+	void Transform::DeSerialize()
+	{
+		SC_GET_PARAMETER(position);
+		SC_GET_PARAMETER(rotation);
+		SC_GET_PARAMETER(scale);
+	}
 }

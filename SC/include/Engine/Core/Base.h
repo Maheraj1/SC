@@ -23,3 +23,8 @@
 
 #include "Engine/Debug/Debug.h"
 
+// use only in source files
+#define SC_REGISTER_COMPONENT(x) \
+SC::Internal::ComponentData::components.push_back(#x);\
+SC::Internal::ComponentData::NameToComponents.try_emplace(#x, SC::Internal::ComponentData::components.size()-1);\
+SC::Internal::ComponentData::NameToFunc.try_emplace(#x, [](Entity* ent) {ent->AddComponent<x>();})

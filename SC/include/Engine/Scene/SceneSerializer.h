@@ -5,21 +5,37 @@
 
 #include "yaml-cpp/yaml.h"
 
+#include <functional>
 #include <iostream>
+#include <unordered_map>
+
+#ifdef SC_CORE_IMPL
+	#ifdef SC_DEBUG
+		#define SC_Serialize(x)   SC::SceneSerializer::SerializeText(x)
+		#define SC_DeSerialize(x) SC::SceneSerializer::DeserializeText(x)
+	#else
+		#define SC_Serialize(x)   SC::SceneSerializer::SerializeBinary(x)
+		#define SC_DeSerialize(x) SC::SceneSerializer::DeserializeBinary(x)
+	#endif
+#endif
 
 namespace SC
 {
-	class SceneSerializer
+	class SC_API SceneSerializer
 	{
+	private:
+		static YAML::Emitter* emt;
 	public:
 		SceneSerializer();
 
-		static void SerializeText(const std::string filePath);
-		static void SerializeBinary(const std::string filePath);
+		static void SerializeText  (const Scene& scene);
+		static void SerializeBinary(const Scene& scene);
 
-		static bool DeserializeText(const std::string filePath);
-		static bool DeserializeBinary(const std::string filePath);
-	protected:
-		static void SerializeEntity(YAML::Emitter& out, Entity& entity);
+		static bool DeserializeText  (Scene& scene);
+		static bool DeserializeBinary(Scene& scene);
+
+		static void Init();
+
+		friend class Serialization::SerializedData;
 	};
 }

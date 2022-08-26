@@ -27,8 +27,9 @@
     "C_Cpp.intelliSenseEngine": "Disabled",
     "cSpell.words": [
         "Dloadproc",
-        "Wwindow",
+        "dvec",
         "fvec",
-        "dvec"
+        "LoadedScenes",
+        "Wwindow"
     ]
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Common.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 
@@ -14,6 +15,7 @@ namespace SC
     class SC_API Scene
     {
     private:
+        const char* FilePath;
         std::vector<Entity> m_objs;
         std::vector<Entity*> DestroyList;
         Camera* activeCamera;
@@ -22,11 +24,16 @@ namespace SC
         void Awake();
         void Update();
     public:
-        Scene();
+        Scene(const char* filepath = Common::EmptyString);
         ~Scene();
+
+        void Save();
+        void Load();
 
         Entity& AddEntity(std::string name);
         Entity* AddEntityPtr(std::string name);
+
+        Entity& AddEntity(std::string name, UUID id);
 
         void DestroyEntity(Entity* ent);
 

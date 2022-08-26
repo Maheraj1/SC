@@ -13,11 +13,11 @@ endif
 .PHONY: bin/SandBox
 
 %.o: src/%.cpp
-	@clang++ -c -o $@ $< -std=c++17 -I../SC/include -Iinclude -I../external/glm -I../external/box2d/include $(OTHER_ARGS)
+	@clang++ -c -o $@ $< -std=c++20 -I../SC/include -Iinclude -I../external/glm -I../external/box2d/include $(OTHER_ARGS)
 	@printf "\e[33mBuilt $@:\e[34m $<\e[0m\n"
 
 bin/SandBox_: $(OBJ)
-	@clang++ -o $@ -std=c++17 -Llib -lSC $^ $(OTHER_ARGS)
+	@clang++ -o $@ -std=c++20 -Llib -lSC $^ $(OTHER_ARGS)
 	@printf "\e[32mBuilt SandBox\e[0m\n"
 
 clean:

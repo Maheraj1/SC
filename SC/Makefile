@@ -6,13 +6,13 @@ LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d
 RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
-VERSION = -std=c++17
+VERSION = -std=c++20
 TYPE ?= 0
 TARGET = 0
 SRC_DIR = src
 SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
-DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__
-INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal
+DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL
+INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal -I../extrenal/yaml-cpp/include
 LIB_DIR = -Llib/MacOS/x86_64
 OBJ_NAME = libSC
 OBJ_PATH = $(OBJ_NAME)

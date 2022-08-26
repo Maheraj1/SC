@@ -1,14 +1,16 @@
 #include "Engine/Scene/Scene.h"
+#include "Engine/Core/Application.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/Physics/RigidBody.h"
 #include "Engine/Debug/Timmer.h"
+#include "Engine/Scene/SceneSerializer.h"
 
 namespace SC
 {
 	Entity& Scene::AddEntity(std::string name)
 	{
-		m_objs.push_back(name);
+		m_objs.emplace_back(name);
 		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
 		for (int i = 0; i < m_objs.size();i++) {
 			m_objs[i].ResetComponentEntityPtr();
@@ -18,12 +20,17 @@ namespace SC
 
 	Entity* Scene::AddEntityPtr(std::string name)
 	{
-		m_objs.push_back(name);
+		return &AddEntity(name);
+	}
+
+	Entity& Scene::AddEntity(std::string name, UUID id)
+	{
+		m_objs.emplace_back(name, id);
 		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
 		for (int i = 0; i < m_objs.size();i++) {
 			m_objs[i].ResetComponentEntityPtr();
 		}
-		return &m_objs[m_objs.size()-1];
+		return m_objs.at(m_objs.size()-1);
 	}
 
 	void Scene::Start() {
@@ -62,6 +69,19 @@ namespace SC
 		}
 	}
 
-	Scene::Scene()  { }
+	void Scene::Save()
+	{
+		SC_Serialize(*this);
+	}
+
+	void Scene::Load()
+	{
+		SC_DeSerialize(*this);
+		if (!Application::PlayerLoopStarted) return;
+		Awake();
+		Start();
+	}
+
+	Scene::Scene(const char* FilePath):FilePath(FilePath)  { }
 	Scene::~Scene() { }
 }

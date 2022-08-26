@@ -9,6 +9,8 @@
 #include "Engine/Core/Errors.h"
 #include "Engine/Core/UUID.h"
 
+#include <array>
+#include <list>
 #include <vector>
 #include <type_traits>
 #include <exception>
@@ -17,7 +19,8 @@
 
 namespace SC
 {
-	class Entity
+	struct Script;
+	class SC_API Entity
 	{
 	public:
 		std::string name;
@@ -25,12 +28,14 @@ namespace SC
 
 	public:
 		Entity(std::string name = "New Entity");
+		Entity(std::string name, UUID id);
 
 		~Entity() { }
 
 		uint64_t GetUUID() const;
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T& AddComponent()
 		{
 			Component<T>* com = new Component<T>();
@@ -40,12 +45,14 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* AddComponentPtr()
 		{
 			return &AddComponent<T>();
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T& GetComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -60,12 +67,14 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* GetComponentPtr() const
 		{
 			return &GetComponent<T>();
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		T* TryGetComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -78,6 +87,7 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		bool HasComponent() const
 		{
 			for (int i = 0; i < components.capacity(); i++) 
@@ -88,6 +98,7 @@ namespace SC
 		}
 
 		template<typename T>
+		requires (std::is_base_of_v<Script, T>)
 		void RemoveComponent()
 		{
 			for (int i = 0; i < components.capacity(); i++) 

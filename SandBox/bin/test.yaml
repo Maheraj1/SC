@@ -1,0 +1,74 @@
+Version: 0.0.1b
+Components: [RigidBody, BoxCollider, CircleCollider, Camera, SpriteRenderer, CameraMovement, SpriteMovement]
+ComponentsRegistered: 7
+Objects:
+  - GUID: 15416366223117272720
+    Name: Test
+    Transform:
+      Position: [2, 5]
+      Rotation: 0
+      Scale: [1, 1]
+    Components:
+      - Name: SpriteRenderer
+        Color: [255, 255, 255]
+      - Name: RigidBody
+        Mass: 1
+        Type: 2
+      - Name: BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        Size: [1, 1]
+        Offset: [0, 0]
+  - GUID: 17763623597571062915
+    Name: Ground
+    Transform:
+      Position: [0, -5]
+      Rotation: 0
+      Scale: [5, 1]
+    Components:
+      - Name: SpriteRenderer
+        Color: [255, 255, 255]
+      - Name: RigidBody
+        Mass: 1
+        Type: 0
+      - Name: BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        Size: [5, 1]
+        Offset: [0, 0]
+  - GUID: 8474849551276685256
+    Name: Ball
+    Transform:
+      Position: [0, 5]
+      Rotation: 0
+      Scale: [1, 1]
+    Components:
+      - Name: SpriteRenderer
+        Color: [255, 255, 255]
+      - Name: RigidBody
+        Mass: 10
+        Type: 2
+      - Name: CircleCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        Size: 1
+  - GUID: 5966165974821075783
+    Name: Camera
+    Transform:
+      Position: [0, 0]
+      Rotation: 0
+      Scale: [1, 1]
+    Components:
+      - Name: Camera
+        Size: 5
+      - Name: CameraMovement
+        Speed: 2

@@ -16,6 +16,7 @@ namespace SC
 	struct AppSettings
 	{
 		WindowProps WindowProperties;
+		const char* sceneFile;
 
 		AppSettings(WindowProps windowProperties = WindowProps());
 	};
@@ -36,6 +37,7 @@ namespace SC
 
 		EventHandler<WindowCloseArgs> OnWindowClose;
 		static bool AutoGenerateTexture;
+		static bool PlayerLoopStarted;
 
 	public:
 		/**
@@ -51,7 +53,7 @@ namespace SC
 		 * @brief Runs The Application
 		 * 
 		 */
-		void Run();
+		void Run(void(*func)(void));
 
 		/**
 		 * @brief Close Window

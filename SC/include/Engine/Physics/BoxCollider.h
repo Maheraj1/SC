@@ -25,6 +25,8 @@ namespace SC {
 			void ApplyParameters();
 		private:
 			void Start();
+			void Serialize() const override;
+			void DeSerialize() override;
 
 			RigidBody* rb;
 			b2Fixture* fixture;

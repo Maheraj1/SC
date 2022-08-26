@@ -47,6 +47,9 @@ namespace SC
         components.clear();
     }
 
+    Entity::Entity(std::string name, UUID id)
+    :name(name), transform(), m_id(id) { }
+
     Entity::Entity(std::string name)
-    :name(name), transform() { }
+    :name(name), transform(), m_id() { }
 }
