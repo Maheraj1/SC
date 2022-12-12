@@ -18,7 +18,6 @@ SC is not fully complete but has a lot of features:
 - Physics System based on box2d
 - Custom shaders
 - A FileSystem and Resource management system
-- A Heap Memory Debuger
 - ApplicationAddons allows to create a overlay or add engine features (*Not stable*)
 - Editor Application (*Not stable and **Experimental***)
 ## Optimizations
