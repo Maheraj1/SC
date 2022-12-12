@@ -1,0 +1,87 @@
+Version: 0.0.3b
+Components: [RigidBody, BoxCollider, CircleCollider, Camera, SpriteRenderer, CameraMovement, SpriteMovement]
+Objects:
+  - UUID: 15416366223117272720
+    Name: Test
+    Transform:
+      position: [2, 5]
+      rotation: 0
+      scale: [1, 1]
+    Components:
+      - Name: SpriteRenderer
+        color: [255, 255, 255]
+        Shader:
+          UUID: 1
+        Texture:
+          UUID: 5966165974821075786
+      - Name: RigidBody
+        mass: 1
+        type: 2
+      - Name: BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        size: [1, 1]
+        offset: [0, 0]
+  - UUID: 17763623597571062915
+    Name: Ground
+    Transform:
+      position: [0, -5]
+      rotation: 0
+      scale: [5, 1]
+    Components:
+      - Name: SpriteRenderer
+        color: [255, 255, 255]
+        Shader:
+          UUID: 1
+        Texture:
+          UUID: 5966165974821075786
+      - Name: RigidBody
+        mass: 1
+        type: 0
+      - Name: BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        size: [5, 1]
+        offset: [0, 0]
+  - UUID: 17763623597571062916
+    Name: Test2
+    Transform:
+      position: [0, 10]
+      rotation: 10
+      scale: [5, 1]
+    Components:
+      - Name: SpriteRenderer
+        color: [255, 255, 255]
+        Shader:
+          UUID: 1
+        Texture:
+          UUID: 5966165974821075786
+      - Name: RigidBody
+        mass: 1
+        type: 2
+      - Name: BoxCollider
+        Density: 1
+        Friction: .5
+        Restitution: 1
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        size: [5, 1]
+        offset: [0, 0]
+  - UUID: 5966165974821075783
+    Name: Camera
+    Transform:
+      position: [0, 0]
+      rotation: 0
+      scale: [1, 1]
+    Components:
+      - Name: Camera
+        size: 10
+        RenderToImage: true
+      - Name: CameraMovement
+        speed: 5

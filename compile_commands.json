@@ -18,33 +18,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
-      "-o",
-      "Math.o",
-      "src/Core/Math.cpp"
-    ],
-    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/Math.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Math.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang++",
-      "-c",
-      "-DSC_RENDERER_OpenGL",
-      "-DGLFW_INCLUDE_NONE",
-      "-DSC_WINDOW_API_GLFW",
-      "-DSC_USE__asm__",
-      "-DSC_CORE_IMPL",
-      "-DSC_DEBUG",
-      "-std=c++20",
-      "-g3",
-      "-Iinclude",
-      "-I../external/glm",
-      "-I../external/imgui",
-      "-I../external/imgui/backends",
-      "-I../external/box2d",
-      "-I../extrenal",
-      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Application.o",
       "src/Core/Application.cpp"
@@ -72,13 +47,15 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
-      "SCObject.o",
-      "src/Core/SCObject.cpp"
+      "Common.o",
+      "src/Core/Common.cpp"
     ],
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/SCObject.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/SCObject.o"
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/Common.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Common.o"
   },
   {
     "arguments": [
@@ -99,13 +76,15 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
-      "UUID.o",
-      "src/Core/UUID.cpp"
+      "EntryPoint.o",
+      "src/Core/EntryPoint.cpp"
     ],
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/UUID.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/UUID.o"
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/EntryPoint.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/EntryPoint.o"
   },
   {
     "arguments": [
@@ -126,13 +105,15 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
-      "Timmer.o",
-      "src/Debug/Timmer.cpp"
+      "Math.o",
+      "src/Core/Math.cpp"
     ],
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Debug/Timmer.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Timmer.o"
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/Math.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Math.o"
   },
   {
     "arguments": [
@@ -153,6 +134,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Time.o",
       "src/Core/Time.cpp"
@@ -180,13 +163,15 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
-      "Camera.o",
-      "src/ECS/Camera.cpp"
+      "UUID.o",
+      "src/Core/UUID.cpp"
     ],
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/ECS/Camera.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Camera.o"
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Core/UUID.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/UUID.o"
   },
   {
     "arguments": [
@@ -207,6 +192,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Debug.o",
       "src/Debug/Debug.cpp"
@@ -234,6 +221,66 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "Timmer.o",
+      "src/Debug/Timmer.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Debug/Timmer.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Timmer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "Camera.o",
+      "src/ECS/Camera.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/ECS/Camera.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Camera.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Entity.o",
       "src/ECS/Entity.cpp"
@@ -261,33 +308,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
-      "-o",
-      "MemoryTracker.o",
-      "src/Debug/MemoryTracker.cpp"
-    ],
-    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
-    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Debug/MemoryTracker.cpp",
-    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/MemoryTracker.o"
-  },
-  {
-    "arguments": [
-      "/usr/bin/clang++",
-      "-c",
-      "-DSC_RENDERER_OpenGL",
-      "-DGLFW_INCLUDE_NONE",
-      "-DSC_WINDOW_API_GLFW",
-      "-DSC_USE__asm__",
-      "-DSC_CORE_IMPL",
-      "-DSC_DEBUG",
-      "-std=c++20",
-      "-g3",
-      "-Iinclude",
-      "-I../external/glm",
-      "-I../external/imgui",
-      "-I../external/imgui/backends",
-      "-I../external/box2d",
-      "-I../extrenal",
-      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Script.o",
       "src/ECS/Script.cpp"
@@ -315,6 +337,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "SpriteRenderer.o",
       "src/ECS/SpriteRenderer.cpp"
@@ -342,6 +366,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Transform.o",
       "src/ECS/Transform.cpp"
@@ -369,6 +395,37 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "Input.o",
+      "src/Input/Input.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Input/Input.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/Input.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "glad.o",
       "src/Other/glad.cpp"
@@ -396,6 +453,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "stb_image.o",
       "src/Other/stb_image.cpp"
@@ -423,6 +482,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "BoxCollider.o",
       "src/Physics/BoxCollider.cpp"
@@ -450,6 +511,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "CircleCollider.o",
       "src/Physics/CircleCollider.cpp"
@@ -477,6 +540,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Physics.o",
       "src/Physics/Physics.cpp"
@@ -504,6 +569,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "RigidBody.o",
       "src/Physics/RigidBody.cpp"
@@ -531,6 +598,37 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "BatchProcesser.o",
+      "src/Renderer/BatchProcesser.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Renderer/BatchProcesser.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/BatchProcesser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "FileSystem.o",
       "src/Resources/FileSystem.cpp"
@@ -558,6 +656,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Resources.o",
       "src/Resources/Resources.cpp"
@@ -585,6 +685,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "Scene.o",
       "src/Scene/Scene.cpp"
@@ -612,6 +714,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "SceneManager.o",
       "src/Scene/SceneManager.cpp"
@@ -639,6 +743,37 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "SceneRenderer.o",
+      "src/Scene/SceneRenderer.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Scene/SceneRenderer.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/SceneRenderer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "SceneSerializer.o",
       "src/Scene/SceneSerializer.cpp"
@@ -666,6 +801,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "SerializableObject.o",
       "src/Serialization/SerializableObject.cpp"
@@ -693,6 +830,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "SerializedData.o",
       "src/Serialization/SerializedData.cpp"
@@ -720,6 +859,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLWindow.o",
       "src/Window/OpenGL/OpenGLWindow.cpp"
@@ -747,6 +888,37 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-o",
+      "FrameBuffer.o",
+      "src/Renderer/OpenGL/FrameBuffer.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Renderer/OpenGL/FrameBuffer.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/FrameBuffer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_CORE_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLErrors.o",
       "src/Renderer/OpenGL/OpenGLErrors.cpp"
@@ -774,6 +946,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLRenderer.o",
       "src/Renderer/OpenGL/OpenGLRenderer.cpp"
@@ -801,6 +975,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLShader.o",
       "src/Renderer/OpenGL/OpenGLShader.cpp"
@@ -828,6 +1004,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLTexture.o",
       "src/Renderer/OpenGL/OpenGLTexture.cpp"
@@ -855,6 +1033,8 @@
       "-I../external/box2d",
       "-I../extrenal",
       "-I../extrenal/yaml-cpp/include",
+      "-Wall",
+      "-Wno-undefined-var-template",
       "-o",
       "OpenGLInput.o",
       "src/Input/OpenGL/OpenGLInput.cpp"
@@ -862,5 +1042,79 @@
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
     "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Input/OpenGL/OpenGLInput.cpp",
     "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/OpenGLInput.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_EDITOR_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "src/Internal/UI/ImGui.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "src/Internal/UI/ImGui.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_EDITOR_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-I../SC/include",
+      "-Iinclude",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "src/main.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SCEditor",
+    "file": "src/main.cpp"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_EDITOR_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../SC/include",
+      "-I../external/glm",
+      "-I../external/imgui",
+      "-I../external/imgui/backends",
+      "-I../external/box2d",
+      "-I../extrenal",
+      "-I../extrenal/yaml-cpp/include",
+      "src/EditorAddon.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SCEditor",
+    "file": "src/EditorAddon.cpp"
   }
 ]

@@ -15,7 +15,7 @@ namespace SC {
 		rb = TryGetComponent<RigidBody>();
 		if (rb == nullptr) return;
 
-		Vector2f pos = entity->transform.position;
+		// Vector2f pos = entity->transform.position;
 		shape = new b2CircleShape();
 		shape->m_radius = size;
 

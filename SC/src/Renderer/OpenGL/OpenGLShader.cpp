@@ -13,32 +13,48 @@ namespace SC
 {
 	// Main things
 
-	Shader::Shader() { }
+	Shader::Shader(const char* src):src(src) { }
 
 	Shader::~Shader()
 	{
+		if (Valid) Delete();
+	}
+
+	void Shader::Delete()
+	{
+		Valid = false;
 		if (m_id == 0) return;
 		glDeleteProgram(m_id);
+		m_id = 0;
 	}
 
 	unsigned int Shader::GetShaderID() const { return m_id; }
 
 	void Shader::Bind() const
 	{
-		if (Resources::currentShader == m_id) return;
 		glUseProgram(m_id);
-		Resources::currentShader = m_id;
+	}
+
+	uint64_t Shader::GetID() const
+	{
+		return uuid;
 	}
 
 	bool Shader::Compile(const char* src)
 	{
+		Valid = true;
+		const char* _src = nullptr;
+		
+		if (this->src == nullptr) _src = src;
+		else _src = this->src;
+		
 		std::string vss_s;
 		std::string fss_s;
 
 		// set this in a scope to destroy variables after the variables are not needed
 		{
 			std::string line;
-			std::istringstream ss(src);
+			std::istringstream ss(_src);
 			int8_t mode = -1;
 
 			while (std::getline(ss, line))
@@ -99,7 +115,6 @@ namespace SC
 			glGetShaderInfoLog(fs, size, NULL, buffer);
 
 			Debug::Error((std::string)"Failed to compile fragment shader, OpenGL Output: " + buffer, "Shader::Compile::FragmentShaderCompilationError");
-			m_id = Internal::Renderer::ErrorShaderID;
 			return false;
 		}
 
@@ -118,6 +133,7 @@ namespace SC
 			glGetProgramiv(vs, GL_INFO_LOG_LENGTH, &size);
 			char* buffer = (char*)alloca(size + 1);
 			glGetProgramInfoLog(vs, size, NULL, buffer);
+			buffer[size] = 0;
 
 			Debug::Error((std::string)"Failed to link shaders, OpenGL Output: " + buffer, "Shader::Program::Link");
 			m_id = Internal::Renderer::ErrorShaderID;

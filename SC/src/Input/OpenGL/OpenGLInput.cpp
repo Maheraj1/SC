@@ -7,31 +7,29 @@
 namespace SC 
 {
 	static GLFWwindow* window;
-	bool Input::GetKeyDown(KeyCode key)
-	{
+
+	bool Input::GetKeyDown_UnBlocked(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(window, (int)key);
 		if (k == GLFW_PRESS) return true;
 		return false;
 	}
-	bool Input::GetKeyUp(KeyCode key)
-	{
+
+	bool Input::GetKeyUp_UnBlocked(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow()), (int)key);
 		if (k == GLFW_RELEASE) return true;
 		return false;
 	}
 
-	bool Input::GetKey(KeyCode key)
-	{
+	bool Input::GetKey_UnBlocked(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow()), (int)key);
 		if (k == GLFW_PRESS || k == GLFW_REPEAT) return true;
 		return false;
 	}
 
-	Vector2f Input::GetMousePos()
-	{
+	Vector2f Input::GetMousePos() {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
@@ -40,25 +38,29 @@ namespace SC
 		return Vector2f(xf, yf);
 	}
 
-	bool Input::GetMouse(int n)
-	{
+	bool Input::GetMouse(int n) {
+		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_PRESS || status == GLFW_REPEAT) return true;
 		return false;
 	}
 
-	bool Input::GetMouseDown(int n)
-	{
+	bool Input::GetMouseDown(int n) {
+		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_PRESS) return true;
 		return false;
 	}
 
-	bool Input::GetMouseUp(int n)
-	{
+	bool Input::GetMouseUp(int n) {
+		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_RELEASE) return true;
 		return false;
+	}
+
+	void Input::SetState(bool _state) {
+		state = _state;
 	}
 
 }

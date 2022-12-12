@@ -14,7 +14,17 @@ namespace SC {
 
 	namespace Internal {
         std::vector<const char*> ComponentData::components;
-		std::unordered_map<const char*, int> ComponentData::NameToComponents;
+		std::unordered_map<std::string, int> ComponentData::TypeNameToComponentName;
 		std::unordered_map<std::string, void(*)(Entity*)> ComponentData::NameToFunc;
     }
+
+	void Script::Serial() const
+	{
+		_Serialize();
+	}
+
+	void Script::DeSerial()
+	{
+		_DeSerialize();
+	}
 }

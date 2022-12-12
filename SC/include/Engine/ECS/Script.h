@@ -2,28 +2,15 @@
 
 #include "Engine/Core/Core.h"
 #include "Engine/Core/SCObject.h"
-#include "Engine/ECS/Component.h"
-#include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/Transform.h"
 #include "Engine/Serialization/SerializableObject.h"
 #include "Engine/ECS/Entity.h"
 
 #include <array>
-#include <functional>
 #include <iostream>
-#include <unordered_map>
 
 namespace SC
 {
-    namespace Internal {
-        struct SC_API ComponentData
-        {
-            static std::vector<const char*> components;
-            static std::unordered_map<const char*, int> NameToComponents;
-            static std::unordered_map<std::string, void(*)(Entity*)> NameToFunc;
-        };
-    }
-
 	/**
      * @brief Script for logic
      */
@@ -32,6 +19,7 @@ namespace SC
 
     public:
         Entity* entity;
+        Transform* transform;
     public:
         Script();
 
@@ -57,15 +45,14 @@ namespace SC
 
         // Scripting Api functions
         
-        void Start()       { }
-        void Awake()       { }
-        void Update()      { }
-        void OnDestroy()   { }
+        void Start()              { }
+        void Awake()              { }
+        void Update()             { }
+        void OnDestroy()          { }
+        void OnApplicationStart() { } // Runs when the application starts (i.e runtime or editor) to set default parameters
         void Destroy(Entity* ent);
 
-        inline void Serial() {_Serialize();}
-        inline void DeSerial() {_DeSerialize();}
-
-        friend class Component<Script>;
+        void Serial() const;
+        void DeSerial();
     };
 }

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 #include "Engine/ECS/Script.h"
 #include "Collider.h"
 
-struct b2Fixture;
-struct b2CircleShape;
+class b2Fixture;
+class b2CircleShape;
 
 namespace SC {
-	struct RigidBody;
+	class RigidBody;
 
 	class SC_API CircleCollider: public Script, public Collider
 	{

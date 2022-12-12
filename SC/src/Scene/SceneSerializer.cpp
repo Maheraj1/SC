@@ -1,19 +1,23 @@
 #include "Engine/Scene/SceneSerializer.h"
+#include "Engine/Debug/Debug.h"
 #include "Engine/ECS/Script.h"
 #include "Engine/Physics/Physics.h"
+#include "Engine/Resources/FileSystem.h"
 #include "Engine/Scene/SceneManager.h"
 
 #include "Engine/Serialization/SerializedData.h"
 
 #include "yaml-cpp/yaml.h"
 
+#include <exception>
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace SC
 {
 	YAML::Emitter* SceneSerializer::emt = nullptr;
-	static const char version[8] = "0.0.1b\0";
+	static const char version[8] = "0.0.3b\0";
 
 	SceneSerializer::SceneSerializer() {
 		
@@ -41,8 +45,6 @@ namespace SC
 			*emt << com;
 		}
 		*emt << YAML::EndSeq;
-
-		*emt << YAML::Key << "ComponentsRegistered" << YAML::Value << Internal::ComponentData::components.size();
 		
 		*emt << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;
 
@@ -50,8 +52,8 @@ namespace SC
 		for (int i = 0; i < scene.m_objs.size(); i++)
 		{
 			*emt << YAML::BeginMap;
-			*emt << YAML::Key << "GUID" << YAML::Value << scene.m_objs[i].GetUUID();
-			*emt << YAML::Key << "Name" << scene.m_objs[i].name;
+			*emt << YAML::Key << "UUID" << YAML::Value << scene.m_objs[i].GetUUID();
+			*emt << YAML::Key << "Name" << YAML::Value << scene.m_objs[i].name;
 			*emt << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap;
 			scene.m_objs[i].transform._Serialize();
 			*emt << YAML::Key << "Components" << YAML::Value << YAML::BeginSeq;
@@ -87,15 +89,18 @@ namespace SC
 	bool SceneSerializer::DeserializeText(Scene& scene)
 	{
 		Physics::ShutDown();
+		scene.m_objs.clear();
 		YAML::Node data;
 		try
 		{
 			data = YAML::LoadFile(scene.FilePath);
-		} catch (YAML::ParserException e)
+		} catch (std::exception e)
 		{
 			Debug::Error("Failed to load " + (std::string)scene.FilePath + " scene", "SC::SceneSerializer::DeserializeText");
 			return false;
 		}
+		
+		// Version shows validity of file
 		if (!data["Version"]) return false;
 
 		Debug::Info((std::string)"Current Scene Loader Version " + version + " Scene file version " + data["Version"].as<std::string>(), "SC::SceneSerializer::DeserializeText");
@@ -103,14 +108,12 @@ namespace SC
 		auto dat = data["Objects"];
 		if (dat)
 		{
-			int comC = data["ComponentsRegistered"].as<int>();
-
 			auto com = data["Components"];
 			if (!data["Components"].IsSequence()) return false;
 
 			for (auto ent: dat)
 			{
-				UUID uid = ent["GUID"].as<uint64_t>();
+				UUID uid = ent["UUID"].as<uint64_t>();
 				std::string name = ent["Name"].as<std::string>();
 
 				auto& _ent = scene.AddEntity(name, uid);

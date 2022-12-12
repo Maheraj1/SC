@@ -6,6 +6,8 @@
     ],
     "settings": {
         "files.associations": {
+            "*.scrd": "yaml",
+            "*.scs": "yaml",
             "future": "cpp",
             "array": "cpp",
             "__tuple": "cpp",
@@ -34,7 +36,18 @@
             "utility": "cpp"
         },
         "cSpell.words": [
-            "fvec"
-        ]
+            "fvec",
+            "SCMS",
+            "scrd"
+        ],
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "**/*.o": true
+        },
     }
 }

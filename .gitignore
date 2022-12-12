@@ -1,5 +1,6 @@
 .cache
 SandBox_
+SCEditor_
 *.o
 *.dylib
 *.so

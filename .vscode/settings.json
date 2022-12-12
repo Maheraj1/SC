@@ -8,7 +8,6 @@
         "editor.wordBasedSuggestions": false,
         "editor.suggest.insertMode": "replace",
         "editor.semanticHighlighting.enabled": true,
-        // "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
     },
     "prettier.useTabs": true,
@@ -23,13 +22,13 @@
         "editor.autoClosingQuotes": "always",
         "editor.autoClosingDelete": "always",
     },
-    "C_Cpp.errorSquiggles": "Enabled", 
     "C_Cpp.intelliSenseEngine": "Disabled",
     "cSpell.words": [
         "Dloadproc",
         "dvec",
         "fvec",
         "LoadedScenes",
-        "Wwindow"
-    ]
+        "Wwindow",
+        "framebuffer"
+    ],
 }

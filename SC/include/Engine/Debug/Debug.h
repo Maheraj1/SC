@@ -118,6 +118,6 @@ namespace SC
          * 
          * @param condition 
          */
-        static void Assert(bool condition = true);
+        static void Assert(bool condition = false);
     };
 };

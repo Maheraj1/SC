@@ -20,7 +20,7 @@ namespace SC
             
         public:
             Component(const char* name = Common::EmptyString)
-            :script(T()), IComponent(name) { }
+            :IComponent(name), script(T()) { }
 
             ~Component() {
                 script.OnDestroy();
@@ -39,6 +39,11 @@ namespace SC
             virtual void _Awake() override
             {
                 script.Awake();
+            }
+
+            virtual void _OnApplicationStart() override
+            {
+                script.OnApplicationStart();
             }
 
             virtual void _Serialize() override

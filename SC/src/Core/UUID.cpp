@@ -15,8 +15,6 @@ namespace SC
 	UUID::UUID(uint64_t uuid)
 	:m_uuid(uuid) { }
 
-	UUID::~UUID() { }
-
 	bool UUID::operator==(const UUID& other) const
 	{
 		return other.m_uuid == this->m_uuid;
@@ -25,5 +23,10 @@ namespace SC
 	bool UUID::operator==(const uint64_t other) const
 	{
 		return other == this->m_uuid;
+	}
+
+	bool UUID::operator==(const uint32_t other) const
+	{
+		return (uint64_t)other == this->m_uuid;
 	}
 }

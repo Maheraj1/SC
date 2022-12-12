@@ -1,5 +1,5 @@
 #include "Engine/Physics/Physics.h"
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Physics/RigidBody.h"
 #include "b2_body.h"
@@ -9,6 +9,7 @@
 #include "box2d.h"
 #include <vector>
 #include "Engine/Scene/SceneManager.h"
+#include "glm/trigonometric.hpp"
 
 namespace SC {
 	// Class static variables
@@ -46,7 +47,7 @@ namespace SC {
 			RigidBody* rb = objs[i].TryGetComponent<RigidBody>();
 			if (rb == nullptr) continue;
 			objs[i].transform.position = FromBox2dVector2(rb->body->GetPosition());
-			objs[i].transform.rotation = rb->body->GetAngle();
+			objs[i].transform.rotation = glm::degrees(rb->body->GetAngle());
 		}
             
 	}

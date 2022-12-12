@@ -9,15 +9,18 @@ namespace SC
 		public:
 			UUID();
 			UUID(uint64_t uuid);
-			UUID(const UUID&) = default;
+			UUID(const UUID& other) = default;
+			~UUID() = default;
+
 
 			operator uint64_t() const {return m_uuid;}
+			operator uint32_t() const {return (uint32_t)m_uuid;}
 			bool operator==(const UUID& other) const;
 			bool operator==(const uint64_t other) const;
+			bool operator==(const uint32_t other) const;
 			bool operator+=(const UUID& other) const = delete;
 			bool operator-=(const UUID& other) const = delete;
 
-			~UUID();
 		private:
 			uint64_t m_uuid;
 	};

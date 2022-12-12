@@ -1,6 +1,7 @@
 #include "Engine/Core/Platform.h"
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Time.h"
+#include "Engine/ECS/Camera.h"
 #include "Engine/Physics/Physics.h"
 #include "b2_world.h"
 #include "Engine/Scene/SceneManager.h"
@@ -10,6 +11,7 @@
 #include "Engine/Debug/Debug.h"
 
 #include "glad/glad.h"
+#include "glm/ext/matrix_clip_space.hpp"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -33,12 +35,12 @@ namespace SC
 
 	void* Window::GetNativeWindow()
 	{
-		return m_window;
+		return glfw_window;
 	}
 
 	Window::~Window()
 	{
-		glfwDestroyWindow(static_cast<GLFWwindow*>(m_window));
+		glfwDestroyWindow(glfw_window);
 		s_windowInstanceCount--;
 		if (s_windowInstanceCount <= 0)
 		{
@@ -58,6 +60,7 @@ namespace SC
 			if (!glfwInit())
 			{
 				Debug::Error("Couldn't Initialize GLFW", "Window::GLFWInitializationError");
+				return;
 			}
 		}
 
@@ -79,6 +82,7 @@ namespace SC
 		if (window == NULL)
 		{
 			Debug::Error("Failed to create OpenGL Window (version: " + std::to_string(OpenGLVersion[0]) + '.' + std::to_string(OpenGLVersion[1]) + " Core", "Window::OpenGLWindowCreationError");
+			return;
 		}
 
 		Debug::Info("Created OpenGL Window", "SC::OpenGLWidnow");
@@ -86,7 +90,8 @@ namespace SC
 		glfwMakeContextCurrent(window);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			Debug::Error("Failed to initialize Glad", "Window::OpenGLContextLoadError");
+			Debug::Error("Failed to initialize Glad", "Window::OpenGLContextLoadingError");
+			return;
 		}
 
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
@@ -95,6 +100,9 @@ namespace SC
 
 		glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height){
 			glViewport(0, 0, width, height);
+			#ifdef SC_RUNTIME
+			Internal::Renderer::ViewPortSize = {width, height};
+			#endif
 		});
 
 		glfwSetWindowAspectRatio(window, 16, 9);
@@ -122,12 +130,40 @@ namespace SC
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(.1f, .1f, .1f, 1.0f);
+		Clear();
+
+		auto app = Application::Get();
 		
-		Internal::Renderer::Render();
-		Physics::GetPhysicsWorld()->DebugDraw();
+		for(auto addon: app->addons)
+		{
+			addon->PreFrameRender();
+		}
+
+		SceneManager::GetCurrentScene().GetCurrentCamera()->Render();
+
+		for(auto addon: app->addons)
+		{
+			addon->PostFrameRender();
+		}
 
 		glfwSwapBuffers(glfw_window);
+	}
+
+	Matrix4 Window::GetScreenCoords()
+	{
+		int width, height;
+		glfwGetWindowSize(glfw_window, &width, &height);
+		return glm::ortho(0, width, 0, height);
+	}
+
+	void Window::SetWindowSize(Vector2i size)
+	{
+		glViewport(0, 0, size.x, size.y);
+	}
+
+	void Window::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(.1f, .1f, .1f, 1.0f);
 	}
 }

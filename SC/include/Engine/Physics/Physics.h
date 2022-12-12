@@ -2,9 +2,9 @@
 
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Core.h"
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 
-struct b2World;
+class b2World;
 
 namespace SC {
 
@@ -14,6 +14,11 @@ namespace SC {
 	{
 		public:
 			static Vector2f gravity;
+			/**
+			 * @brief Get the Physics World object as b2World (box2d)
+			 * 
+			 * @return b2World* 
+			 */
 			static b2World* GetPhysicsWorld();
 		private:
 			static void Init();

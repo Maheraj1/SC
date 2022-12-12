@@ -4,7 +4,6 @@
 #include "Engine/Resources/FileSystem.h"
 #include "Engine/Resources/Resources.h"
 
-#include "Other/Sprites/Square.h"
 #include "glad/glad.h"
 
 #include "stb/stb_image.h"
@@ -12,20 +11,34 @@
 namespace SC 
 {
 	Texture::Texture()
-	:fp(nullptr), m_id(0),
-	TextureF{GL_LINEAR, GL_LINEAR}, TextureW{GL_REPEAT, GL_REPEAT},
-	Format(GL_RGB8), IFormat(GL_RGB)
+	:m_id(0),
+	TextureW{GL_REPEAT, GL_REPEAT}, TextureF{GL_LINEAR, GL_LINEAR},
+	Format(GL_RGB8), IFormat(GL_RGB),
+	fp(nullptr)
+	{ }
+
+	Texture::Texture(const char* fp)
+	:m_id(0),
+	TextureW{GL_REPEAT, GL_REPEAT}, TextureF{GL_LINEAR, GL_LINEAR},
+	Format(GL_RGB8), IFormat(GL_RGB),
+	fp(fp)
 	{ }
 
 	Texture::~Texture()
 	{
+		if (Valid) Delete();
+	}
+
+	void Texture::Delete()
+	{
+		Valid = false;
 		if (m_id == 0) return;
-		if (m_id == Resources::currentTexture) Resources::currentTexture = 0;
 		glDeleteTextures(1, &m_id);
 	}
 
 	void Texture::Generate()
 	{
+		Valid = true;
 		bool alpha = false;
 		if (IFormat == GL_RGBA) alpha = true;
 
@@ -72,47 +85,38 @@ namespace SC
 
 	void Texture::SetAttribute(TextureParameters param, TextureProperties value)
 	{
-		if (param == TextureParameters::TextureWarpX)
+		if ((uint)param & (uint)TextureParameters::TextureWarpX)
 		{
-			if (value == TextureProperties::WrapRepeat) TextureW[0] = GL_REPEAT;
-			if (value == TextureProperties::WrapMirroredRepeat) TextureW[0] = GL_MIRRORED_REPEAT;
-			if (value == TextureProperties::WrapClampToEdge) TextureW[0] = GL_CLAMP_TO_EDGE;
-			if (value == TextureProperties::WrapClampToBorder) TextureW[0] = GL_CLAMP_TO_BORDER;
-		} else if (param == TextureParameters::TextureWarpY)
+			if ((uint)value & (uint)TextureProperties::WrapRepeat) TextureW[0] = GL_REPEAT;
+			if ((uint)value & (uint)TextureProperties::WrapMirroredRepeat) TextureW[0] = GL_MIRRORED_REPEAT;
+			if ((uint)value & (uint)TextureProperties::WrapClampToEdge) TextureW[0] = GL_CLAMP_TO_EDGE;
+			if ((uint)value & (uint)TextureProperties::WrapClampToBorder) TextureW[0] = GL_CLAMP_TO_BORDER;
+		} 
+		if ((uint)param & (uint)TextureParameters::TextureWarpY)
 		{
-			if (value == TextureProperties::WrapRepeat) TextureW[1] = GL_REPEAT;
-			if (value == TextureProperties::WrapMirroredRepeat) TextureW[1] = GL_MIRRORED_REPEAT;
-			if (value == TextureProperties::WrapClampToEdge) TextureW[1] = GL_CLAMP_TO_EDGE;
-			if (value == TextureProperties::WrapClampToBorder) TextureW[1] = GL_CLAMP_TO_BORDER;
-		} else if (param == TextureParameters::TextureWarpBoth)
-		{
-			if (value == TextureProperties::WrapRepeat) {TextureW[0] = GL_REPEAT; TextureW[1] = GL_REPEAT;}
-			if (value == TextureProperties::WrapMirroredRepeat) {TextureW[0] = GL_MIRRORED_REPEAT; TextureW[1] = GL_MIRRORED_REPEAT;}
-			if (value == TextureProperties::WrapClampToEdge) {TextureW[0] = GL_CLAMP_TO_EDGE; TextureW[1] = GL_CLAMP_TO_EDGE;}
-			if (value == TextureProperties::WrapClampToBorder) {TextureW[0] = GL_CLAMP_TO_BORDER; TextureW[1] = GL_CLAMP_TO_BORDER;}
+			if ((uint)value & (uint)TextureProperties::WrapRepeat) TextureW[1] = GL_REPEAT;
+			if ((uint)value & (uint)TextureProperties::WrapMirroredRepeat) TextureW[1] = GL_MIRRORED_REPEAT;
+			if ((uint)value & (uint)TextureProperties::WrapClampToEdge) TextureW[1] = GL_CLAMP_TO_EDGE;
+			if ((uint)value & (uint)TextureProperties::WrapClampToBorder) TextureW[1] = GL_CLAMP_TO_BORDER;
 		}
 
-		if (param == TextureParameters::TextureFilterMin)
+		if ((uint)param & (uint)TextureParameters::TextureFilterMin)
 		{
-			if (value == TextureProperties::FilterLinear) TextureW[0] = GL_LINEAR;
-			if (value == TextureProperties::FilterNearest) TextureW[0] = GL_NEAREST;
-		} else if (param == TextureParameters::TextureFilterMag)
+			if ((uint)value & (uint)TextureProperties::FilterLinear) TextureW[0] = GL_LINEAR;
+			if ((uint)value & (uint)TextureProperties::FilterNearest) TextureW[0] = GL_NEAREST;
+		} if ((uint)param & (uint)TextureParameters::TextureFilterMag)
 		{
-			if (value == TextureProperties::FilterLinear) TextureW[1] = GL_LINEAR;
-			if (value == TextureProperties::FilterNearest) TextureW[1] = GL_NEAREST;
-		} else if(param == TextureParameters::TextureFilterBoth)
-		{
-			if (value == TextureProperties::FilterLinear) {TextureW[0] = GL_LINEAR; TextureW[1] = GL_LINEAR;}
-			if (value == TextureProperties::FilterNearest) {TextureW[0] = GL_NEAREST; TextureW[1] = GL_NEAREST;}
+			if ((uint)value & (uint)TextureProperties::FilterLinear) TextureW[1] = GL_LINEAR;
+			if ((uint)value & (uint)TextureProperties::FilterNearest) TextureW[1] = GL_NEAREST;
 		}
 
-		if (param == TextureParameters::Format)
+		if ((uint)param & (uint)TextureParameters::Format)
 		{
-			if (value == TextureProperties::FormatRGB)
+			if ((uint)value & (uint)TextureProperties::FormatRGB)
 			{
 				Format = GL_RGB8;
 				IFormat = GL_RGB;
-			} else if (value == TextureProperties::FormatRGBA) {
+			} else if ((uint)value == (uint)TextureProperties::FormatRGBA) {
 				Format = GL_RGBA8;
 				IFormat = GL_RGBA;
 			}
@@ -127,8 +131,12 @@ namespace SC
 
 	void Texture::SetData(unsigned char* data, unsigned int size)
 	{
+		glBindTexture(GL_TEXTURE_2D, m_id);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size, size, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	uint Texture::GetTextureID() { return m_id; }
+	uint Texture::GetTextureID() const { return m_id; }
+	
+	uint64_t Texture::GetID() const { return uuid; }
 }

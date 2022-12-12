@@ -1,54 +1,70 @@
 #include "Engine/Resources/Resources.h"
+#include "Engine/Debug/Debug.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
+#include "Engine/Resources/FileSystem.h"
+#include <filesystem>
+#include <sstream>
+#include <yaml-cpp/yaml.h>
 #include <utility>
+
+enum class ResourceType
+{
+	Texture,
+	Shader
+};
 
 namespace SC
 {
-	std::unordered_map<const char*, Shader> Resources::m_shaders;
-	unsigned int Resources::currentShader = 0;
+	template<typename T>
+	requires (std::is_base_of_v<Resource, T>)
+	std::unordered_map<std::string, T> ResourceMap<T>::data;
 
-	std::unordered_map<const char*, Texture> Resources::m_textures;
-	unsigned int Resources::currentTexture = 0;
-
-	Shader& Resources::GetShader(const char* name)
+	template<typename T>
+	requires (std::is_base_of_v<Resource, T>)
+	void ResourceMap<T>::Clear()
 	{
-		return m_shaders.at(name);
+		for (auto res: ResourceMap<T>::data) {
+			res.second.Delete();
+		}
 	}
 
-	Shader& Resources::AddShader(const char *name)
-	{
-		return m_shaders[name];
-	}
+	static const char Version[] = "0.0.1a";
 
-	Shader* Resources::GetShaderPtr(const char* name)
+	void Resources::LoadFileResources(const char* fp)
 	{
-		return &GetShader(name);
-	}
+		if (!FileSystem::FileExists(fp)) return;
 
-	Shader* Resources::AddShaderPtr(const char *name)
-	{
-		return &m_shaders[name];
-	}
+		auto filepaths = FileSystem::GetFilesInDirectory(fp, ".scrd"); // .scrd means SC Resource Destination
 
-	Texture& Resources::GetTexture(const char* name)
-	{
-		return m_textures.at(name);
-	}
+		for (auto filepath : filepaths) {
+			auto file = YAML::LoadFile(FileSystem::JoinPath(".", filepath));
+			{
+				std::string FileVersion = file["Version"].as<std::string>();
 
-	Texture& Resources::AddTexture(const char* name, const char* fp)
-	{
-		m_textures[name].fp = fp;
-		return m_textures.at(name);
-	}
+				if (FileVersion != Version)
+				{
+					Debug::Warning("Loaded resource file is older than current resource loader version (" + filepath.generic_string() + ')');
+				}
+			}
 
-	Texture* Resources::GetTexturePtr(const char* name)
-	{
-		return &GetTexture(name);
-	}
+			ResourceType type = (ResourceType)file["Type"].as<int>();
+			auto ResourceFile = filepath.replace_extension(file["Ext"].as<std::string>()).c_str();
+			auto ResourceFileBaseName = filepath.stem().c_str();
 
-	Texture* Resources::AddTexturePtr(const char *name, const char* fp)
-	{
-		return &AddTexture(name, fp);
+			switch (type) {				
+				case ResourceType::Texture: {
+					Texture* tex = AddResource<Texture>(ResourceFileBaseName, ResourceFile);
+					tex->uuid = file["UUID"].as<uint64_t>();
+					Debug::Info("Loaded Texture");
+					break;
+				}
+				case ResourceType::Shader: {
+					AddResource<Shader>(ResourceFileBaseName, ResourceFile)->uuid = file["UUID"].as<uint64_t>();
+					Debug::Info("Loaded Shader");
+					break;
+				}
+			}
+		}
 	}
 }
