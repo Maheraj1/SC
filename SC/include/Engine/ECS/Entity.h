@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 #include "Engine/Debug/Debug.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/Transform.h"
@@ -8,6 +8,7 @@
 #include "Engine/Core/Base.h"
 #include "Engine/Core/Errors.h"
 #include "Engine/Core/UUID.h"
+#include "Engine/ECS/ComponentData.h"
 
 #include <array>
 #include <list>
@@ -19,7 +20,7 @@
 
 namespace SC
 {
-	struct Script;
+	class Script;
 	class SC_API Entity
 	{
 	public:
@@ -38,8 +39,11 @@ namespace SC
 		requires (std::is_base_of_v<Script, T>)
 		T& AddComponent()
 		{
-			Component<T>* com = new Component<T>();
+			Component<T>* com = new Component<T>(
+				Internal::ComponentData::components.at(Internal::ComponentData::TypeNameToComponentName[typeid(T).name()])
+			);
 			com->GetScript().entity = this;
+			com->GetScript().transform = &transform;
 			components.push_back(com);
 			return com->GetScript();
 		}
@@ -117,8 +121,6 @@ namespace SC
 			return m_id == ent.m_id;
 		}
 		
-		friend class Scene;
-		friend class SceneSerializer;
 	private:
 		void Start();
 		void Update();
@@ -130,5 +132,9 @@ namespace SC
 
 	protected:
 		std::vector<IComponent*> components;
+
+		friend class Scene;
+		friend class SceneSerializer;
+		friend class Application;
 	};
 }

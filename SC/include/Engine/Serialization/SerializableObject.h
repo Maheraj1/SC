@@ -4,10 +4,6 @@
 #include "Engine/Core/SCObject.h"
 #include "SerializedData.h"
 
-namespace SC {
-	template<typename T>
-	class Component;
-}
 namespace SC::Serialization {
 	class SerializedData;
 	
@@ -17,11 +13,14 @@ namespace SC::Serialization {
 			SerializableObject();
 		protected:
 
+			// To be overloaded by user
 			virtual void Serialize() const { }
 			virtual void DeSerialize() { }
 
+			// Internal functions
 			void _Serialize() const;
 			void _DeSerialize();
-		friend void SerializedData::AddValue(const SerializableObject* dat, const char* name);
+		friend void SerializedData::AddValue<SerializableObject>(const SerializableObject* dat, const char* name);
+		friend void SerializedData::GetValue<SerializableObject>(SerializableObject* dat, const char* name);
 	};
 }

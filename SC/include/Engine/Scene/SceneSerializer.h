@@ -9,7 +9,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#ifdef SC_CORE_IMPL
+#if defined(SC_CORE_IMPL) || defined(SC_EDITOR_IMPL)
 	#ifdef SC_DEBUG
 		#define SC_Serialize(x)   SC::SceneSerializer::SerializeText(x)
 		#define SC_DeSerialize(x) SC::SceneSerializer::DeserializeText(x)

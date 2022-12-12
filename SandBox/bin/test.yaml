@@ -10,7 +10,7 @@ Objects:
       Scale: [1, 1]
     Components:
       - Name: SpriteRenderer
-        Color: [255, 255, 255]
+        color: [255, 255, 255]
       - Name: RigidBody
         Mass: 1
         Type: 2
@@ -30,7 +30,7 @@ Objects:
       Scale: [5, 1]
     Components:
       - Name: SpriteRenderer
-        Color: [255, 255, 255]
+        color: [255, 255, 255]
       - Name: RigidBody
         Mass: 1
         Type: 0
@@ -42,25 +42,6 @@ Objects:
         IsTrigger: false
         Size: [5, 1]
         Offset: [0, 0]
-  - GUID: 8474849551276685256
-    Name: Ball
-    Transform:
-      Position: [0, 5]
-      Rotation: 0
-      Scale: [1, 1]
-    Components:
-      - Name: SpriteRenderer
-        Color: [255, 255, 255]
-      - Name: RigidBody
-        Mass: 10
-        Type: 2
-      - Name: CircleCollider
-        Density: 1
-        Friction: 0.5
-        Restitution: 0
-        RestitutionThreshold: 0.5
-        IsTrigger: false
-        Size: 1
   - GUID: 5966165974821075783
     Name: Camera
     Transform:

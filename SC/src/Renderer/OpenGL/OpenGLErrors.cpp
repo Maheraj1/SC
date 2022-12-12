@@ -17,7 +17,7 @@ namespace SC::Internal::OpenGL {
 		GLenum err;
 		while ((err = glGetError()) != GL_NO_ERROR) {
 			char hexDat[7];
-			sprintf(hexDat, "0x%04X", err);
+			snprintf(hexDat, 7, "0x%04X", err);
 			Debug::Error((std::string)GLEnumToString(err) + '/' + hexDat + '/' + std::to_string(err) + ' ' + func + ' ' + filename + ':' + std::to_string(line), "OpenGL Error");
 			return false;
 		}

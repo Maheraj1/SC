@@ -93,13 +93,12 @@ void PreAppRun()
 	
 	SC_REGISTER_COMPONENT(CameraMovement);
 	SC_REGISTER_COMPONENT(SpriteMovement);
-
- 	Scene& scene = SceneManager::AddScene("test.yaml");
+	Scene& scene = SceneManager::AddScene("test.yaml");
 	scene.Load();
 	
 	// {
 	// 	Entity& ent = scene.AddEntity("Test");
-	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexturePtr("tex", "Square0.png");
+	// 	// ent.AddComponent<SpriteRenderer>().texture = Resources::AddTexture("tex", "Square0.png");
 	// 	ent.transform.position = { 2.0f, 5.0f };
 	// 	auto& rb = ent.AddComponent<RigidBody>();
 	// 	rb.type = RigidBodyType::Dynamic;
@@ -110,32 +109,16 @@ void PreAppRun()
 
 	// {
 	// 	Entity& ent = scene.AddEntity("Ground");
-	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
+	// 	// ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexture("tex");
 	// 	ent.AddComponent<RigidBody>();
 	// 	ent.AddComponent<BoxCollider>().size = Vector2f(5.0f, 1.0f);
 	// 	ent.transform.scale = Vector2f(5.0f, 1.0f);
 	// 	ent.transform.position.y = -5;
 	// }
 
-	// {
-	// 	Entity& ent = scene.AddEntity("Ball");
-	// 	ent.AddComponent<SpriteRenderer>().texture = Resources::GetTexturePtr("tex");
-	// 	auto& rb = ent.AddComponent<RigidBody>();
-	// 	rb.type = RigidBodyType::Dynamic;
-	// 	rb.mass = 10.0f;
-	// 	ent.AddComponent<CircleCollider>().size = 1.0f;
-	// 	ent.transform.scale = Vector2f(1.0f, 1.0f);
-	// 	ent.transform.position.y = 5;
-	// }
-
 	// Entity& cam = scene.AddEntity("Camera");
 	// cam.AddComponent<Camera>();
 	// cam.AddComponent<CameraMovement>().i = 1;
 
-	// SceneSerializer::SerializeText("test.yaml");
-}
-
-int main()
-{
-	RunApp();
+	// scene.Save();
 }

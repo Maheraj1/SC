@@ -12,7 +12,7 @@ namespace SC {
 			Timmer(const char* FuncName);
 			~Timmer();
 
-			void Stop();
+			double Stop();
 	};
 
 	#define SC_ScopedTimmer(x) Timmer __t(x)

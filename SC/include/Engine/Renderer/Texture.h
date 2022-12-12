@@ -1,41 +1,38 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+#include "Engine/Resources/Resource.h"
 
 namespace SC {
-	enum class TextureProperties
+	enum class TextureProperties: unsigned int
 	{
-		None = -1,
+		WrapRepeat = 1 << 1,
+		WrapMirroredRepeat = 1 << 2,
 		
-		WrapRepeat,
-		WrapMirroredRepeat,
-		
-		WrapClampToEdge,
-		WrapClampToBorder,
+		WrapClampToEdge = 1 << 3,
+		WrapClampToBorder = 1 << 4,
 
-		FilterNearest,
-		FilterLinear,
+		FilterNearest = 1 << 5,
+		FilterLinear = 1 << 6,
 
-		FormatRGB,
-		FormatRGBA,
+		FormatRGB = 1 << 7,
+		FormatRGBA = 1 << 8,
 	};
 
-	enum class TextureParameters
+	enum class TextureParameters: unsigned int
 	{
-		None = -1,
+		TextureWarpX = 1 << 1,
+		TextureWarpY = 1 << 2,
+		TextureWarpBoth = TextureWarpX | TextureWarpY,
 
-		TextureWarpX,
-		TextureWarpY,
-		TextureWarpBoth,
+		TextureFilterMin = 1 << 3,
+		TextureFilterMag = 1 << 4,
+		TextureFilterBoth = TextureFilterMag | TextureFilterMin,
 
-		TextureFilterMin,
-		TextureFilterMag,
-		TextureFilterBoth,
-
-		Format,
+		Format = 1 << 5,
 	};
 
-	class SC_API Texture
+	class SC_API Texture: public Resource
 	{
 	private:
 		unsigned int m_id = 0;
@@ -45,12 +42,19 @@ namespace SC {
 		unsigned int IFormat;
 
 		const char* fp;
+
+		bool Valid;
 	public:
 		Texture();
+		Texture(const char* fp);
 		~Texture();
 
+		virtual uint64_t GetID() const override;
+
 		void Generate();
-		unsigned int GetTextureID();
+		void Delete() override;
+
+		unsigned int GetTextureID() const;
 		void SetAttribute(TextureParameters param, TextureProperties value);
 		void Bind(unsigned int slot = 0);
 		void SetData(unsigned char* data, unsigned int size);

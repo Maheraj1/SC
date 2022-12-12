@@ -1,0 +1,80 @@
+{
+	// Place your SC workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	"SC Script": {
+		"scope": "cpp",
+		"prefix": "SCScript",
+		"body": [
+			"#include <Engine/SC.h>",
+			"using namespace SC;",
+			"",
+			"class $TM_FILENAME_BASE: public SC::Script",
+			"{",
+			"\t\tvoid Start()",
+			"\t\t{",
+			"\t\t\t",
+			"\t\t}",
+			"",
+			"\t\tvoid Update()",
+			"\t\t{",
+			"\t\t\t",
+			"\t\t}",
+			"",
+			"\t\tvoid Serialize()",
+			"\t\t{",
+			"\t\t\t",
+			"\t\t}",
+			"",
+			"\t\tvoid DeSerialize()",
+			"\t\t{",
+			"\t\t\t",
+			"\t\t}",
+			"\tfriend class ::SC::Component<${2:$TM_FILENAME_BASE}>;",
+			"};"
+		],
+		"description": "Creates a SC Script File"
+	},
+
+	"SC Core Script Header": {
+		"scope": "cpp",
+		"prefix": "SCCoreScriptH",
+		"body": [
+			"#pragma once",
+			"",
+			"#include <Engine/ECS/Script.h>",
+			"",
+			"namespace SC$1",
+			"{",
+			"\tclass ${2:$TM_FILENAME_BASE}: public SC::Script",
+			"\t{",
+			"$0",
+			"\t\tvoid Start();",
+			"\t\tvoid Update();",
+			"",
+			"\t\tvoid Serialize();",
+			"\t\tvoid DeSerialize();",
+			"\tfriend class ::SC::Component<${2:$TM_FILENAME_BASE}>;",
+			"\t};",
+			"}"
+		],
+		"description": "Creates a SC Core Script File"
+	},
+
+	"SC Core Script Source": {
+		"scope": "cpp",
+		"prefix": "SCCoreScriptS",
+		"body": [
+			"#include \"Engine/$1/${TM_FILENAME_BASE}.h\"",
+			"",
+			"namespace SC$2",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a SC Core Script File"
+	}
+}

@@ -5,7 +5,7 @@
 #include "Engine/ECS/Component.h"
 #include "Engine/ECS/Script.h"
 
-struct b2Body;
+class b2Body;
 
 namespace SC {
 	class Application;

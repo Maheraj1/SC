@@ -1,8 +1,9 @@
 # We have to use static version of glfw and dynamic version of yaml-cpp, ImGui and Box2D
-# Run the Makefile in extrnal folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dyanlic lib in bin folder also
+# Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
 # Change this accoding to your choice
 COMPILER = clang++
 LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d
+# Options: OpenGL, Metal, DX11
 RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
@@ -11,9 +12,10 @@ TYPE ?= 0
 TARGET = 0
 SRC_DIR = src
 SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
+WARNS = -Wall -Wno-undefined-var-template
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL
 INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal -I../extrenal/yaml-cpp/include
-LIB_DIR = -Llib/MacOS/x86_64
+LIB_DIR = -Llib
 OBJ_NAME = libSC
 OBJ_PATH = $(OBJ_NAME)
 SRC_COUNT = $(words $(SRC))
@@ -49,20 +51,20 @@ ifeq ($(TYPE), 1)
 	OTHER_ARGS = -O3
 endif
 
-%.o: src/Window/OpenGL/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR)
+%.o: src/Window/**/%.cpp
+	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
-%.o: src/Renderer/OpenGL/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR)
+%.o: src/Renderer/**/%.cpp
+	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
-%.o: src/Input/OpenGL/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR)
+%.o: src/Input/**/%.cpp
+	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 %.o: src/**/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR)
+	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 
@@ -76,13 +78,17 @@ base:
 	@printf "\e[32mBuilding \e[35m$(SRC_COUNT) files\e[32m on\e[36m $(BUILD_TYPE)\e[32m Configration\e[0m\n\n"
 
 DL: $(OBJS)
-	@$(COMPILER) -shared $^ $(DEFINES) -DSC_SHARED $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) -o $(OBJ_PATH).dylib $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC -Wall -Winfo -Werror
+	@$(COMPILER) -shared $^ $(DEFINES) -DSC_SHARED $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) -o $(OBJ_PATH).dylib $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS)
 	@printf "\n\e[35mBuilt $(SRC_COUNT) Sources files\e[0m\n"
 
 	@mv $(OBJ_PATH).dylib bin/$(OBJ_PATH).dylib
 
 	@cp bin/$(OBJ_PATH).dylib ../SandBox/lib/$(OBJ_NAME).dylib
 	@cp bin/$(OBJ_PATH).dylib ../SandBox/bin/$(OBJ_NAME).dylib
+	
+	@cp bin/$(OBJ_PATH).dylib ../SCEditor/bin/$(OBJ_NAME).dylib
+	@cp bin/$(OBJ_PATH).dylib ../SCEditor/$(OBJ_NAME).dylib
+	@cp bin/$(OBJ_PATH).dylib ../SCEditor/libs/$(OBJ_NAME).dylib
 
 clean:
-	@rm -f *.o $(OBJ_PATH).dylib $(OBJ_NAME).dylib ../SandBox/lib/$(OBJ_NAME).dylib ../SandBox/bin/$(OBJ_NAME).dylib
+	@rm -f *.o $(OBJ_PATH).dylib $(OBJ_NAME).dylib ../SandBox/lib/$(OBJ_NAME).dylib ../SandBox/bin/$(OBJ_NAME).dylib ../SCEditor/bin/$(OBJ_NAME).dylib ../SCEditor/$(OBJ_NAME).dylib ../SCEditor/libs/$(OBJ_NAME).dylib

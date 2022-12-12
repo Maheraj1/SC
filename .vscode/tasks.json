@@ -17,13 +17,14 @@
         {
             "label": "Build SC Release",
             "type": "shell",
-            "command": "make TYPE=1 -j8",
+            "command": "make clean && make TYPE=1 -j8",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "dependsOn": "Clean Project"
         },
         {
             "label": "Build SandBox",
@@ -82,8 +83,35 @@
         },
         {
             "label": "Clean Project",
-            "dependsOn": "Clean SandBox",
+            "dependsOn": "Clean SCEditor",
             "problemMatcher": [],
+        },
+        {
+            "label": "Compile SCImGui",
+            "command": "clang++ -Iinclude -I../external/imgui -Llib -limgui src/Internal/UI/ImGui.cpp -o libSCImGui.dylib -shared -fPIC -DSC_EDITOR_IMPL -I../external/glm -std=c++20 -I../external -lglfw -I../external/imgui/backends -Wall -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_RENDERER_OpenGL && cp libSCImGui.dylib ../SCEditor/libSCImGui.dylib && cp libSCImGui.dylib ../SCEditor/bin/libSCImGui.dylib",
+            "problemMatcher": "$gcc",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SC"
+            }
+        },
+        {
+            "label": "Build SCEditor",
+            "command": "make",
+            "options": {
+                "cwd": "${workspaceFolder}/SCEditor"
+            },
+            "problemMatcher": "$gcc",
+            "dependsOn": "Build SC Debug"
+        },
+        {
+            "label": "Clean SCEditor",
+            "command": "make clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SCEditor"
+            },
+            "dependsOn": "Clean SandBox"
         }
     ],
     "inputs": [
@@ -91,7 +119,7 @@
             "id": "Max-Threads",
             "type": "promptString",
             "description": "Max threads to use in multithreading",
-            "default": "4"
+            "default": "8"
         }
     ],
 }

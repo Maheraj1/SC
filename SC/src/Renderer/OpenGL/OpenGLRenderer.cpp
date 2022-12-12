@@ -1,12 +1,10 @@
 #include "Engine/Core/Base.h"
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Resources/Resources.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/OpenGL/OpenGLErrors.h"
-#include "Engine/Scene/SceneManager.h"
-#include "Engine/Debug/MemoryTracker.h"
 #include "Engine/Debug/Timmer.h"
 
 #include "glm/fwd.hpp"
@@ -23,146 +21,24 @@
 
 namespace SC::Internal
 {
-	// just to make code look better
-	#define BatchEnt batches[currentBatch].entities
-
 	unsigned int Renderer::VAO;
 	unsigned int Renderer::ErrorShaderID;
-	
-	bool Renderer::done = false;
-	bool Renderer::Run = true;
+
 	bool Renderer::WireFrameMode = false;
-	bool Renderer::RenderT = false;
-	static bool* _RenderT = &Renderer::RenderT;
-	static bool* _done = &Renderer::done;
-	static bool* Run = &Renderer::Run;
+	std::vector<BatchData> Renderer::batchData;
 
 	static uint VBO, EBO;
 	static unsigned int UBO_MVP;
-	static uint8_t currentMode = 1;
 
-	static std::vector<BatchData> batchData;
 	static Matrix4 proj;
-	static const Matrix4* _proj_ = &proj;
-
-	static uint texW;
-
-	// using this variables to let the multithread function use it
-	static const uint _MBC = Renderer::MAX_BATCH_COUNT;
-	static const uint _MTS = Renderer::MAX_TEXTURE_SLOT_USAGE;
-
-	void Renderer::StartBatch(const std::vector<Entity> *objs)
-	{
-		// std::mutex m;
-		// std::lock_guard<std::mutex> lg(m);
-		std::vector<Batch> batches = {Batch()};
-
-		uint currentBatch = 0;
-		for (Entity ent: *objs)
-		{
-			if (batches[currentBatch].entities.entC == _MBC) currentBatch++;
-			if (!ent.HasComponent<SpriteRenderer>()) continue;
-
-			SpriteRenderer* sr = ent.GetComponentPtr<SpriteRenderer>();
-			if (batches[currentBatch].shader != sr->shader->GetShaderID())
-			{
-				for (int i = 0; i < batches.size(); i++)
-				{
-				 	if (batches[i].shader == sr->shader->GetShaderID()) {
-						currentBatch = i;
-					} else if (batches[i].shader == 0)
-					{
-						batches[i].shader = sr->shader->GetShaderID();
-					} else if (batches.size()-1 == currentBatch) {
-						currentBatch = batches.size();
-						batches.push_back(Batch());
-						batches[currentBatch].shader = sr->shader->GetShaderID();
-					}
-				}
-			}
-
-			for (uint i = 0; i < _MTS; i++)
-			{
-				if (batches[currentBatch].Textures[i].GetID() == sr->texture->GetTextureID()) /* if texture list has the texture we need break from it add to binding list */
-				{
-					BatchEnt.textureIndex[BatchEnt.entC] = i;
-					break;
-				}
-				else if (batches[currentBatch].Textures[i].GetID() == 0) /* if slot is empty we will use it */
-				{
-					batches[currentBatch].Textures[i].GetID() = sr->texture->GetTextureID();
-					BatchEnt.textureIndex[BatchEnt.entC] = i;
-					break;
-				} else if (i == _MTS-1) /* if it is last slot and no empty slot is found create a new Batch */
-				{
-					currentBatch = batches.size();
-					batches.push_back(Batch());
-					batches[currentBatch].shader = sr->shader->GetShaderID();
-					batches[currentBatch].Textures[0].GetID() = sr->texture->GetTextureID();
-					BatchEnt.textureIndex[BatchEnt.entC] = i;
-				}
-			}
-			batches[currentBatch].shader = sr->shader->GetShaderID();
-			
-			// Set all Vertex Positions
-			BatchEnt.pos[BatchEnt.entC * 4 + 0] = (ent.transform.GetModel(true) * Vector4f(-1.0f, -1.0f, 1.0f, 1.0f));
-			BatchEnt.pos[BatchEnt.entC * 4 + 1] = (ent.transform.GetModel(true) * Vector4f( 1.0f, -1.0f, 1.0f, 1.0f));
-			BatchEnt.pos[BatchEnt.entC * 4 + 2] = (ent.transform.GetModel(true) * Vector4f( 1.0f,  1.0f, 1.0f, 1.0f));
-			BatchEnt.pos[BatchEnt.entC * 4 + 3] = (ent.transform.GetModel(true) * Vector4f(-1.0f,  1.0f, 1.0f, 1.0f));
-
-			// Set all Color Values
-			for (int i = 0; i <= 3; i++)
-				BatchEnt.color[(BatchEnt.entC * 4) + i] = ((Vector3i)sr->color)/255.0f;
-
-			BatchEnt.entC++;
-		}
-
-		// batchData.reserve(batches.size());
-
-		for (int i = 0; i < batches.size(); i++)
-		{
-			std::array<uint, _MBC * 6> ind;
-
-			for (int v = 0; v/6 < batches[i].entities.entC; v += 6) {
-				ind[v + 0] = 0 + ((v / 6 ) * 4);
-				ind[v + 1] = 1 + ((v / 6 ) * 4);
-				ind[v + 2] = 3 + ((v / 6 ) * 4);
-
-				ind[v + 3] = 1 + ((v / 6 ) * 4);
-				ind[v + 4] = 2 + ((v / 6 ) * 4);
-				ind[v + 5] = 3 + ((v / 6 ) * 4);
-			}
-			
-			std::array<Vector2f, _MBC * 4> texCoords;
-
-			int offset = 0;
-			for (int i2 = 0; i2 < batches[i].entities.entC; i2++) {
-				texCoords[offset + 0] = {0, 0};
-				texCoords[offset + 1] = {1, 0};
-				texCoords[offset + 2] = {1, 1};
-				texCoords[offset + 3] = {0, 1};
-				offset += 4;
-			}
-
-			batchData.emplace_back(batches[i].entities.pos,
-									 texCoords,
-									  batches[i].entities.color,
-									  	batches[i].entities.textureIndex,
-										 ind,
-										  batches[i].Textures,
-										   batches[i].shader,
-											batches[i].entities.entC
-									   );
-		}
-	}
 
 	void Renderer::Render()
 	{
-		if (WireFrameMode && currentMode != 0)
+		// Vector4f pos = proj * Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
+		if (WireFrameMode)
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			currentMode = 0;
-		} else if (currentMode != 1)
+		} else
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
@@ -171,31 +47,27 @@ namespace SC::Internal
 		{
 			if (batch.size <= 0) continue;
 
-			glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * MAX_BATCH_COUNT, &batch.pos[0]);
-			glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, &batch.texCoords[0]);
-			glBufferSubData(GL_ARRAY_BUFFER, 96 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, &batch.color[0]);
-			glBufferSubData(GL_ARRAY_BUFFER, 144 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT,&batch.tex[0]);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &batch.indices[0]);
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * MAX_BATCH_COUNT, &batch.pos[0]));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, &batch.texCoords[0]));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 96 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, &batch.color[0]));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 144 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT,&batch.tex[0]));
+			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &batch.indices[0]));
 			
-			if (Resources::currentShader != batch.shader) {
-				glUseProgram(batch.shader);
-				Resources::currentShader = batch.shader;
-			}
+			GLCall(glUseProgram(batch.shader));
 			
 			int32_t tex[MAX_TEXTURE_SLOT_USAGE];
 
 			for (int i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
 			{
-				glActiveTexture(GL_TEXTURE0 + i);
-				glBindTexture(GL_TEXTURE_2D, batch.Textures[i].TexID);
+				GLCall(glActiveTexture(GL_TEXTURE0 + i));
+				GLCall(glBindTexture(GL_TEXTURE_2D, batch.Textures[i]));
 				tex[i] = i;
 			}
 
-			glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex);
+			GLCall(glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex));
 
-			glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0);
+			GLCall(glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0));
 		}
-		batchData.clear();
 	}
 
 	void Renderer::Init()
@@ -272,7 +144,8 @@ void main() {
 		glDeleteShader(fs);
 
 		// Hard coded texture shader
-		Resources::AddShader("Sprite").Compile(R"(#shader vert
+	 	Shader* shader = Resources::AddResource<Shader>("Sprite");
+		shader->Compile(R"(#shader vert
 #version 410 core
 
 layout (location = 0) in vec2  i_pos;
@@ -315,6 +188,7 @@ void main() {
 	int i = int(fs_in.tex);
 	o_color = texture(u_textures[i], fs_in.texCoords) * vec4(fs_in.color, 1.0);
 })");
+		shader->uuid = 1;
 	}
 
 	void Renderer::SetMVP(Matrix4 _proj)
@@ -332,13 +206,4 @@ void main() {
 	void EntityBatchArray::operator++() { entC++;}
 
 	void EntityBatchArray::operator--() { entC--;}
-
-	BatchTextureConnection::BatchTextureConnection(uint TexID):TexID(TexID) { }
-	BatchTextureConnection::~BatchTextureConnection() { }
-
-	void BatchTextureConnection::AddEntity(uint64_t entID)
-	{
-		entIDs[lastIndex] = entID;
-		lastIndex++;
-	}
 }

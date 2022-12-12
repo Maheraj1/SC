@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core.h"
+#include "Engine/Core/Core.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-volatile"
@@ -39,9 +39,6 @@ namespace SC
 
     struct SC_API Math
     {
-        static constexpr float PI = 22.0f/7;
-        static constexpr float RAD = PI/180.0f;
-
         static float Lerp(float a, float b, float t);
         static Vector2f Lerp(Vector2f a, Vector2f b, float t);
         static Vector3f Lerp(Vector3f a, Vector3f b, float t);

@@ -13,7 +13,7 @@ namespace SC {
 		rb = TryGetComponent<RigidBody>();
 		if (rb == nullptr) return;
 
-		Vector2f pos = entity->transform.position;
+		// Vector2f pos = entity->transform.position;
 		shape = new b2PolygonShape();
 		shape->SetAsBox(size.x+offset.x, size.y+offset.y);
 

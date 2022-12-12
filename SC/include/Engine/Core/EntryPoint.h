@@ -1,15 +1,18 @@
 #pragma once
 
 #include "Application.h"
-
-namespace SC::Internal::Components {extern void ComponentsFunc();}
+#include "Engine/Resources/Resources.h"
 
 extern void PreAppRun();
-
 
 inline void RunApp()
 {
 	SC::Debug::Info("Starting Engine", "SC::Application");
 	SC::Application app;
 	app.Run(PreAppRun);
+}
+
+int main()
+{
+	RunApp();
 }

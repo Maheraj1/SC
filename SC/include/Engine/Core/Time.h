@@ -20,11 +20,14 @@ namespace SC
         static int targetFps;
         static bool CalculateFps;
         static bool LimitFPS;
+
+        static float FixedUpdateRepetition;
         
         static const float& fps;
         static const double& time;
         static const double& deltaTime;
 
         static void Update();
+        static void FixedUpdate();
     };
 };

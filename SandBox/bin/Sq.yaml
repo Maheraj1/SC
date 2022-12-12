@@ -1,0 +1,6 @@
+Version: "0.0.0a"
+Type: Texture
+# Not required
+GUID: 23456789
+Name: Sq
+File: Sq.png

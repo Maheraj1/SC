@@ -1,21 +1,29 @@
 #pragma once
 
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Core/SCObject.h"
+#include "Engine/Resources/Resource.h"
 
 namespace SC
 {
-	class SC_API Shader
+	class SC_API Shader: public Resource
 	{
 	private:
 		unsigned int m_id;
+		const char* src;
+
+		bool Valid;
 	public:
-		Shader();
+		Shader(const char* src = nullptr);
 		~Shader();
 
 		unsigned int GetShaderID() const;
 
 		void Bind() const;
 		bool Compile(const char* src);
+		void Delete() override;
+
+		virtual uint64_t GetID() const override;
 
 		// Shader variables functions
 
@@ -29,6 +37,4 @@ namespace SC
 		void SetVector3i(const char* VarName,Vector3i vec);
 		void SetVector4i(const char* VarName,Vector4i vec);
 	};
-
-	Shader* CreateShader();
 }

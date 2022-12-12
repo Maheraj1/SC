@@ -10,10 +10,14 @@ namespace SC {
 		start = std::chrono::high_resolution_clock::now();
 	}
 
-	void Timmer::Stop()
+	double Timmer::Stop()
 	{
 		auto end = std::chrono::high_resolution_clock::now();
-		Debug::Info(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()) + " ms", funcName);
+
+		if (funcName != nullptr)
+			Debug::Info(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()) + " ms", funcName);
+
+		return std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 	}
 
 	Timmer::~Timmer()

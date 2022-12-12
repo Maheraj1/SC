@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "Engine/Core/Math.h"
+#include "Engine/Math/Math.h"
 #include "Engine/Serialization/SerializableObject.h"
 
 namespace SC
@@ -9,9 +9,12 @@ namespace SC
 	class Entity;
 	namespace Internal { 
 		class Renderer;
-		struct BatchData;
-		void RenderBatch(const std::vector<Entity>* objs);
 	}
+
+	/**
+	 * @brief A class to handle matrix calculations and positioning, rotating and scaling of objects
+	 * 
+	 */
 	class SC_API Transform: Serialization::SerializableObject
 	{
 	private:
@@ -29,6 +32,5 @@ namespace SC
 		friend class Camera;
 		friend class Internal::Renderer;
 		friend class SceneSerializer;
-		friend void Internal::RenderBatch(const std::vector<Entity>* objs);
 	};
 }

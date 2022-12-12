@@ -1,34 +1,60 @@
 #include "Engine/ECS/SpriteRenderer.h"
-#include "Engine/Core/Math.h"
-#include "Engine/Renderer/Texture.h"
+#include "Engine/Math/Math.h"
+#include "Engine/Resources/ResourceMap.h"
 #include "Engine/Resources/Resources.h"
+#include "Engine/Renderer/Shader.h"
+#include "Engine/Renderer/Texture.h"
+#include "Engine/Serialization/SerializedData.h"
 
 #include <string>
 
 namespace SC
 {
-	void SpriteRenderer::PostRender()
+	SpriteRenderer::SpriteRenderer()
+	:shader(nullptr), texture(nullptr)
 	{
-		color.r = 255;
-		color.b = 255;
-		color.g = 255;
+
 	}
 
-	void SpriteRenderer::Start() { 
-		if (shader == nullptr) shader = Resources::GetShaderPtr("Sprite");
-		if (texture == nullptr) texture = Resources::GetTexturePtr("Square");
+	void SpriteRenderer::PostRender()
+	{
+		Renderer::texture = texture.obj;
+		Renderer::shader  = shader.obj;
+		Renderer::color   = color;
+	}
+
+	void SpriteRenderer::Start() {
+		Renderer::texture = texture.obj;
+		Renderer::shader  = shader.obj ;
+		Renderer::color   = color;
+		texture = Resources::GetResource<Texture> ("Square");
+		shader  = Resources::GetResource<Shader>  ("Sprite");
+	}
+
+	void SpriteRenderer::Awake() {
+		texture = Resources::GetResource<Texture> ("Square");
+		shader  = Resources::GetResource<Shader>  ("Sprite");
 	}
 
 	void SpriteRenderer::Serialize() const
 	{
-		Color16 color = (Color16)this->color;
-		SC_ADD_PARAMETER(color);
+		SC_ADD_PARAM((Color16)color, "color");
+
+		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->shader, "Shader");
+		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->texture, "Texture");
 	}
 
 	void SpriteRenderer::DeSerialize()
 	{
-		Color16 color;
-		SC_GET_PARAMETER(color);
+		Color16 color = {255, 255, 255};
+		SC_GET_PARAM(color, "color");
 		this->color = (Color)color;
+
+		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->shader, "Shader");
+		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->texture, "Texture");
+	}
+
+	void SpriteRenderer::OnApplicationStart() { 
+
 	}
 }

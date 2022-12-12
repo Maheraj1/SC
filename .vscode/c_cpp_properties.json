@@ -23,7 +23,7 @@
             "intelliSenseMode": "macos-clang-x64",
             "compilerArgs": [],
             "cppStandard": "c++17",
-            "compileCommands": "${workspaceFolder}/SC/compile_commands.json"
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
         }
     ],
     "version": 4

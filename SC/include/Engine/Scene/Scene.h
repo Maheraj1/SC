@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Common.h"
+#include "Engine/Math/Math.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 
@@ -23,6 +24,7 @@ namespace SC
         void Start();
         void Awake();
         void Update();
+        void Clear();
     public:
         Scene(const char* filepath = Common::EmptyString);
         ~Scene();
@@ -34,6 +36,8 @@ namespace SC
         Entity* AddEntityPtr(std::string name);
 
         Entity& AddEntity(std::string name, UUID id);
+
+        Camera* GetCurrentCamera() { return activeCamera; }
 
         void DestroyEntity(Entity* ent);
 
