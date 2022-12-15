@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Math/Math.h"
+#include <imgui.h>
 #include <functional>
 
 #if defined(SC_EDITOR_IMPL) && !(SC_CORE_IMPL)
@@ -186,6 +187,14 @@ namespace SC::Internal::UI::ImGui {
 	void SetCursorPos(Vector2 pos);
 
 	void ShowMetricsWindow();
+
+	inline ImVec2 ToImVec2(Vector2f v) {
+		return {v.x, v.y};
+	}
+
+	inline Vector2f FromImVec2(ImVec2 v) {
+		return {v.x, v.y};
+	}
 }
 
 #endif

@@ -26,14 +26,6 @@ struct GLFWwindow;
 
 namespace SC::Internal::UI::ImGui {
 
-	static ImVec2 ToImVec2(Vector2f v) {
-		return {v.x, v.y};
-	}
-
-	static Vector2f FromImVec2(ImVec2 v) {
-		return {v.x, v.y};
-	}
-
 	static GLFWwindow* window;
 
 	void SetColors() {

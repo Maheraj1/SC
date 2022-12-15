@@ -15,7 +15,7 @@ namespace SC
 	 * @brief A class to handle matrix calculations and positioning, rotating and scaling of objects
 	 * 
 	 */
-	class SC_API Transform: Serialization::SerializableObject
+	class SC_API Transform: public Serialization::SerializableObject
 	{
 	private:
 		Matrix4 GetModel(bool useScale = true) const;

@@ -13,6 +13,9 @@
 #include "Engine/Scene/SceneSerializer.h"
 #include "glm/common.hpp"
 #include "glm/geometric.hpp"
+
+#include "imgui.h"
+
 #include <algorithm>
 
 namespace SC::Editor {
@@ -24,8 +27,6 @@ namespace SC::Editor {
 	
 	static bool ViewPortOpen;
 	static bool GameViewOpen;
-
-	static bool ViewPortSelected = true;
 
 	void EditorAddon::PreFrameRender() 
 	{	
@@ -42,13 +43,31 @@ namespace SC::Editor {
 			ViewPortTex = Internal::SceneRenderer::Render(data, fb);
 	}
 
-	void EditorAddon::PostFrameRender() 
-	{
+	void DrawEntity(Entity& ent) {
+		bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(ent.GetUUID()), ImGuiTreeNodeFlags_OpenOnArrow, "%s", ent.name.c_str());
+
+		if (open) {
+			ImGui::TreePop();
+		}
+	}
+
+	void DrawSceneHeirarchy() {
+		ImGui::Begin("Scene Heirarchy");
+
+		for (auto&& ent : SceneManager::GetCurrentScene().GetEntities()) {
+			DrawEntity(ent);
+		}
+
+		ImGui::End();
+	}
+
+	void EditorAddon::PostFrameRender() {
 		GameViewTex = SceneManager::GetCurrentScene().GetCurrentCamera()->fb.GetTextureID();
 
+		using namespace ::SC::Internal;
+
 		// ImGui Frame
-		using namespace ::SC::Internal::UI;
-		ImGui::BeginFrame();
+		UI::ImGui::BeginFrame();
 
 		// MenuBar
 		ImGui::BeginMenuBar();
@@ -63,23 +82,23 @@ namespace SC::Editor {
 		ImGui::EndMenuBar();
 
 		// Toolbar
-		ImGui::PushStyleVar(ImGui::ImGuiStyleVar::WindowPadding, {0, 2});
-		ImGui::PushStyleVar(ImGui::ImGuiStyleVar::ItemInnerSpacing, {0, 0});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 2});
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, {0, 0});
 
-		ImGui::PushStyleColor(ImGui::ImGuiCol::Button, {0, 0, 0, 0});
+		ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
 
-		auto col =  ImGui::GetStyleColors();
+		auto col =  ImGui::GetStyle().Colors;
 		
-		auto col_active = col[(int)ImGui::ImGuiCol::ButtonActive];
+		auto col_active = col[(int)ImGuiCol_ButtonActive];
 		col_active.w = 0.5f;
-		ImGui::PushStyleColor(ImGui::ImGuiCol::ButtonActive, col_active);
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, col_active);
 
-		auto col_hovered = col[(int)ImGui::ImGuiCol::ButtonHovered];
+		auto col_hovered = col[(int)ImGuiCol_ButtonHovered];
 		col_hovered.w = 0.5f;
-		ImGui::PushStyleColor(ImGui::ImGuiCol::ButtonHovered, col_hovered);
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, col_hovered);
 
-		ImGui::Begin("Toolbar", nullptr, (int)ImGui::ImGuiWindowFlags::NoDecoration | 
-												(int)ImGui::ImGuiWindowFlags::NoScrollWithMouse);
+		ImGui::Begin("Toolbar", nullptr, (int)ImGuiWindowFlags_NoDecoration | 
+												(int)ImGuiWindowFlags_NoScrollWithMouse);
 
 		static const float ButtonSize = 32.0f;
 		const float offset = (ImGui::GetWindowContentRegionMax().x * 0.5f) - ButtonSize;
@@ -95,37 +114,39 @@ namespace SC::Editor {
 			tex = reinterpret_cast<void*>(StopTex-> GetTextureID());
 		}
 		
-		if (ImGui::ImageButton(tex, {32.0f, 32.0f})) {
+		if (UI::ImGui::ImageButton(tex, {32.0f, 32.0f})) {
 			app->SetRunState(!app->EditMode);
 		}
 		
 		ImGui::SameLine(offset+ButtonSize+4);
-		ImGui::ImageButton(reinterpret_cast<void*>(PauseTex->GetTextureID()), {32.0f, 32.0f});
+		UI::ImGui::ImageButton(reinterpret_cast<void*>(PauseTex->GetTextureID()), {32.0f, 32.0f});
 
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 		ImGui::End();
 
-		ImGui::PushStyleVar(ImGui::ImGuiStyleVar::WindowPadding, {0.0f, 0.0f});
+		DrawSceneHeirarchy();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.0f, 0.0f});
 
 		// ViewPort
 		ImGui::Begin("ViewPort");
 		
 		ViewPortOpen = true;
-		ViewPortSize = ImGui::GetContentRegionAvail();
+		ViewPortSize = UI::ImGui::GetContentRegionAvail();
 
-		ImGui::Image(reinterpret_cast<void*>(ViewPortTex), ImGui::GetContentRegionAvail());
+		UI::ImGui::Image(reinterpret_cast<void*>(ViewPortTex), UI::ImGui::GetContentRegionAvail());
 		
 		ImGui::End();
 
 		// GameViewPort
-		ImGui::Begin("Game", nullptr, (int)ImGui::ImGuiWindowFlags::HorizontalScrollbar);
-		ImGui::SetCursorPos((ImGui::GetContentRegionAvail() - (Vector2f)Internal::Renderer::Resolution) * 0.5f);
+		ImGui::Begin("Game", nullptr, (int)ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::SetCursorPos(UI::ImGui::ToImVec2((UI::ImGui::GetContentRegionAvail() - (Vector2f)Internal::Renderer::Resolution) * 0.5f));
 
-		ImGui::Image(reinterpret_cast<void*>(GameViewTex), Internal::Renderer::Resolution);
+		UI::ImGui::Image(reinterpret_cast<void*>(GameViewTex), Internal::Renderer::Resolution);
 		
-		IsViewPortSelected = ImGui::IsCurrentWindowFocusedAndHovered();
-		GameViewOpen = ImGui::IsCurrentWindowVisible();
+		IsViewPortSelected = UI::ImGui::IsCurrentWindowFocusedAndHovered();
+		GameViewOpen = UI::ImGui::IsCurrentWindowVisible();
 		
 		ImGui::End();
 		
@@ -139,9 +160,7 @@ namespace SC::Editor {
 
 		ImGui::End();
 
-		ImGui::EndFrame();
-
-		Input::SetState(IsViewPortSelected);
+		UI::ImGui::EndFrame();
 	}
 
 	void EditorAddon::Update() {
@@ -161,8 +180,8 @@ namespace SC::Editor {
 
 	void EditorAddon::Start() 
 	{
-		using namespace ::SC::Internal::UI;
-		ImGui::Init(Application::GetWindow().GetNativeWindow());
+		using namespace Internal;
+		UI::ImGui::Init(Application::GetWindow().GetNativeWindow());
 		Application::Get()->_EditMode = true;
 		Application::Get()->_IsEditor = true;
 
@@ -179,8 +198,9 @@ namespace SC::Editor {
 
 	void EditorAddon::ShutDown()
 	{
-		using namespace ::SC::Internal::UI;
-		ImGui::ShutDown();
+		using namespace Internal;
+		
+		UI::ImGui::ShutDown();
 	}
 
 }

@@ -34,8 +34,9 @@ namespace SC
 
         Entity& AddEntity(std::string name);
         Entity* AddEntityPtr(std::string name);
-
         Entity& AddEntity(std::string name, UUID id);
+
+		std::vector<Entity>& GetEntities() { return m_objs; }
 
         Camera* GetCurrentCamera() { return activeCamera; }
 
