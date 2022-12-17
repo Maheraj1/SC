@@ -44,7 +44,14 @@ namespace SC::Editor {
 	}
 
 	void DrawEntity(Entity& ent) {
-		bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(ent.GetUUID()), ImGuiTreeNodeFlags_OpenOnArrow, "%s", ent.name.c_str());
+		bool open = ImGui::TreeNode(reinterpret_cast<void*>(ent.GetUUID()), "%s", ent.name.c_str());
+
+		if (ImGui::BeginPopupContextItem()) {
+			if (ImGui::MenuItem("Delete Entity"))
+				SceneManager::GetCurrentScene().DestroyEntity(&ent);
+
+			ImGui::EndPopup();
+		}
 
 		if (open) {
 			ImGui::TreePop();
@@ -54,8 +61,18 @@ namespace SC::Editor {
 	void DrawSceneHeirarchy() {
 		ImGui::Begin("Scene Heirarchy");
 
-		for (auto&& ent : SceneManager::GetCurrentScene().GetEntities()) {
+		Scene& scene = SceneManager::GetCurrentScene();
+
+		for (auto&& ent : scene.GetEntities()) {
 			DrawEntity(ent);
+		}
+
+		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		{
+			if (ImGui::MenuItem("Create Empty Entity"))
+				scene.AddEntity("New Entity");
+
+			ImGui::EndPopup();
 		}
 
 		ImGui::End();

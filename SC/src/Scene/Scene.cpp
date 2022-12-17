@@ -55,8 +55,6 @@ namespace SC
 	void Scene::CleanFrame() {
 		for (auto&& ent: DestroyList) {
 			for (int i = 0; i < m_objs.size(); i++) if (m_objs[i] == *ent) {
-				ent->Destroy();
-				delete ent;
 				m_objs.erase(m_objs.begin()+i);
 			}
 		}
