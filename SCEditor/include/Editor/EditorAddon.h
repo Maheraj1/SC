@@ -17,6 +17,9 @@ namespace SC::Editor {
 			virtual void ShutDown() override;
 
 		private:
+
+			void DrawInspector();
+			
 			Texture* PlayTex;
 			Texture* PauseTex;
 			Texture* StopTex;

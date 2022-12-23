@@ -20,6 +20,12 @@
 
 namespace SC
 {
+	#ifdef SC_EDITOR_IMPL
+	namespace Editor {
+		class EditorAddon;
+	}
+	#endif
+
 	class Script;
 	class SC_API Entity
 	{
@@ -116,8 +122,7 @@ namespace SC
 			throw Errors::ScriptInstanceNotFound();
 		}
 
-		bool operator==(Entity& ent)
-		{
+		bool operator==(Entity& ent) {
 			return m_id == ent.m_id;
 		}
 		
@@ -136,5 +141,8 @@ namespace SC
 		friend class Scene;
 		friend class SceneSerializer;
 		friend class Application;
+		#ifdef SC_EDITOR_IMPL
+		friend class Editor::EditorAddon;
+		#endif
 	};
 }

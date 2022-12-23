@@ -1,5 +1,7 @@
-#include "EditorAddon.h"
+#include "Editor/EditorAddon.h"
 #include "Engine/Core/Application.h"
+#include "Engine/ECS/Entity.h"
+#include "Engine/ECS/IComponent.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Input/Input.h"
@@ -17,6 +19,10 @@
 #include "imgui.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <iterator>
+#include <string>
+ 
 
 namespace SC::Editor {
 	static bool IsViewPortSelected = false;
@@ -27,6 +33,9 @@ namespace SC::Editor {
 	
 	static bool ViewPortOpen;
 	static bool GameViewOpen;
+
+	static UUID entSelectedID = 0;
+	static Entity* entSelected;
 
 	void EditorAddon::PreFrameRender() 
 	{	
@@ -44,6 +53,7 @@ namespace SC::Editor {
 	}
 
 	void DrawEntity(Entity& ent) {
+
 		bool open = ImGui::TreeNode(reinterpret_cast<void*>(ent.GetUUID()), "%s", ent.name.c_str());
 
 		if (ImGui::BeginPopupContextItem()) {
@@ -51,6 +61,11 @@ namespace SC::Editor {
 				SceneManager::GetCurrentScene().DestroyEntity(&ent);
 
 			ImGui::EndPopup();
+		}
+
+		if (ImGui::IsItemClicked()) {
+			entSelected = &ent;
+			entSelectedID = ent.GetUUID();
 		}
 
 		if (open) {
@@ -67,6 +82,11 @@ namespace SC::Editor {
 			DrawEntity(ent);
 		}
 
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+			entSelected = nullptr;
+			entSelectedID = 0llu;
+		}
+
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
@@ -74,6 +94,30 @@ namespace SC::Editor {
 
 			ImGui::EndPopup();
 		}
+
+		ImGui::End();
+	}
+
+	void EditorAddon::DrawInspector() {
+		ImGui::Begin("Inspector");
+
+		if (entSelectedID == 0llu || !entSelected) {
+			ImGui::End();
+			return;
+		}
+
+		ImGui::Text("Name");
+		ImGui::SameLine();
+
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		strncpy(buffer, entSelected->name.c_str(), sizeof(buffer));
+		
+		if (ImGui::InputText("##Name", buffer, sizeof(buffer))) {
+			entSelected->name = std::string(buffer);
+		}
+
+		ImGui::Text("Components");
 
 		ImGui::End();
 	}
@@ -144,6 +188,8 @@ namespace SC::Editor {
 
 		DrawSceneHeirarchy();
 
+		DrawInspector();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.0f, 0.0f});
 
 		// ViewPort
@@ -176,6 +222,8 @@ namespace SC::Editor {
 		ImGui::Text("DeltaTime: %f", Time::deltaTime);
 
 		ImGui::End();
+
+		// ImGui::ShowDemoWindow();
 
 		UI::ImGui::EndFrame();
 	}

@@ -12,12 +12,6 @@ namespace SC {
 		SceneManager::GetCurrentScene().DestroyEntity(ent);
 	}
 
-	namespace Internal {
-        std::vector<const char*> ComponentData::components;
-		std::unordered_map<std::string, int> ComponentData::TypeNameToComponentName;
-		std::unordered_map<std::string, void(*)(Entity*)> ComponentData::NameToFunc;
-    }
-
 	void Script::Serial() const
 	{
 		_Serialize();

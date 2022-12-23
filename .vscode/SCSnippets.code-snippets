@@ -76,5 +76,40 @@
 			"}"
 		],
 		"description": "Creates a SC Core Script File"
+	},
+
+	"Class Header": {
+		"scope": "cpp",
+		"prefix": "ClassHeader",
+		"body": [
+			"#pragma once",
+			"",
+			"namespace $1 {",
+			"\tclass ${2:$TM_FILENAME_BASE} {",
+			"\t  public:",
+			"\t\t${2:$TM_FILENAME_BASE}($3);",
+			"\t\t~${2:$TM_FILENAME_BASE}();",
+			"\t\t$0",
+			"\t};",
+			"}"
+		]
+	},
+
+	"Class Source": {
+		"scope": "cpp",
+		"prefix": "ClassSrc",
+		"body": [
+			"#include \"$1/${3:$TM_FILENAME_BASE}.cpp\"",
+			"",
+			"namespace $2 {",
+			"\t${3:$TM_FILENAME_BASE}($3) { ",
+			"\t$0",
+			"\t}",
+			"",
+			"\t~${3:$TM_FILENAME_BASE}() {",
+			"\t",
+			"\t}",
+			"}"
+		]
 	}
 }
