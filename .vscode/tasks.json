@@ -83,7 +83,7 @@
         },
         {
             "label": "Clean Project",
-            "dependsOn": "Clean SCEditor",
+            "dependsOn": "Clean Script Core",
             "problemMatcher": [],
         },
         {
@@ -112,7 +112,29 @@
                 "cwd": "${workspaceFolder}/SCEditor"
             },
             "dependsOn": "Clean SandBox"
-        }
+        },
+		{
+			"label": "Compile Script Core",
+			"command": "make",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/SC-ScriptCore"
+			},
+			"dependsOn": "Build SCEditor",
+		},
+		{
+			"label": "Clean Script Core",
+			"command": "make clean",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/SC-ScriptCore"
+			},
+			"dependsOn": "Clean SCEditor",
+		},
+		{
+			"label": "Build Project",
+			"dependsOn": "Compile Script Core",
+		}
     ],
     "inputs": [
         {

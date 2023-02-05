@@ -1,5 +1,6 @@
 #include "Engine/ECS/ComponentData.h"
 #include <vector>
+#include <string>
 
 namespace SC::Internal {
 	std::vector<const char*> ComponentData::components;

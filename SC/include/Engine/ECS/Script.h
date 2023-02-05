@@ -3,12 +3,14 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Core/SCObject.h"
 #include "Engine/ECS/Transform.h"
+#include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Serialization/SerializableObject.h"
 #include "Engine/ECS/Entity.h"
 
 #include <array>
 #include <iostream>
 
+#ifndef SC_OLD_SCRIPT_CORE
 namespace SC
 {
 	/**
@@ -56,3 +58,16 @@ namespace SC
         void DeSerial();
     };
 }
+#else
+
+namespace SC {
+	class Script: public Serialization::SerializableObject {
+		public:
+			Transform transform;
+			Entity* entity;
+		private:
+			
+	};
+}
+
+#endif

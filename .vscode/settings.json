@@ -1,4 +1,5 @@
 {
+	
     "files.exclude": {
         "**/.cache": true
     },
@@ -22,7 +23,7 @@
         "editor.autoClosingQuotes": "always",
         "editor.autoClosingDelete": "always",
     },
-    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
     "cSpell.words": [
         "Dloadproc",
         "dvec",
@@ -31,4 +32,6 @@
         "Wwindow",
         "framebuffer"
     ],
+	"omnisharp.useModernNet": false,
+	"omnisharp.projectLoadTimeout": 120
 }

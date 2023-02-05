@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <ostream>
+#include <sstream>
 #include <string>
 
 namespace SC
@@ -54,6 +56,19 @@ namespace SC
         BrightWhite    = 107,
     };
 
+	class DebugLogOut: public std::ostringstream {
+		public:
+			DebugLogOut& operator<<(DebugLogColor color) {
+				*this << "\e[" << (int)color << 'm';
+				return *this;
+			}
+
+			DebugLogOut& operator<<(DebugLogBackGroundColor color) {
+				*this << "\e[" << (int)color << 'm';
+				return *this;
+			}
+	};
+
     /**
      * @brief struct with Debugging and Logging methods
      */
@@ -66,16 +81,33 @@ namespace SC
          * @param color color of text (optional)
          * @param bg background color of text (optional)
          */
-        static void Log(std::string text, DebugLogColor color = DebugLogColor::White, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
+        static void Log(std::string text, DebugLogColor color = DebugLogColor::None, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
 
-        /**
-         * @brief Method for logging text with colors
+		/**
+         * @brief Method for logging formatted text with colors
          * 
-         * @param text text to be printed
+         * @param text format to be used
          * @param color color of text (optional)
          * @param bg background color of text (optional)
          */
-        static void Log(std::string text, const char* file, const char* line, DebugLogColor color = DebugLogColor::White, DebugLogBackGroundColor bg = DebugLogBackGroundColor::None);
+        static void Log(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
+
+		/**
+         * @brief Method for logging formatted text with colors
+         * 
+         * @param fmt format to be used
+		 * @param args va_list for ... support
+         * @param color color of text (optional)
+         * @param bg background color of text (optional)
+         */
+        static void LogV(const char* fmt, va_list args);
+
+		/**
+		 * @brief Logs from a DebugLogOut buffer
+		 * 
+		 * @param buffer 
+		 */
+		static void Log(DebugLogOut& buffer);
 
         /**
          * @brief Method for logging info

@@ -46,6 +46,12 @@ namespace SC
 		 */
 		static std::string ReadFile(std::string path);
 		/**
+		 * @brief Reads the binary File from path
+		 * 
+		 * @param path path of file
+		 */
+		static char* ReadFileBinary(std::string path, uint* size);
+		/**
 		 * @brief Writes the data given to the given path
 		 * 
 		 * @param path The path of file

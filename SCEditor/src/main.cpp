@@ -1,4 +1,4 @@
-#include "EditorAddon.h"
+#include "Editor/EditorAddon.h"
 #include "Engine/Core/EntryPoint.h"
 #include "Engine/Core/Platform.h"
 #include "Engine/Resources/FileSystem.h"

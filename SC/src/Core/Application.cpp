@@ -21,6 +21,7 @@
 #include "Engine/Core/Base.h"
 #include "Engine/ECS/Entity.h"
 
+#include "Engine/Scripting/ScriptEngine.h"
 #include "b2_world.h"
 #include "b2_body.h"
 
@@ -63,7 +64,7 @@ namespace SC
 
 		Resources::LoadFileResources("Assets");
 		Resources::AddResource<Texture>("DefaultSprite")->Generate();
-		
+
 		SceneSerializer::Init();
 
 		if (!(_IsEditor && _EditMode))
@@ -133,13 +134,17 @@ namespace SC
 	{
 		s_instance = this;
 		OnWindowClose += [&](WindowCloseArgs args) {Application::Close();};
+		Scripting::ScriptEngine::Init("SC-JIT-Runtime", ".");
 	}
 
-	Application::~Application() { }
+	Application::~Application() { 
+		
+	}
 
 	void Application::Close()
 	{
 		s_instance->Running = false;
+		Scripting::ScriptEngine::ShutDown();
 	}
 
 	Application* Application::Get()

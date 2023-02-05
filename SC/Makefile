@@ -2,8 +2,8 @@
 # Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
 # Change this accoding to your choice
 COMPILER = clang++
-LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d
-# Options: OpenGL, Metal, DX11
+LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d -lmonosgen-2.0
+# Options: OpenGL(Only Supported), Metal, DX11
 RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
@@ -14,8 +14,8 @@ SRC_DIR = src
 SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
 WARNS = -Wall -Wno-undefined-var-template
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL
-INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal -I../extrenal/yaml-cpp/include
-LIB_DIR = -Llib
+INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal -I../extrenal/yaml-cpp/include -I$(MONO_INCLUDE)
+LIB_DIR = -Llib -L$(MONO_LIB)
 OBJ_NAME = libSC
 OBJ_PATH = $(OBJ_NAME)
 SRC_COUNT = $(words $(SRC))

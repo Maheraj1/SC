@@ -99,14 +99,14 @@
 		"scope": "cpp",
 		"prefix": "ClassSrc",
 		"body": [
-			"#include \"$1/${3:$TM_FILENAME_BASE}.cpp\"",
+			"#include \"$1/${3:$TM_FILENAME_BASE}.h\"",
 			"",
 			"namespace $2 {",
-			"\t${3:$TM_FILENAME_BASE}($3) { ",
+			"\t${3:$TM_FILENAME_BASE}::${3:$TM_FILENAME_BASE}() { ",
 			"\t$0",
 			"\t}",
 			"",
-			"\t~${3:$TM_FILENAME_BASE}() {",
+			"\t~${3:$TM_FILENAME_BASE}::${3:$TM_FILENAME_BASE}() {",
 			"\t",
 			"\t}",
 			"}"

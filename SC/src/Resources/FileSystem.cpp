@@ -1,5 +1,6 @@
 #include "Engine/Resources/FileSystem.h"
 #include "Engine/Core/Platform.h"
+#include "Engine/Debug/Debug.h"
 
 #include <cstdarg>
 #include <iostream>
@@ -37,6 +38,21 @@ namespace SC
 		std::string data; 
 		file >> data;
 		file.close();
+		return data;
+	}
+
+	char* FileSystem::ReadFileBinary(std::string path, uint* size)
+	{
+		if (!FileSystem::FileExists(path.c_str())) {
+			Debug::Error("File Not found - " + path, "FileSystem::FileNotFound");
+		}
+
+		uint filesize = std::filesystem::file_size(path);
+		*size = filesize;
+		
+		std::ifstream file(path, std::ios::in | std::ios::binary);
+		char* data = (char*)malloc(filesize);
+		file.read(data, filesize);
 		return data;
 	}
 
