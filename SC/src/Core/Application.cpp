@@ -79,7 +79,7 @@ namespace SC
 
 		for (auto obj: SceneManager::GetCurrentScene().m_objs)
 		{
-			for (auto comp : obj.components) {
+			for (auto comp : obj->components) {
 				comp->_OnApplicationStart();
 			}
 		}

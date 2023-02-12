@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\SC-ScriptCore\SC-ScriptCore\SC-ScriptCore.csproj" />
+    <ProjectReference Include="..\SC-ScriptCore\SCEngine\SCEngine.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -10,5 +10,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   
-
 </Project>

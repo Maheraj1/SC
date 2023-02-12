@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox-Script-Assembly", "Sandbox-Script-Assembly.csproj", "{950D199A-2FFC-48C6-B6B2-98A68F07052C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox-Script-Assembly", "Sandbox-Script-Assembly.csproj", "{7EF7F966-C01A-40EB-AC34-66C9EF21DCAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SC-ScriptCore", "..\SC-ScriptCore\SC-ScriptCore\SC-ScriptCore.csproj", "{3D2FCD84-3E68-4578-B643-5BDE48B77228}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCEngine", "..\SC-ScriptCore\SCEngine\SCEngine.csproj", "{2C68594E-F587-4465-853C-75DE0B9A405B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,13 +16,5 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3D2FCD84-3E68-4578-B643-5BDE48B77228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D2FCD84-3E68-4578-B643-5BDE48B77228}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D2FCD84-3E68-4578-B643-5BDE48B77228}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D2FCD84-3E68-4578-B643-5BDE48B77228}.Release|Any CPU.Build.0 = Release|Any CPU
-		{950D199A-2FFC-48C6-B6B2-98A68F07052C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{950D199A-2FFC-48C6-B6B2-98A68F07052C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{950D199A-2FFC-48C6-B6B2-98A68F07052C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{950D199A-2FFC-48C6-B6B2-98A68F07052C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

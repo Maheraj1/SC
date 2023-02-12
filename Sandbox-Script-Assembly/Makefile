@@ -2,6 +2,8 @@ build:
 	@dotnet build
 	@mv bin/Debug/net6.0/Sandbox-Script-Assembly.dll ../SCEditor/bin/Sandbox-Script-Assembly.dll
 	@mv bin/Debug/net6.0/Sandbox-Script-Assembly.pdb ../SCEditor/bin/Sandbox-Script-Assembly.pdb
+	@mv bin/Debug/net6.0/SCEngine.dll ../SCEditor/bin/SCEngine.dll
+	@mv bin/Debug/net6.0/SCEngine.pdb ../SCEditor/bin/SCEngine.pdb
 
 clean:
 	@dotnet clean

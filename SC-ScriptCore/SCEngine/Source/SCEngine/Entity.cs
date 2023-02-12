@@ -6,5 +6,9 @@ namespace SCEngine
 		protected Entity() => id = 0;
 
 		internal Entity(ulong id) => this.id = id;
+
+		public Transform transform {
+			get => SCEngineInternal.InternalCalls.Entity_GetTransform();
+		}
 	}
 }

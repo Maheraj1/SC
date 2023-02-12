@@ -32,8 +32,10 @@ CXX = g++
 _OS = WIN
 endif
 
-.PHONY: build clean
-	@mv libimgui.$(EXT) ../SC/lib/$(OS)/x68_64/libimgui.$(EXT)
+.PHONY: build
+	@mv libimgui.$(EXT) ../SC/lib/libimgui.$(EXT)
+	@mv libimgui.$(EXT) ../SCEditor/lib/libimgui.$(EXT)
+	@mv libimgui.$(EXT) ../SCEditor/bin/libimgui.$(EXT)
 
 build: libimgui.$(EXT) libyaml-cpp.$(EXT)
 

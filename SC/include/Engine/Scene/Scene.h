@@ -17,7 +17,7 @@ namespace SC
     {
     private:
         const char* FilePath;
-        std::vector<Entity> m_objs;
+        std::vector<Entity*> m_objs;
         std::vector<Entity*> DestroyList;
         Camera* activeCamera;
 
@@ -36,7 +36,7 @@ namespace SC
         Entity* AddEntityPtr(std::string name);
         Entity& AddEntity(std::string name, UUID id);
 
-		std::vector<Entity>& GetEntities() { return m_objs; }
+		std::vector<Entity*>& GetEntities() { return m_objs; }
 
         Camera* GetCurrentCamera() { return activeCamera; }
 

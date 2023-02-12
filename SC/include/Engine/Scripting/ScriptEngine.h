@@ -39,7 +39,7 @@ namespace SC::Scripting {
 				MonoClass* EntityClass;
 				MonoClass* ScriptClass;
 				
-				std::unordered_map<class _Key, MonoClass*> Scripts;
+				std::unordered_map<std::string, MonoClass*> Scripts;
 			};
 
 			static ScriptEngineData data;

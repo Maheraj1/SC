@@ -4,13 +4,14 @@
 #include "Engine/Core/SCObject.h"
 #include "Engine/ECS/Transform.h"
 #include "Engine/Scripting/ScriptEngine.h"
+#include "Engine/Scripting/ScriptInstance.h"
 #include "Engine/Serialization/SerializableObject.h"
 #include "Engine/ECS/Entity.h"
 
 #include <array>
 #include <iostream>
 
-#ifndef SC_OLD_SCRIPT_CORE
+#ifdef SC_OLD_SCRIPT_CORE
 namespace SC
 {
 	/**
@@ -63,10 +64,22 @@ namespace SC
 namespace SC {
 	class Script: public Serialization::SerializableObject {
 		public:
+			Script();
+			~Script();
+
+			template<typename... Args>
+			void CallMethod(std::string name, Args... args);
+
+			template<typename T>
+			T* GetField(std::string name);
+
+			template<typename T>
+			void SetField(std::string name, T* data);
+
 			Transform transform;
 			Entity* entity;
 		private:
-			
+			Scripting::ScriptInstance runtimeScript;
 	};
 }
 

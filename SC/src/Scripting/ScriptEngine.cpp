@@ -8,6 +8,8 @@
 #include <map>
 #include <memory>
 
+#include <unordered_map>
+
 namespace SC::Scripting {
 	
 	ScriptEngine::ScriptEngineData ScriptEngine::data;
@@ -65,7 +67,7 @@ namespace SC::Scripting {
 			}
 
 			if (mono_class_is_subclass_of(data.ScriptClass, _class, false)) {
-				data.Scripts.emplace(_class);
+				data.Scripts[(std::string)name + nameSpace] = _class;
 			}
 		}
 	}
