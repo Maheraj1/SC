@@ -1,7 +1,7 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/Camera.h"
-#include "Engine/ECS/Script.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Transform.h"
 #include "Engine/Physics/BoxCollider.h"
@@ -56,12 +56,6 @@ namespace SC
 	{
 		Running = true;
 
-		SC_REGISTER_COMPONENT(RigidBody);
-		SC_REGISTER_COMPONENT(BoxCollider);
-		SC_REGISTER_COMPONENT(CircleCollider);
-		SC_REGISTER_COMPONENT(Camera);
-		SC_REGISTER_COMPONENT(SpriteRenderer);
-
 		Resources::LoadFileResources("Assets");
 		Resources::AddResource<Texture>("DefaultSprite")->Generate();
 
@@ -76,13 +70,6 @@ namespace SC
 		
 		
 		func();
-
-		for (auto obj: SceneManager::GetCurrentScene().m_objs)
-		{
-			for (auto comp : obj->components) {
-				comp->_OnApplicationStart();
-			}
-		}
 		
 
 		for (auto addon: addons)

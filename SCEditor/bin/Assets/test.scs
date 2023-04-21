@@ -1,5 +1,6 @@
 Version: 0.0.3b
-Components: [RigidBody, BoxCollider, CircleCollider, Camera, SpriteRenderer, CameraMovement, SpriteMovement]
+# Only for internal components
+Components: [RigidBody, BoxCollider, CircleCollider, Camera, SpriteRenderer]
 Objects:
   - UUID: 15416366223117272720
     Name: Test
@@ -83,5 +84,3 @@ Objects:
       - Name: Camera
         size: 10
         RenderToImage: true
-      - Name: CameraMovement
-        speed: 5

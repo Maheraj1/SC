@@ -1,14 +1,13 @@
 #pragma once
 
+#include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Debug/Debug.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/Transform.h"
-#include "Engine/ECS/Component.h"
 #include "Engine/Core/Base.h"
 #include "Engine/Core/Errors.h"
 #include "Engine/Core/UUID.h"
-#include "Engine/ECS/ComponentData.h"
 
 #include <array>
 #include <list>
@@ -26,7 +25,7 @@ namespace SC
 	}
 	#endif
 
-	class Script;
+	class MonoCSScript;
 	class SC_API Entity
 	{
 	public:
@@ -41,86 +40,10 @@ namespace SC
 
 		uint64_t GetUUID() const;
 
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		T& AddComponent()
-		{
-			Component<T>* com = new Component<T>(
-				Internal::ComponentData::components.at(Internal::ComponentData::TypeNameToComponentName[typeid(T).name()])
-			);
-			com->GetScript().entity = this;
-			com->GetScript().transform = &transform;
-			components.push_back(com);
-			return com->GetScript();
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		T* AddComponentPtr()
-		{
-			return &AddComponent<T>();
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		T& GetComponent() const
-		{
-			for (int i = 0; i < components.capacity(); i++) 
-			{
-				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
-				if (com != nullptr)
-					return com->GetScript();
-			}
-
-			Debug::Error("Instance of Script Not Found", (std::string)"Entity::GetComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");
-			throw Errors::ScriptInstanceNotFound();
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		T* GetComponentPtr() const
-		{
-			return &GetComponent<T>();
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		T* TryGetComponent() const
-		{
-			for (int i = 0; i < components.capacity(); i++) 
-			{
-				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
-				if (com != nullptr)
-					return com->GetScriptPtr();
-			}
-			return nullptr;
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		bool HasComponent() const
-		{
-			for (int i = 0; i < components.capacity(); i++) 
-			{
-				if (dynamic_cast<Component<T>*>(components[i]) != nullptr) return true;
-			}
-			return false;
-		}
-
-		template<typename T>
-		requires (std::is_base_of_v<Script, T>)
-		void RemoveComponent()
-		{
-			for (int i = 0; i < components.capacity(); i++) 
-			{
-				Component<T>* com = dynamic_cast<Component<T>*>(components[i]);
-				if (com != nullptr)
-					return;
-			}
-
-			Debug::Error("Instance of Script Not Found", (std::string)"Entity::RemoveComponent<" + typeid(T).name() + ">::InstanceOfScriptNotFound");
-			throw Errors::ScriptInstanceNotFound();
-		}
+		IScript* AddComponent(uint64_t cid);
+		IScript* GetComponent(uint64_t cid) const;
+		bool HasComponent(uint64_t cid) const;
+		void RemoveComponent(uint64_t cid);
 
 		bool operator==(Entity& ent) {
 			return m_id == ent.m_id;
@@ -131,12 +54,11 @@ namespace SC
 		void Update();
 		void Awake();
 		void Destroy();
-		void ResetComponentEntityPtr();
 
 		UUID m_id;
 
 	protected:
-		std::vector<IComponent*> components;
+		std::vector<IScript*> scripts;
 
 		friend class Scene;
 		friend class SceneSerializer;

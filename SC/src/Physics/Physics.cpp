@@ -41,13 +41,15 @@ namespace SC {
 
 	void Physics::UpdatePositions()
 	{
+		static uint64_t& rb_cid = ComponentID<RigidBody>::cid;
+
 		auto& objs = SceneManager::GetCurrentScene().m_objs;
 
 		for (int i = 0; i < objs.size(); i++) {
-			RigidBody* rb = objs[i].TryGetComponent<RigidBody>();
+			RigidBody* rb = (RigidBody*)objs[i]->GetComponent(rb_cid);
 			if (rb == nullptr) continue;
-			objs[i].transform.position = FromBox2dVector2(rb->body->GetPosition());
-			objs[i].transform.rotation = glm::degrees(rb->body->GetAngle());
+			objs[i]->transform.position = FromBox2dVector2(rb->body->GetPosition());
+			objs[i]->transform.rotation = glm::degrees(rb->body->GetAngle());
 		}
             
 	}

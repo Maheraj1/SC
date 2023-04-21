@@ -28,10 +28,15 @@
 #define STRINGIFY(x) #x
 
 // use only in source files
-#define SC_REGISTER_COMPONENT(x) \
-SC::Internal::ComponentData::components.push_back(STRINGIFY(x));\
-SC::Internal::ComponentData::TypeNameToComponentName.try_emplace(typeid(x).name(), SC::Internal::ComponentData::components.size()-1);\
-SC::Internal::ComponentData::NameToFunc.try_emplace(STRINGIFY(x), [](Entity* ent) {ent->AddComponent<x>();})
+#define GET_CID_IMPL(T) \
+uint64_t T::GetCID() {\
+	static uint64_t cid = 0;\
+\
+	if (cid == 0)\
+		cid = Internal::ComponentData::TypeNameToCID[typeid(T).name()];\
+\
+	return cid;\
+}
 
 namespace SC {
 	template<typename T>

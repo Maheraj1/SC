@@ -1,28 +1,40 @@
+include ../ext/ext.mk
+
 # We have to use static version of glfw and dynamic version of yaml-cpp, ImGui and Box2D
 # Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
 # Change this accoding to your choice
-COMPILER = clang++
-LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d -lmonosgen-2.0
+CXX = clang++
 # Options: OpenGL(Only Supported), Metal, DX11
 RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
 VERSION = -std=c++20
 TYPE ?= 0
-TARGET = 0
+BUILD_TYPE = Debug
+UNAME_S = $(shell uname -s)
+
 SRC_DIR = src
 SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
-WARNS = -Wall -Wno-undefined-var-template
-DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL
-INCLUDE_DIR = -Iinclude -I../external/glm -I../external/imgui -I../external/imgui/backends -I../external/box2d -I../extrenal -I../extrenal/yaml-cpp/include -I$(MONO_INCLUDE)
-LIB_DIR = -Llib -L$(MONO_LIB)
-OBJ_NAME = libSC
-OBJ_PATH = $(OBJ_NAME)
-SRC_COUNT = $(words $(SRC))
-BUILD_TYPE = Debug
 OBJS = $(addsuffix .o, $(basename $(notdir $(SRC))))
 
-ifneq ($(OS), Windows_NT)
+WARNS = -Wall -Wno-undefined-var-template
+DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL -DSC_SHARED
+INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
+
+LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d -lmonosgen-2.0
+LIB_DIR = -Llib -L$(MONO_LIB)
+OBJ_PATH = libSC
+SRC_COUNT = $(words $(SRC))
+
+ifeq ($(OS), Windows_NT)
+	CXX = g++
+	OBJ_PATH += .dll
+	ifeq ($(RENDERER), OpenGL)
+		LIBS += -lopengl32 -luser32 -lgdi32 -lshell32 -lkernel32
+	endif
+else ifeq ($(UNAME_S), Darwin)
+	CXX = clang++
+	OBJ_PATH += .dylib
 	FRAMEWORKS += -framework IOKit -framework CoreVideo -framework Cocoa
 	ifeq ($(RENDERER), OpenGL)
 		FRAMEWORKS += -framework OpenGL
@@ -30,41 +42,26 @@ ifneq ($(OS), Windows_NT)
 		SRC += $(wildcard $(SRC_DIR)/Renderer/OpenGL/*.cpp)
 		SRC += $(wildcard $(SRC_DIR)/Input/OpenGL/*.cpp)
 	endif
-	#TODO Add Metal Spport
+
+	# TODO Add Metal Spport	
 	ifeq ($(RENDERER), Metal)
 		FRAMEWORKS += -framework Metal
 		DEFINES += -DGLFW_EXPOSE_NATIVE_COCOA
+		SRC += $(wildcard $(SRC_DIR)/Window/Metal/*.cpp)
+		SRC += $(wildcard $(SRC_DIR)/Renderer/Metal/*.cpp)
+		SRC += $(wildcard $(SRC_DIR)/Input/Metal/*.cpp)
 	endif
-else
-	LIBS += -lopengl32 -luser32 -lgdi32 -lshell32 -lkernel32
-	
 endif
 
+CXXFLAGS = $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS) -c
+LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS)
 
-ifeq ($(TYPE), 0)
-	BUILD_TYPE = Debug
-	OTHER_ARGS = -g3
-	DEFINES += -DSC_DEBUG
-endif
-ifeq ($(TYPE), 1)
-	BUILD_TYPE = Release
-	OTHER_ARGS = -O3
-endif
-
-%.o: src/Window/**/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
-	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
-
-%.o: src/Renderer/**/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
-	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
-
-%.o: src/Input/**/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
+%.o: src/**/**/%.cpp
+	@$(CXX) -o $@ $< $(CXXFLAGS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 %.o: src/**/%.cpp
-	@$(COMPILER) -c -o $@ $< $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS)
+	@$(CXX) -o $@ $< $(CXXFLAGS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 
@@ -78,17 +75,17 @@ base:
 	@printf "\e[32mBuilding \e[35m$(SRC_COUNT) files\e[32m on\e[36m $(BUILD_TYPE)\e[32m Configration\e[0m\n\n"
 
 DL: $(OBJS)
-	@$(COMPILER) -shared $^ $(DEFINES) -DSC_SHARED $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) -o $(OBJ_PATH).dylib $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS)
+	@$(CXX) -shared $^ -o $(OBJ_PATH)
 	@printf "\n\e[35mBuilt $(SRC_COUNT) Sources files\e[0m\n"
 
-	@mv $(OBJ_PATH).dylib bin/$(OBJ_PATH).dylib
+	@mv $(OBJ_PATH) bin/$(OBJ_PATH)
 
-	@cp bin/$(OBJ_PATH).dylib ../SandBox/lib/$(OBJ_NAME).dylib
-	@cp bin/$(OBJ_PATH).dylib ../SandBox/bin/$(OBJ_NAME).dylib
+	@cp bin/$(OBJ_PATH) ../SandBox/lib/$(OBJ_NAME)
+	@cp bin/$(OBJ_PATH) ../SandBox/bin/$(OBJ_NAME)
 	
-	@cp bin/$(OBJ_PATH).dylib ../SCEditor/bin/$(OBJ_NAME).dylib
-	@cp bin/$(OBJ_PATH).dylib ../SCEditor/$(OBJ_NAME).dylib
-	@cp bin/$(OBJ_PATH).dylib ../SCEditor/libs/$(OBJ_NAME).dylib
+	@cp bin/$(OBJ_PATH) ../SCEditor/bin/$(OBJ_NAME)
+	@cp bin/$(OBJ_PATH) ../SCEditor/$(OBJ_NAME)
+	@cp bin/$(OBJ_PATH) ../SCEditor/libs/$(OBJ_NAME)
 
 clean:
-	@rm -f *.o $(OBJ_PATH).dylib $(OBJ_NAME).dylib ../SandBox/lib/$(OBJ_NAME).dylib ../SandBox/bin/$(OBJ_NAME).dylib ../SCEditor/bin/$(OBJ_NAME).dylib ../SCEditor/$(OBJ_NAME).dylib ../SCEditor/libs/$(OBJ_NAME).dylib
+	@rm -f *.o $(OBJ_PATH) $(OBJ_NAME) ../SandBox/lib/$(OBJ_NAME) ../SandBox/bin/$(OBJ_NAME) ../SCEditor/bin/$(OBJ_NAME) ../SCEditor/$(OBJ_NAME).dylib ../SCEditor/libs/$(OBJ_NAME)

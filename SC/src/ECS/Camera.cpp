@@ -43,7 +43,7 @@ namespace SC
 			instance = this;
 		}
 		else {
-			entity->RemoveComponent<Camera>();
+			// entity->RemoveComponent<Camera>();
 			return;
 		}
 		ReCalculateViewProjection();
@@ -73,11 +73,11 @@ namespace SC
 	void Camera::Render()
 	{
 		Internal::CameraData data;
-		data.pos = transform->position;
+		data.pos = entity->transform.position;
 		data.WindowSize = Internal::Renderer::Resolution;
 		data.RenderToScreen = true;
 		data.zoomLevel = size;
-		data.Rotation = transform->rotation;
+		data.Rotation = entity->transform.rotation;
 		fb.Invalidate();
 
 		if ((RenderToImage) || (Application::IsEditor && Application::EditMode))
@@ -90,6 +90,8 @@ namespace SC
 	{
 		return texID;
 	}
+
+	GET_CID_IMPL(Camera);
 
 	Camera::Camera()
 	:fb(1280, 720)

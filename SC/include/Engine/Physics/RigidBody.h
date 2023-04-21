@@ -2,8 +2,7 @@
 
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Event.h"
-#include "Engine/ECS/Component.h"
-#include "Engine/ECS/Script.h"
+#include "Engine/ECS/NativeScript.h"
 
 class b2Body;
 
@@ -17,7 +16,7 @@ namespace SC {
 		Dynamic,
 	};
 
-	class SC_API RigidBody: public Script
+	class SC_API RigidBody: public NativeScript
 	{
 	public:
 		RigidBody();
@@ -27,6 +26,8 @@ namespace SC {
 		float mass = 1.0f;
 
 		void ApplyParameters();
+
+		virtual uint64_t GetCID() override;
 	private:
 		b2Body* body;
 		int physicsID;
@@ -38,7 +39,6 @@ namespace SC {
 		void Serialize() const override;
 		void DeSerialize() override;
 
-		friend class Component<RigidBody>;
 		friend class Physics;
 		friend class BoxCollider;
 		friend class CircleCollider;

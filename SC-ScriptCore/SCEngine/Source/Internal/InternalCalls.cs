@@ -12,10 +12,21 @@ namespace SCEngineInternal
 		
 		// Entity Methods
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal extern static SCEngine.Transform Entity_GetTransform();
+		internal extern static void Entity_GetTransform(ulong eid, out SCEngine.Transform transform);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal extern static void Entity_SetTransform(ulong eid, ref SCEngine.Transform transform);
+
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal extern static object Entity_GetComponent(ulong eid);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal extern static object Entity_AddComponent(ulong eid);
 
 		// Transform methods
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		internal extern static SCEngine.Vector2 Transform_GetPosition();
+		internal extern static void Transform_GetPosition(ulong eid, ref SCEngine.Vector2 pos);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		internal extern static void Transform_SetPosition(ulong eid, ref SCEngine.Vector2 pos);
 	}
 }

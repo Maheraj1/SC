@@ -2,6 +2,9 @@
 
 // Core.h file for dynamic libary support
 
+#include <string>
+using namespace std::string_literals;
+
 #include "Platform.h"
 
 #ifndef SC_API

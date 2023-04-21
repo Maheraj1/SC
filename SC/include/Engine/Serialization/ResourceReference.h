@@ -18,7 +18,7 @@ namespace SC
 	 * @tparam T 
 	 */
 	template<typename T>
-	requires (std::is_base_of_v<Resource, T>)
+	// requires (std::is_base_of_v<Resource, T>)
 	class ResourceReference: public Serialization::SerializableObject
 	{
 		public:

@@ -54,6 +54,8 @@ namespace SC
 		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->texture, "Texture");
 	}
 
+	GET_CID_IMPL(SpriteRenderer);
+
 	void SpriteRenderer::OnApplicationStart() { 
 
 	}

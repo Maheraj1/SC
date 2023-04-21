@@ -69,4 +69,6 @@ namespace SC {
 		SC_GET_PARAMETER(type);
 		this->type = (RigidBodyType)type;
 	}
+
+	GET_CID_IMPL(RigidBody);
 }

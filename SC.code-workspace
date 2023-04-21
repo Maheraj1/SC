@@ -36,10 +36,11 @@
             "utility": "cpp"
         },
         "cSpell.words": [
-            "fvec",
-            "SCMS",
-            "scrd"
-        ],
+			"fvec",
+			"SCMS",
+			"scrd",
+			"ucid"
+		],
         "files.exclude": {
             "**/.git": true,
             "**/.svn": true,

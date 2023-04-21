@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Math/Math.h"
-#include "Engine/ECS/Script.h"
+#include "Engine/ECS/NativeScript.h"
 #include "Collider.h"
 
 class b2Fixture;
@@ -10,7 +10,7 @@ class b2CircleShape;
 namespace SC {
 	class RigidBody;
 
-	class SC_API CircleCollider: public Script, public Collider
+	class SC_API CircleCollider: public NativeScript, public Collider
 	{
 		public:
 			float size = 1.0f;
@@ -22,6 +22,8 @@ namespace SC {
 			bool IsTrigger = false;
 
 			void ApplyParameters();
+
+			virtual uint64_t GetCID() override;
 		private:
 			void Start();
 			void Serialize() const override;
@@ -30,6 +32,5 @@ namespace SC {
 			RigidBody* rb;
 			b2Fixture* fixture;
 			b2CircleShape* shape;
-		friend class Component<CircleCollider>;
 	};
 }

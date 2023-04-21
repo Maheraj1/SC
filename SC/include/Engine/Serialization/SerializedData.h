@@ -48,6 +48,12 @@ namespace SC::Serialization {
 		template<typename T>
 		static void GetValue(T* dat, const char* name);
 
+		static void WriteBeginList();
+		static void WriteEndList();
+
+		static void ReadBeginList();
+		static void ReadEndList();
+
 		// Helper functions
 		static void* GetEmitter();
 		static void* GetCurrent();

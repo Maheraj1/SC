@@ -1,5 +1,6 @@
 #include "Engine/Scene/Scene.h"
 #include "Engine/Core/Application.h"
+#include "Engine/ECS/Entity.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/ECS/IComponent.h"
@@ -10,12 +11,7 @@
 namespace SC
 {
 	Entity& Scene::AddEntity(std::string name) {
-		m_objs.emplace_back(name);
-		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
-		for (int i = 0; i < m_objs.size();i++) {
-			m_objs[i].ResetComponentEntityPtr();
-		}
-		return m_objs.at(m_objs.size()-1);
+		return *m_objs.emplace_back(new Entity(name));
 	}
 
 	Entity* Scene::AddEntityPtr(std::string name) {
@@ -23,28 +19,23 @@ namespace SC
 	}
 
 	Entity& Scene::AddEntity(std::string name, UUID id) {
-		m_objs.emplace_back(name, id);
-		// this is required because the location to the object changes in std::vector::push_back() thus making he reference invalid
-		for (int i = 0; i < m_objs.size();i++) {
-			m_objs[i].ResetComponentEntityPtr();
-		}
-		return m_objs.at(m_objs.size()-1);
+		return *m_objs.emplace_back(new Entity(name, id));
 	}
 
 	void Scene::Start() {
-		for (Entity& objs: m_objs) {
-			objs.Start();
+		for (Entity* objs: m_objs) {
+			objs->Start();
 		}
 	}
 	void Scene::Awake() {
-		for (Entity& objs : m_objs) {
-			objs.Awake();
+		for (Entity* objs : m_objs) {
+			objs->Awake();
 		}
 	}
 
 	void Scene::Update() {
-		for (Entity& objs : m_objs) {
-			objs.Update();
+		for (Entity* objs : m_objs) {
+			objs->Update();
 		}
 	}
 
@@ -54,7 +45,8 @@ namespace SC
 
 	void Scene::CleanFrame() {
 		for (auto&& ent: DestroyList) {
-			for (int i = 0; i < m_objs.size(); i++) if (m_objs[i] == *ent) {
+			for (int i = 0; i < m_objs.size(); i++) if (*m_objs[i] == *ent) {
+				delete m_objs[i];
 				m_objs.erase(m_objs.begin()+i);
 			}
 		}

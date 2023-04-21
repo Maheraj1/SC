@@ -7,7 +7,6 @@
 #include "mono/metadata/mono-debug.h"
 #include "mono/utils/mono-publib.h"
 
-#include <dlfcn.h>
 #include <filesystem>
 
 namespace SC::Scripting {
@@ -32,24 +31,24 @@ namespace SC::Scripting {
 
 		assemblyHandle = mono_assembly_load_from_full(image, path, &status, 0);
 		
-		if (loadPDB) {
-			std::filesystem::path PDBpath = path;
-			PDBpath.replace_extension(".pdb");
+		// if (loadPDB) {
+		// 	std::filesystem::path PDBpath = path;
+		// 	PDBpath.replace_extension(".pdb");
 
-			if (FileSystem::FileExists(PDBpath.c_str())) {
-				uint size = 0;
-				char* data = FileSystem::ReadFileBinary(PDBpath, &size);
+		// 	if (FileSystem::FileExists(PDBpath.c_str())) {
+		// 		uint size = 0;
+		// 		char* data = FileSystem::ReadFileBinary(PDBpath, &size);
 
-				mono_debug_open_image_from_memory(image, (const unsigned char*)data, size);
+		// 		mono_debug_open_image_from_memory(image, (const unsigned char*)data, size);
 
-				DebugLogOut out;
-				out << DebugLogColor::Green << "Loaded PDB file for " << path;
-				Debug::Log(out);
+		// 		DebugLogOut out;
+		// 		out << DebugLogColor::Green << "Loaded PDB file for " << path;
+		// 		Debug::Log(out);
 			
-			} else {
-				Debug::Error("PDB Not Found", "SC::Scripting::ScriptAssembly::PDBFileNotFound");
-			}
-		}
+		// 	} else {
+		// 		Debug::Error("PDB Not Found", "SC::Scripting::ScriptAssembly::PDBFileNotFound");
+		// 	}
+		// }
 
 		mono_image_close(image);
 

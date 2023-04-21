@@ -1,6 +1,6 @@
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Debug/Debug.h"
-#include "Engine/ECS/Script.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Resources/FileSystem.h"
 #include "Engine/Scene/SceneManager.h"
@@ -40,11 +40,6 @@ namespace SC
 		Serialization::SerializedData::emt = emt;
 		*emt << YAML::BeginMap;
 		*emt << YAML::Key << "Version" << YAML::Value << version;
-		*emt << YAML::Key << "Components" << YAML::Value << YAML::Flow << YAML::BeginSeq;
-		for (auto& com : Internal::ComponentData::components) {
-			*emt << com;
-		}
-		*emt << YAML::EndSeq;
 		
 		*emt << YAML::Key << "Objects" << YAML::Value << YAML::BeginSeq;
 
@@ -52,16 +47,16 @@ namespace SC
 		for (int i = 0; i < scene.m_objs.size(); i++)
 		{
 			*emt << YAML::BeginMap;
-			*emt << YAML::Key << "UUID" << YAML::Value << scene.m_objs[i].GetUUID();
-			*emt << YAML::Key << "Name" << YAML::Value << scene.m_objs[i].name;
+			*emt << YAML::Key << "UUID" << YAML::Value << scene.m_objs[i]->GetUUID();
+			*emt << YAML::Key << "Name" << YAML::Value << scene.m_objs[i]->name;
 			*emt << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap;
-			scene.m_objs[i].transform._Serialize();
+			scene.m_objs[i]->transform._Serialize();
 			*emt << YAML::Key << "Components" << YAML::Value << YAML::BeginSeq;
 
-			for (int i2 = 0; i2 < scene.m_objs[i].components.size(); i2++) {
+			for (int i2 = 0; i2 < scene.m_objs[i]->scripts.size(); i2++) {
 				*emt << YAML::BeginMap;
-				*emt << YAML::Key << "Name" << scene.m_objs[i].components[i2]->name;
-				scene.m_objs[i].components[i2]->_Serialize();
+				*emt << YAML::Key << "Name" << Internal::ComponentData::components[scene.m_objs[i]->scripts[i2]->GetCID()].qualifiedName;
+				scene.m_objs[i]->scripts[i2]->_Serialize();
 			}
 			*emt << YAML::EndSeq;
 			
@@ -75,15 +70,6 @@ namespace SC
 		f << emt->c_str();
 		
 		delete emt;
-	}
-
-	bool IsInComponents(const char* name)
-	{
-		for (const char* str: Internal::ComponentData::components)
-			if (strcmp(name, str) == 0) 
-				return true;
-
-		return false;
 	}
 
 	bool SceneSerializer::DeserializeText(Scene& scene)
@@ -123,16 +109,11 @@ namespace SC
 				
 				for (int i = 0; i < ent["Components"].size(); i++)
 				{
-					auto string = ent["Components"][i]["Name"].as<std::string>();
-					const char* name = string.c_str();
-					if (IsInComponents(name))
-					{
-						auto scr = ent["Components"][i];
-						auto scrN = scr["Name"].as<std::string>();
-						Serialization::SerializedData::currentNode = &scr;
-						Internal::ComponentData::NameToFunc.at(scrN)(&_ent);
-						_ent.components[i]->_DeSerialize();
-					}
+					auto scr = ent["Components"][i];
+					auto scrN = scr["Name"].as<std::string>();
+					Serialization::SerializedData::currentNode = &scr;
+					_ent.AddComponent(Internal::ComponentData::QualifiedNameToCID[scrN]);
+					_ent.scripts[i]->_DeSerialize();
 				}
 			}
 		}

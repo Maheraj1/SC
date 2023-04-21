@@ -1,5 +1,6 @@
 #include "Engine/Physics/BoxCollider.h"
 #include "Engine/Core/Event.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Physics/RigidBody.h"
 #include "b2_polygon_shape.h"
@@ -10,7 +11,7 @@
 namespace SC {
 	void BoxCollider::Start()
 	{
-		rb = TryGetComponent<RigidBody>();
+		rb = (RigidBody*)entity->GetComponent(ComponentID<RigidBody>::cid);
 		if (rb == nullptr) return;
 
 		// Vector2f pos = entity->transform.position;
@@ -59,4 +60,6 @@ namespace SC {
 		SC_GET_PARAMETER(size);
 		SC_GET_PARAMETER(offset);
 	}
+	
+	GET_CID_IMPL(BoxCollider);
 }

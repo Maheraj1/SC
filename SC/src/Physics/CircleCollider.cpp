@@ -12,7 +12,7 @@
 namespace SC {
 	void CircleCollider::Start()
 	{
-		rb = TryGetComponent<RigidBody>();
+		rb = (RigidBody*)entity->GetComponent(ComponentID<RigidBody>::cid);
 		if (rb == nullptr) return;
 
 		// Vector2f pos = entity->transform.position;
@@ -59,4 +59,6 @@ namespace SC {
 		SC_GET_PARAMETER(IsTrigger);
 		SC_GET_PARAMETER(size);
 	}
+
+	GET_CID_IMPL(CircleCollider);
 }

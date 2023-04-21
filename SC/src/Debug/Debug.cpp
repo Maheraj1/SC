@@ -28,6 +28,10 @@ namespace SC
 		char* buffer = new char[size + 1];
 
 		snprintf(buffer, size, fmt, args);
+        
+        DebugLogOut out;
+        out << buffer;
+        Log(out);
 	}
 
 	void Debug::Log(const char* fmt, ...) {

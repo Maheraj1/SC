@@ -16,7 +16,7 @@ namespace SC
 	{
 	public:
 		template<typename T>
-		requires (std::is_base_of_v<Resource, T>)
+		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* GetResource(uint64_t id)
 		{
 			for (auto&& [name, res] : ResourceMap<T>::data) {
@@ -29,14 +29,14 @@ namespace SC
 		}
 
 		template<typename T>
-		requires (std::is_base_of_v<Resource, T>)
+		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* GetResource(const char *name)
 		{
 			return &ResourceMap<T>::data.at(name);
 		}
 
 		template<typename T, typename... Args>
-		requires (std::is_base_of_v<Resource, T>)
+		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* AddResource(const char *name, Args ...args)
 		{
 			ResourceMap<T>::data.try_emplace((std::string)name, args...);

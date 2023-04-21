@@ -1,6 +1,5 @@
 namespace SCEngine
 {
-
 	public class Transform
 	{
 		public Vector2 Position { get; set; }

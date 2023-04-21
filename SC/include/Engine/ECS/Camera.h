@@ -4,12 +4,12 @@
 #include "Engine/ECS/IComponent.h"
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Scene/Scene.h"
-#include "Script.h"
+#include "NativeScript.h"
 
 namespace SC 
 {
 	class Texture;
-	class Camera: public Script
+	class Camera: public NativeScript
 	{
 	private:
 		uint32_t texID;
@@ -31,12 +31,12 @@ namespace SC
 		Matrix4 GetViewProjection();
 		void ReCalculateViewProjection();
 		uint32_t GetRenderTexture();
+
+		virtual uint64_t GetCID() override;
 		
 		float size = 5.0f;
 		bool RenderToImage  = true;
 		FrameBuffer fb;
-
-		friend class Component<Camera>;
 		friend class Window;
 	};
 }

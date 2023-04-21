@@ -582,4 +582,23 @@ namespace SC::Serialization
 		currentNode = nodeBackup;
 	}
 
+	void SerializedData::WriteBeginList() {
+		auto& _emt = (*emt);
+		_emt << YAML::BeginSeq << YAML::Flow;
+	}
+	
+	void SerializedData::WriteEndList() {
+		auto& _emt = (*emt);
+		_emt << YAML::EndSeq;
+	}
+
+	static std::vector<YAML::Node*> backupNodes;
+
+	void SerializedData::ReadBeginList() {
+		
+	}
+	
+	void SerializedData::ReadEndList() {
+		
+	}
 }
