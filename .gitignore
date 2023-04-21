@@ -9,3 +9,6 @@ SCEditor_
 *.a
 *.tmp
 *.log
+obj/
+*.pdb
+*.deps.json
