@@ -3,7 +3,7 @@
 #include "Engine/Debug/Debug.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Physics/Physics.h"
-#include "b2_world.h"
+#include "box2d/b2_world.h"
 
 #include <GLFW/glfw3.h>
 #include <thread>

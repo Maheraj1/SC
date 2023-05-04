@@ -38,6 +38,16 @@ uint64_t T::GetCID() {\
 	return cid;\
 }
 
+#define GET_CID_IMPL_SRC(T) \
+uint64_t GetCID() override {\
+	static uint64_t cid = 0;\
+\
+	if (cid == 0)\
+		cid = Internal::ComponentData::TypeNameToCID[typeid(T).name()];\
+\
+	return cid;\
+}
+
 namespace SC {
 	template<typename T>
 	using Ref = std::shared_ptr<T>;

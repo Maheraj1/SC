@@ -3,10 +3,10 @@
 #include "Engine/ECS/IScript.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Physics/RigidBody.h"
-#include "b2_polygon_shape.h"
-#include "b2_world.h"
-#include "b2_fixture.h"
-#include "b2_body.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_world.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_body.h"
 
 namespace SC {
 	void BoxCollider::Start()

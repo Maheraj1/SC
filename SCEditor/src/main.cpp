@@ -1,13 +1,15 @@
 #include "Editor/EditorAddon.h"
 #include "Engine/Core/EntryPoint.h"
 #include "Engine/Core/Platform.h"
+#include "Engine/ECS/Camera.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Resources/FileSystem.h"
 #include "Engine/Scene/SceneManager.h"
 #include <Engine/SC.h>
 
 using namespace SC;
 
-class CameraMovement: public Script
+class CameraMovement: public NativeScript
 {
 	public:
 		float speed = 2.0f;
@@ -17,7 +19,7 @@ class CameraMovement: public Script
 		Vector2f move = {0, 0};
 
 		void Start() { 
-			cam  = GetComponentPtr<Camera>();
+			cam  = (Camera*)entity->GetComponent(ComponentID<Camera>::cid);
 			move = entity->transform.position;
 		}
 
@@ -44,15 +46,17 @@ class CameraMovement: public Script
 		{
 			SC_GET_PARAMETER(speed);
 		}
-	friend class Component<CameraMovement>;
+
+		GET_CID_IMPL_SRC(CameraMovement);
 };
 
-class SpriteMovement: public Script
+class SpriteMovement: public NativeScript
 {
 	private:
 		void Start()  {
 			
-		 }
+		}
+
 		void Update() { 
 			if (Input::GetKey(KeyCode::G)) entity->transform.position.x += 1.0f * Time::deltaTime;
 			if (Input::GetKey(KeyCode::J)) entity->transform.position.x -= 1.0f * Time::deltaTime;
@@ -60,14 +64,13 @@ class SpriteMovement: public Script
 			if (Input::GetKey(KeyCode::H)) entity->transform.position.y += 1.0f * Time::deltaTime;
 			if (Input::GetKey(KeyCode::Y)) entity->transform.position.y -= 1.0f * Time::deltaTime;
 		}
-	friend class Component<SpriteMovement>;
+
+	public:
+		GET_CID_IMPL_SRC(SpriteMovement);
 };
 
 void PreAppRun()
 {
-	SC_REGISTER_COMPONENT(CameraMovement);
-	SC_REGISTER_COMPONENT(SpriteMovement);
-
 	Scene& scene = SceneManager::AddScene("Assets/test.scs");
 	scene.Load();
 	Application::Get()->addons.push_back(new Editor::EditorAddon);

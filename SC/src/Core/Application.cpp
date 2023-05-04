@@ -22,8 +22,8 @@
 #include "Engine/ECS/Entity.h"
 
 #include "Engine/Scripting/ScriptEngine.h"
-#include "b2_world.h"
-#include "b2_body.h"
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
 
 #include <chrono>
 #include <cstddef>

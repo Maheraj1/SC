@@ -21,20 +21,21 @@ WARNS = -Wall -Wno-undefined-var-template
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL -DSC_SHARED
 INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
 
-LIBS = -lglfw -lyaml-cpp -lImGUI -lbox2d -lmonosgen-2.0
+LIBS = -lglfw -lyaml-cpp -limgui-core -lglad -lstbi -lbox2d -lmonosgen-2.0
 LIB_DIR = -Llib -L$(MONO_LIB)
-OBJ_PATH = libSC
+OBJ_NAME = libSC
+OBJ = 
 SRC_COUNT = $(words $(SRC))
 
 ifeq ($(OS), Windows_NT)
 	CXX = g++
-	OBJ_PATH += .dll
+	OBJ = $(OBJ_NAME).dll
 	ifeq ($(RENDERER), OpenGL)
 		LIBS += -lopengl32 -luser32 -lgdi32 -lshell32 -lkernel32
 	endif
 else ifeq ($(UNAME_S), Darwin)
 	CXX = clang++
-	OBJ_PATH += .dylib
+	OBJ = $(OBJ_NAME).dll
 	FRAMEWORKS += -framework IOKit -framework CoreVideo -framework Cocoa
 	ifeq ($(RENDERER), OpenGL)
 		FRAMEWORKS += -framework OpenGL
@@ -54,7 +55,7 @@ else ifeq ($(UNAME_S), Darwin)
 endif
 
 CXXFLAGS = $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS) -c
-LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS)
+LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS) $(EXT_LDFLAGS)
 
 %.o: src/**/**/%.cpp
 	@$(CXX) -o $@ $< $(CXXFLAGS)
@@ -75,17 +76,17 @@ base:
 	@printf "\e[32mBuilding \e[35m$(SRC_COUNT) files\e[32m on\e[36m $(BUILD_TYPE)\e[32m Configration\e[0m\n\n"
 
 DL: $(OBJS)
-	@$(CXX) -shared $^ -o $(OBJ_PATH)
+	@$(CXX) -shared $^ -o $(OBJ)
 	@printf "\n\e[35mBuilt $(SRC_COUNT) Sources files\e[0m\n"
 
-	@mv $(OBJ_PATH) bin/$(OBJ_PATH)
+	@mv $(OBJ) bin/$(OBJ)
 
-	@cp bin/$(OBJ_PATH) ../SandBox/lib/$(OBJ_NAME)
-	@cp bin/$(OBJ_PATH) ../SandBox/bin/$(OBJ_NAME)
+	@cp bin/$(OBJ) ../SandBox/lib/$(OBJ)
+	@cp bin/$(OBJ) ../SandBox/bin/$(OBJ)
 	
-	@cp bin/$(OBJ_PATH) ../SCEditor/bin/$(OBJ_NAME)
-	@cp bin/$(OBJ_PATH) ../SCEditor/$(OBJ_NAME)
-	@cp bin/$(OBJ_PATH) ../SCEditor/libs/$(OBJ_NAME)
+	@cp bin/$(OBJ) ../SCEditor/bin/$(OBJ)
+	@cp bin/$(OBJ) ../SCEditor/$(OBJ)
+	@cp bin/$(OBJ) ../SCEditor/libs/$(OBJ)
 
 clean:
-	@rm -f *.o $(OBJ_PATH) $(OBJ_NAME) ../SandBox/lib/$(OBJ_NAME) ../SandBox/bin/$(OBJ_NAME) ../SCEditor/bin/$(OBJ_NAME) ../SCEditor/$(OBJ_NAME).dylib ../SCEditor/libs/$(OBJ_NAME)
+	@rm -f *.o $(OBJ) $(OBJ) ../SandBox/lib/$(OBJ) ../SandBox/bin/$(OBJ) ../SCEditor/bin/$(OBJ) ../SCEditor/$(OBJ).dylib ../SCEditor/libs/$(OBJ)

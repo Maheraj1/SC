@@ -3,11 +3,11 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Serialization/SerializedData.h"
-#include "b2_body.h"
-#include "b2_fixture.h"
-#include "b2_math.h"
-#include "b2_shape.h"
-#include "box2d.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_math.h"
+#include "box2d/b2_shape.h"
+#include "box2d/box2d.h"
 
 namespace SC {
 
