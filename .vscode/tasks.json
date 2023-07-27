@@ -5,7 +5,7 @@
         {
             "label": "Build SC Debug",
             "type": "shell",
-            "command": "make -j8",
+            "command": "make -j4",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },
@@ -13,11 +13,10 @@
                 "$gcc"
             ]
         },
-
         {
             "label": "Build SC Release",
             "type": "shell",
-            "command": "make clean && make TYPE=1 -j8",
+            "command": "make clean && make TYPE=1 -j4",
             "options": {
                 "cwd": "${workspaceFolder}/SC"
             },
@@ -42,7 +41,9 @@
             "label": "Build SandBox Release",
             "type": "shell",
             "command": "make",
-            "args": ["TYPE=1"],
+            "args": [
+                "TYPE=1"
+            ],
             "options": {
                 "cwd": "${workspaceFolder}/SandBox"
             },
@@ -84,7 +85,7 @@
         {
             "label": "Clean Project",
             "dependsOn": "Clean Script Core",
-            "problemMatcher": [],
+            "problemMatcher": []
         },
         {
             "label": "Compile SCImGui",
@@ -113,35 +114,30 @@
             },
             "dependsOn": "Clean SandBox"
         },
-		{
-			"label": "Compile Script Core",
-			"command": "make",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}/SC-ScriptCore"
-			},
-			"dependsOn": "Build SCEditor",
-		},
-		{
-			"label": "Clean Script Core",
-			"command": "make clean",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}/SC-ScriptCore"
-			},
-			"dependsOn": "Clean SCEditor",
-		},
-		{
-			"label": "Build Project",
-			"dependsOn": "Compile Script Core",
-		}
-    ],
-    "inputs": [
         {
-            "id": "Max-Threads",
-            "type": "promptString",
-            "description": "Max threads to use in multithreading",
-            "default": "8"
+            "label": "Compile Script Core",
+            "command": "make",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SC-ScriptCore"
+            },
+            "dependsOn": "Build SCEditor"
+        },
+        {
+            "label": "Clean Script Core",
+            "command": "make clean",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/SC-ScriptCore"
+            },
+            "dependsOn": "Clean SCEditor"
+        },
+        {
+            "label": "Build Project Debug",
+            "dependsOn": "Compile Script Core",
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ],
 }

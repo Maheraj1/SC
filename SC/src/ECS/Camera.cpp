@@ -23,18 +23,9 @@ namespace SC
 		return ViewProjection;
 	}
 
-	void Camera::ReCalculateViewProjection()
-	{
-		Matrix4 proj = glm::ortho(-16.0f*size, 16.0f*size, -9.0f*size, 9.0f*size);
-		Matrix4 view = entity->transform.GetModel(false);
-		ViewProjection = view * proj;
-		Internal::Renderer::SetMVP(ViewProjection);
-	}
-
 	void Camera::Update()
 	{
 		if (size <= 0) size = 1;
-		ReCalculateViewProjection();
 	}
 
 	void Camera::Start()
@@ -46,7 +37,6 @@ namespace SC
 			// entity->RemoveComponent<Camera>();
 			return;
 		}
-		ReCalculateViewProjection();
 	}
 
 	void Camera::OnDestroy()
@@ -98,4 +88,10 @@ namespace SC
 	{ 
 		SceneManager::GetCurrentScene().activeCamera = this;
 	}
+
+	#ifdef SC_EDITOR_IMPL
+	void Camera::OnIGUI(Editor::EditorDrawData& dcmd) {
+		dcmd.DrawFloat(size, "Projection size");
+	}
+	#endif
 }

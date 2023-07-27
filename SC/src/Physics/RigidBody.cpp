@@ -20,10 +20,11 @@ namespace SC {
 		def.type = (b2BodyType)type;
 
 		body = Physics::world->CreateBody(&def);
-		// b2MassData MDat;
-		// MDat.mass = mass;
-		// MDat.center.Set(pos.x, pos.y);
-		// body->SetMassData(&MDat);
+		b2MassData MDat;
+		MDat.mass = mass;
+		MDat.I = 0;
+		MDat.center.Set(pos.x, pos.y);
+		body->SetMassData(&MDat);
 
 		body->SetTransform(ToBox2dVector2(entity->transform.position), glm::radians(entity->transform.rotation));
 		physicsID = Physics::rigidBodies.size();
@@ -32,7 +33,8 @@ namespace SC {
 
 	RigidBody::RigidBody() { }
 
-	RigidBody::~RigidBody() { 
+	RigidBody::~RigidBody() {
+		if (!body) return;
 		Physics::world->DestroyBody(body);
 		Physics::rigidBodies.erase(Physics::rigidBodies.begin() + physicsID);
 	}
@@ -69,6 +71,9 @@ namespace SC {
 		SC_GET_PARAMETER(type);
 		this->type = (RigidBodyType)type;
 	}
+	#ifdef SC_EDITOR_IMPL
+	void RigidBody::OnIGUI(Editor::EditorDrawData& dcmd) { }
+	#endif
 
 	GET_CID_IMPL(RigidBody);
 }

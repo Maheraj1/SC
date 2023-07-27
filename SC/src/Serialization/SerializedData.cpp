@@ -1,10 +1,15 @@
 #include "Engine/Serialization/SerializedData.h"
 #include "Engine/Math/Math.h"
+#include "Engine/Scripting/SerializableField.h"
 #include "Engine/Serialization/SerializableObject.h"
 
+#include "yaml-cpp/binary.h"
+#include "yaml-cpp/emittermanip.h"
 #include "yaml-cpp/yaml.h"
 #include <cctype>
+#include <cstddef>
 #include <stdexcept>
+#include <sys/_types/_u_char.h>
 
 namespace YAML {
 
@@ -153,60 +158,6 @@ namespace YAML {
 			return true;
 		}
 	};
-
-	template<>
-	struct convert<glm::vec4>
-	{
-		static Node encode(const glm::vec4& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec4& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			rhs.w = node[3].as<float>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<glm::ivec4>
-	{
-		static Node encode(const glm::ivec4& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::ivec4& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<int>();
-			rhs.y = node[1].as<int>();
-			rhs.z = node[2].as<int>();
-			rhs.w = node[3].as<int>();
-			return true;
-		}
-	};
 }
 
 namespace SC::Serialization 
@@ -328,7 +279,7 @@ namespace SC::Serialization
 	}
 
 	template<>
-	void SerializedData::AddValue<>(const std::string& dat, const char* name)
+	void SerializedData::AddValue<std::string>(const std::string& dat, const char* name)
 	{
 		if (name == nullptr) throw std::runtime_error("name of parameter is required");
 		
@@ -336,13 +287,13 @@ namespace SC::Serialization
 		_emt << YAML::Key << name << YAML::Value << dat;
 	}
 
-	template<>
-	void SerializedData::AddValue<const char*>(const char* const & dat, const char* name)
+	void SerializedData::AddValueRaw(const Buffer& buf, const char* name)
 	{
 		if (name == nullptr) throw std::runtime_error("name of parameter is required");
 		
+		YAML::Binary bin((u_char*)buf.Data, buf.Size);
 		YAML::Emitter& _emt = *emt;
-		_emt << YAML::Key << name << YAML::Value << dat;
+		_emt << YAML::Key << name << YAML::Value << bin;
 	}
 
 
@@ -366,7 +317,6 @@ namespace SC::Serialization
 		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << YAML::EndSeq;
 	}
 
-
 	template<>
 	void SerializedData::AddValue<Vector3f>(const Vector3f& dat, const char* name)
 	{
@@ -386,28 +336,6 @@ namespace SC::Serialization
 		_emt << YAML::Key << name << YAML::Value;
 		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << YAML::EndSeq;
 	}
-
-	
-	template<>
-	void SerializedData::AddValue<Vector4f>(const Vector4f& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		
-		YAML::Emitter& _emt = *emt;
-		_emt << YAML::Key << name << YAML::Value;
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << dat.w << YAML::EndSeq;
-	}
-
-	template<>
-	void SerializedData::AddValue<Vector4i>(const Vector4i& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		
-		YAML::Emitter& _emt = *emt;
-		_emt << YAML::Key << name << YAML::Value;
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << dat.w << YAML::EndSeq;
-	}
-
 
 	template<>
 	void SerializedData::AddValue<Color>(const Color& dat, const char* name)
@@ -437,7 +365,20 @@ namespace SC::Serialization
 		YAML::Emitter& _emt = *emt;
 		_emt << YAML::Key << name << YAML::Value << YAML::BeginMap;
 		dat->_Serialize();
-		// _emt << YAML::EndMap;
+	}
+
+	template<>
+	void SerializedData::AddValue(const std::vector<SerializableObject*>* dat, const char* name)
+	{
+		if (name == nullptr) throw std::runtime_error("name of parameter is required");
+		
+		YAML::Emitter& _emt = *emt;
+		_emt << YAML::Key << name << YAML::Value << YAML::BeginSeq << YAML::Flow;
+		
+		for (int i = 0; i < dat->size(); i++) {
+			_emt << YAML::BeginMap;
+			dat->at(i)->_Serialize();
+		}
 	}
 
 	template<>
@@ -519,6 +460,15 @@ namespace SC::Serialization
 		dat = (*currentNode)[name].as<std::string>();
 	}
 
+	void SerializedData::GetValueRaw(Buffer& buf, const char* name)
+	{
+		if (name == nullptr) throw std::runtime_error("name of parameter is required");
+		
+		auto bin = (*currentNode)[name].as<YAML::Binary>();
+		buf = Buffer(bin.size());
+		buf.Data = (uint8_t*)bin.data();
+	}
+
 	template<>
 	void SerializedData::GetValue<>(Vector2f& dat, const char* name)
 	{
@@ -544,26 +494,6 @@ namespace SC::Serialization
 		if (name == nullptr) throw std::runtime_error("name of parameter is required");
 		dat = (*currentNode)[name].as<Vector3i>();
 	}
-	
-	template<>
-	void SerializedData::GetValue<>(Vector4f& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		dat = (*currentNode)[name].as<Vector4f>();
-	}
-	template<>
-	void SerializedData::GetValue<>(Vector4i& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		dat = (*currentNode)[name].as<Vector4i>();
-	}
-
-	template<>
-	void SerializedData::GetValue<>(Color& dat, const char* name)
-	{
-		if (name == nullptr) throw std::runtime_error("name of parameter is required");
-		dat = (*currentNode)[name].as<Color>();
-	}
 	template<>
 	void SerializedData::GetValue<>(Color16& dat, const char* name)
 	{
@@ -572,7 +502,7 @@ namespace SC::Serialization
 	}
 
 	template<>
-	void SerializedData::GetValue<SerializableObject>(SerializableObject* dat, const char* name)
+	void SerializedData::GetValue<>(SerializableObject* dat, const char* name)
 	{
 		if (name == nullptr) throw std::runtime_error("name of parameter is required");
 		auto nodeBackup = currentNode;
@@ -582,23 +512,42 @@ namespace SC::Serialization
 		currentNode = nodeBackup;
 	}
 
-	void SerializedData::WriteBeginList() {
-		auto& _emt = (*emt);
-		_emt << YAML::BeginSeq << YAML::Flow;
-	}
-	
-	void SerializedData::WriteEndList() {
-		auto& _emt = (*emt);
-		_emt << YAML::EndSeq;
+	template<>
+	void SerializedData::GetValue<>(std::vector<SerializableObject*>* dat, const char* name)
+	{
+		if (name == nullptr) throw std::runtime_error("name of parameter is required");
+		auto nodeBackup = currentNode;
+		auto node =(*currentNode)[name];
+		currentNode = &node;
+
+		auto listNode = currentNode;
+		
+		for (int i = 0; i < listNode->size(); i++) {
+			currentNode = &listNode[i];
+			dat->at(i)->_DeSerialize();
+		}
+		
+		currentNode = nodeBackup;
 	}
 
-	static std::vector<YAML::Node*> backupNodes;
+	template<>
+	void SerializedData::GetValue<>(std::vector<Scripting::SerializableField*>* dat, const char* name)
+	{
+		if (name == nullptr) throw std::runtime_error("name of parameter is required");
+		auto nodeBackup = currentNode;
+		auto node =(*currentNode)[name];
+		currentNode = &node;
 
-	void SerializedData::ReadBeginList() {
+		auto listNode = currentNode;
+
+		dat->reserve(listNode->size());
 		
-	}
-	
-	void SerializedData::ReadEndList() {
+		for (int i = 0; i < listNode->size(); i++) {
+			currentNode = &listNode[i];
+			(*dat)[i] = new Scripting::SerializableField;
+			(*dat)[i]->DeSerialize();
+		}
 		
+		currentNode = nodeBackup;
 	}
 }

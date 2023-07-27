@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <string>
 
@@ -42,6 +43,11 @@ namespace SC
 		struct WindowCloseArgs { };
 
 		EventHandler<WindowCloseArgs> OnWindowClose;
+		EventHandlerFixed<EventArgs, 1> OnAppPlay;
+		EventHandlerFixed<EventArgs, 1> OnAppStop;
+		std::vector<std::function<void(void)>> OnFrameEndFunctions;
+		std::vector<std::function<void(void)>> OnFrameBeginFunctions;
+		
 		static bool AutoGenerateTexture;
 		static bool PlayerLoopStarted;
 		std::vector<ApplicationAddons*> addons;
@@ -84,12 +90,13 @@ namespace SC
 		 */
 		static Application* Get();
 
-		/**
-		 * @brief Used to set Edit or Run mode
-		 * 
-		 * @param EditMode 
-		 */
-		static void SetRunState(bool EditMode);
+		static void AddEndOfFrameFunction(std::function<void(void)> func);
+		static void AddStartOfFrameFunction(std::function<void(void)> func);
+
+	private:
+		static void OnScenePlay();
+		static void OnScenePause();
+		static void OnSceneStop();
 	friend class SC::Editor::EditorAddon;
 	friend class SC::Window;
 	};

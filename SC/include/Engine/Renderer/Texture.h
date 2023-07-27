@@ -55,6 +55,7 @@ namespace SC {
 		void Delete() override;
 
 		unsigned int GetTextureID() const;
+		void* GetTexture() const;
 		void SetAttribute(TextureParameters param, TextureProperties value);
 		void Bind(unsigned int slot = 0);
 		void SetData(unsigned char* data, unsigned int size);

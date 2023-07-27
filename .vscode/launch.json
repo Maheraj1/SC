@@ -16,7 +16,7 @@
             "MIMode": "lldb"
         },
         {
-            "name": "Debug (SCEditor)",
+            "name": "Debug (SCEditor-B)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/SCEditor/bin/SCEditor_",
@@ -26,7 +26,20 @@
             "environment": [],
             "externalConsole": true,
             "targetArchitecture": "x86_64",
-            "preLaunchTask": "Build SCEditor",
+            "preLaunchTask": "Build Project Debug",
+            "MIMode": "lldb"
+        },
+        {
+            "name": "Debug NB",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/SCEditor/bin/SCEditor_",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/SCEditor/bin",
+            "environment": [],
+            "externalConsole": true,
+            "targetArchitecture": "x86_64",
             "MIMode": "lldb"
         }
    ]

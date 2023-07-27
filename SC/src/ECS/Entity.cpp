@@ -8,6 +8,7 @@ namespace SC
 {
 	IScript* Entity::AddComponent(uint64_t id) {
 		scripts.push_back(Internal::ComponentData::components.at(id).CreateFunc());
+		scripts.back()->entity = this;
 		return scripts.back();
 	}
 
@@ -67,13 +68,16 @@ namespace SC
         return m_id;
     }
 
-    void Entity::Destroy() {
-        scripts.clear();
-    }
-
     Entity::Entity(std::string name, UUID id)
     :name(name), transform(), m_id(id) { }
 
     Entity::Entity(std::string name)
     :name(name), transform(), m_id() { }
+
+	Entity::~Entity() {
+		for (int i = 0; i < scripts.size(); i++) {
+			delete scripts[i];
+			scripts.erase(scripts.begin()+i);
+		}
+	}
 }

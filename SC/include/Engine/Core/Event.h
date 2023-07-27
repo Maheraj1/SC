@@ -96,10 +96,5 @@ namespace SC
 			{
 				Call(args);
 			}
-
-			void operator+=(std::function<void(T)> func)
-			{
-				AddListener(func);
-			}
 	};
 }

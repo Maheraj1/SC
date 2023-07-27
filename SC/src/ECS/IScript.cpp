@@ -6,9 +6,6 @@
 #include "Engine/Physics/RigidBody.h"
 #include "Engine/ECS/Camera.h"
 
-#define REGISTER_COMPONENT(x) ::SC::Internal::ComponentData::RegisterComponent(#x, typeid(x).name(), [](){ return new x; });\
-::SC::ComponentID<x>::cid = ::SC::Internal::ComponentData::lastID;
-
 template<typename T>
 uint64_t SC::ComponentID<T>::cid;
 
@@ -41,3 +38,30 @@ namespace SC::Internal {
 		REGISTER_COMPONENT(SC::CircleCollider);
 	}
 }
+
+#ifdef SC_EDITOR_IMPL
+namespace SC::Editor { 
+	
+	void EditorDrawData::DrawFloat  (float n  , std::string name) { 
+		data.push_back(EditorDrawCommand{ 
+			.data = (void*)&n, 
+			 .name = name, 
+			  .type = EditorType::Float}); 
+			   }
+
+	void EditorDrawData::DrawInt    (int n    , std::string name) { 
+		data.push_back(EditorDrawCommand{ 
+			.data = (void*)&n, 
+			 .name = name, 
+			  .type = EditorType::Int}); 
+			   }
+
+	void EditorDrawData::DrawVector2(Vector2 n, std::string name) { 
+		data.push_back(EditorDrawCommand{ 
+			.data = (void*)&n, 
+			 .name = name, 
+			  .type = EditorType::Vector2}); 
+			   }
+
+}
+#endif

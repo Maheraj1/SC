@@ -2,7 +2,10 @@
 
 #include "Engine/Core/Core.h"
 #include "Engine/Debug/Debug.h"
+#include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Scripting/ScriptEngine.h"
+#include "Engine/Scripting/SerializableField.h"
+#include "Engine/Serialization/SerializableObject.h"
 #include "Engine/Serialization/SerializedData.h"
 #include "mono/metadata/class.h"
 #include "mono/metadata/metadata.h"
@@ -11,6 +14,8 @@
 
 #include <array>
 #include <string>
+#include <sys/_types/_int8_t.h>
+#include <unordered_map>
 
 #define REGISTER_FUNC(x) funcDat.x = mono_class_get_method_from_name(ScriptClass, #x, 0);
 /* 
@@ -21,19 +26,6 @@ Format
 ```
 */
 namespace SC::Scripting {
-
-	//TODO
-	//FIXME
-	struct SerialisableField: public Serialization::SerializableObject {
-		std::string name;
-		std::string type;
-
-		void Serialize() const override {
-			SC_ADD_PARAMETER_S(name, "Name");
-			SC_ADD_PARAMETER_S(type, "Type");
-			// SC_ADD_PARAMETER_S()
-		}
-	};
 
 	ScriptInstance::ScriptInstance() { 
 	
@@ -148,18 +140,52 @@ namespace SC::Scripting {
 	//FIXME
 	void ScriptInstance::Serialize() const {
 		SC_ADD_PARAMETER_S(name, "ScriptName");
-		Serialization::SerializedData::WriteBeginList();
+
+		std::vector<Serialization::SerializableObject*> sfields;
 		
 		for (auto[name, field]: fields) {
 			ClassField clsField = GetField(field);
-			SerialisableField _field;
+			SerializableField _field;
 			_field.name = clsField.name;
 																	// Not fixed
 			_field.type = mono_type_get_name_full(clsField.mtype, MonoTypeNameFormat::MONO_TYPE_NAME_FORMAT_FULL_NAME);
 
-			SC::Serialization::SerializedData::AddValue((Serialization::SerializableObject *)&_field, name.c_str());
+			_field.data.Data = (uint8_t*)clsField.value;
+
+			sfields.push_back((Serialization::SerializableObject*)&_field);
 		}
+
+		SC_ADD_PARAM<std::vector<Serialization::SerializableObject*>>(&sfields, "Fields");
+	}
+
+	SerializableField* FindField(std::vector<SerializableField*> fields, const ClassField& fieldToFind) {
+		SerializableField* field = nullptr;
+
+		for (int i = 0; i < fields.size(); i++) {
+			if (fieldToFind.name == fields[i]->name) {
+				field = fields[i];
+				break;
+			}
+		}
+
+		return field;
+	}
+
+	void ScriptInstance::DeSerialize() {
+		std::vector<Serialization::SerializableObject*> _sfields;
 		
-		Serialization::SerializedData::WriteEndList();
+		SC_GET_PARAMETER_S(_name, "ScriptName");
+		SC_GET_PARAM<std::vector<Serialization::SerializableObject*>>(&_sfields, "Fields");
+
+		std::vector<Scripting::SerializableField*>* _fields = (std::vector<Scripting::SerializableField*>*)(&_sfields);
+
+		for (auto[name, field]: fields) {
+			ClassField clsField = GetField(field);
+			auto _field = FindField(*_fields, clsField);
+			
+			if (!_field) continue;
+
+			ScriptEngine::SetField(clsField, _field->data);
+		}
 	}
 }

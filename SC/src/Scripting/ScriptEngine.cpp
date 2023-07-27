@@ -134,7 +134,7 @@ namespace SC::Scripting {
 		
 		// uint32_t flags = mono_field_get_flags(field.clsField);
 
-		// if (flags & FIELD_ATTRIBUTE_PUBLIC)
+		// if (flags & FIELD_ATTRIBUTE)
 
 		field.mtype = mono_field_get_type(field.clsField);
 		field.type = Utils::MonoTypeToEngineType(field.mtype);
@@ -142,11 +142,15 @@ namespace SC::Scripting {
 		field.size = mono_type_size(field.mtype, &offset);
 		
 
-		field.value = malloc(field.size);
+		field.value = (char*)malloc(field.size);
 		mono_field_get_value(field.obj, field.clsField, field.value);
 		field.reference = false;
 
 		return field;
+	}
+
+	void ScriptEngine::SetField(ClassField data, Buffer& FieldData) {
+		mono_field_set_value(data.obj, data.clsField, FieldData.As<char*>());
 	}
 
 	void* ScriptEngine::RunMethod(MonoMethod *method, void *obj, void **params) {
@@ -202,7 +206,8 @@ namespace SC::Scripting {
 	}
 
 	void ScriptEngine::ShutDownMono() {
-		mono_jit_cleanup(data.domain);
+		//FIXME
+		// mono_jit_cleanup(data.domain);
 	}
 
 	ClassField::~ClassField() {

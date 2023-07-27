@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Internal/ApplicationAddons.h"
 #include "Engine/Renderer/FrameBuffer.h"
@@ -18,6 +19,7 @@ namespace SC::Editor {
 
 		private:
 
+			void DrawInspectorComponent(IScript* script);
 			void DrawInspector();
 			
 			Texture* PlayTex;

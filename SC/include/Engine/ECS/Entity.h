@@ -35,8 +35,7 @@ namespace SC
 	public:
 		Entity(std::string name = "New Entity");
 		Entity(std::string name, UUID id);
-
-		~Entity() { }
+		~Entity();
 
 		uint64_t GetUUID() const;
 

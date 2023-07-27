@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Buffer.h"
 #include "Engine/Scripting/RegisteredScript.h"
 #include "Engine/Scripting/ScriptAssembly.h"
 #include <map>
@@ -42,7 +43,7 @@ namespace SC::Scripting {
 		EngineTypes type = EngineTypes::None;
 		MonoType* mtype = nullptr;
 		MonoClass* cls;
-		void* value;
+		char* value;
 		uint32_t size;
 		bool reference = false;
 		
@@ -74,7 +75,7 @@ namespace SC::Scripting {
 
 			// TODO
 			static ClassField GetField(ClassField field);
-			static void SetField(ClassField data, void* FieldData);
+			static void SetField(ClassField data, Buffer& FieldData);
 
 		private:
 			static void LoadClasses();

@@ -1,12 +1,10 @@
 #! /usr/bin/sh
 # Run this make to build the project
 
-cd external
-make MT
+cd Sandbox-Script-Assembly
+make &
 cd ../SC
-make -j10
-cd ../Sandbox-Script-Assembly
-make
+make -j4
 cd ../SCEditor
 make -j2
 

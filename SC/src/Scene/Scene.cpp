@@ -53,12 +53,16 @@ namespace SC
 	}
 
 	void Scene::Clear() {
-		m_objs.clear();
+		for (int i = 0; i < m_objs.size(); i++) {
+			delete[] m_objs[i];
+			m_objs.erase(m_objs.begin()+i);
+		}
+
 		SC_DeSerialize(*this);
 	}
 
 	void Scene::Save() {
-		SC_Serialize(*this);
+		Application::AddStartOfFrameFunction([&](){SC_Serialize(*this);});
 	}
 
 	void Scene::Load() {

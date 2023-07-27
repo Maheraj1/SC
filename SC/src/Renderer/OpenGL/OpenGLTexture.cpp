@@ -138,5 +138,7 @@ namespace SC
 
 	uint Texture::GetTextureID() const { return m_id; }
 	
+	void* Texture::GetTexture() const { return reinterpret_cast<void*>(m_id); }
+	
 	uint64_t Texture::GetID() const { return uuid; }
 }

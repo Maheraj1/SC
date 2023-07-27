@@ -28,14 +28,18 @@ namespace SC {
 		void ApplyParameters();
 
 		virtual uint64_t GetCID() override;
+		#ifdef SC_EDITOR_IMPL
+		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override { }
+		#endif
 	private:
 		b2Body* body;
 		int physicsID;
 		EventHandler<> OnApplyParameters;
 
-		void FixedUpdate();
-		void OnDestroy();
-		void Awake();
+		void FixedUpdate() override;
+		void OnDestroy() override;
+		void Awake() override;
 		void Serialize() const override;
 		void DeSerialize() override;
 

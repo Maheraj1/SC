@@ -26,13 +26,16 @@ namespace SC {
 			template<typename T>
 			void RemoveComponent(uint64_t cid) { entity->RemoveComponent(cid); }
 
-			virtual uint64_t GetCID() override;
+			virtual uint64_t GetCID() override = 0;
+			#ifdef SC_EDITOR_IMPL
+			virtual void OnIGUI(Editor::EditorDrawData& dcmd) override = 0;
+			#endif
 		private:
-			void Awake() { }
-			void Start() { }
-			void Update() { }
-			void FixedUpdate() { }
-			void OnDestroy() { }
+			virtual void Awake() { }
+			virtual void Start() { }
+			virtual void Update() { }
+			virtual void FixedUpdate() { }
+			virtual void OnDestroy() { }
 		friend class Entity;
 	};
 }

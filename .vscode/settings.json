@@ -1,9 +1,15 @@
 {
 	
     "files.exclude": {
-        "**/.cache": true
+        "**/.cache": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.o": true
     },
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[cpp]": {
         "editor.insertSpaces": false,
         "editor.wordBasedSuggestions": false,
@@ -11,7 +17,6 @@
         "editor.semanticHighlighting.enabled": true,
         "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
     },
-    "prettier.useTabs": true,
     "[glsl]": {
         "editor.insertSpaces": false,
         "editor.autoSurround": "languageDefined",
@@ -30,8 +35,41 @@
         "fvec",
         "LoadedScenes",
         "Wwindow",
-        "framebuffer"
+        "framebuffer",
+        "SCMS",
+        "scrd",
+        "ucid"
     ],
+    "files.associations": {
+            "*.scrd": "yaml",
+            "*.scs": "yaml",
+            "future": "cpp",
+            "array": "cpp",
+            "__tuple": "cpp",
+            "vector": "cpp",
+            "__hash_table": "cpp",
+            "__threading_support": "cpp",
+            "__tree": "cpp",
+            "atomic": "cpp",
+            "bitset": "cpp",
+            "chrono": "cpp",
+            "map": "cpp",
+            "memory": "cpp",
+            "numeric": "cpp",
+            "optional": "cpp",
+            "random": "cpp",
+            "string": "cpp",
+            "string_view": "cpp",
+            "system_error": "cpp",
+            "thread": "cpp",
+            "unordered_map": "cpp",
+            "variant": "cpp",
+            "__functional_03": "cpp",
+            "__functional_base": "cpp",
+            "algorithm": "cpp",
+            "functional": "cpp",
+            "utility": "cpp"
+    },
 	"omnisharp.useModernNet": false,
-	"omnisharp.projectLoadTimeout": 120
+	"omnisharp.projectLoadTimeout": 120,   
 }

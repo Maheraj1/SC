@@ -27,14 +27,12 @@ namespace SC
 		Renderer::texture = texture.obj;
 		Renderer::shader  = shader.obj ;
 		Renderer::color   = color;
-		texture = Resources::GetResource<Texture> ("Square");
-		shader  = Resources::GetResource<Shader>  ("Sprite");
+		
+		texture = texture.obj ? texture : Resources::GetResource<Texture>("Square");
+		shader  = shader.obj  ? shader  : Resources::GetResource<Shader> ("Sprite");
 	}
 
-	void SpriteRenderer::Awake() {
-		texture = Resources::GetResource<Texture> ("Square");
-		shader  = Resources::GetResource<Shader>  ("Sprite");
-	}
+	void SpriteRenderer::Awake() { }
 
 	void SpriteRenderer::Serialize() const
 	{

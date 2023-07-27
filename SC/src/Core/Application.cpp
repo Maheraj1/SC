@@ -1,4 +1,5 @@
 #include "Engine/Core/Application.h"
+#include "Engine/Core/Event.h"
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/Camera.h"
 #include "Engine/ECS/IScript.h"
@@ -57,7 +58,7 @@ namespace SC
 		Running = true;
 
 		Resources::LoadFileResources("Assets");
-		Resources::AddResource<Texture>("DefaultSprite")->Generate();
+		Resources::AddResource<Texture>("DefaultSquare")->Generate();
 
 		SceneSerializer::Init();
 
@@ -67,7 +68,7 @@ namespace SC
 		Debug::Info("Initalized Physics Engine", "SC::Application");
 		
 		if (AutoGenerateTexture) for (auto& [name, tex]: ResourceMap<Texture>::data) tex.Generate();
-		
+		Internal::ComponentData::RegisterAllComponents();
 		
 		func();
 		
@@ -89,6 +90,10 @@ namespace SC
 
 		while (Running)
 		{
+			for (int i = 0; i < OnFrameBeginFunctions.size(); i++) {
+				OnFrameBeginFunctions[i]();
+			}
+
 			for (auto&& addon: addons)
 			{
 				addon->Update();
@@ -106,6 +111,10 @@ namespace SC
 			
 			SceneManager::GetCurrentScene().CleanFrame();
 			Time::Update();
+
+			for (int i = 0; i < OnFrameEndFunctions.size(); i++) {
+				OnFrameEndFunctions[i]();
+			}
 		}
 
 		Debug::Info("Closing Application", "SC::Application");
@@ -121,11 +130,13 @@ namespace SC
 	{
 		s_instance = this;
 		OnWindowClose += [&](WindowCloseArgs args) {Application::Close();};
+		OnAppPlay.SetListener([&](EventArgs a) { Application::OnScenePlay(); }, 0);
+		OnAppStop.SetListener([&](EventArgs a) { Application::OnSceneStop(); }, 0);
 		Scripting::ScriptEngine::Init("SC-JIT-Runtime", ".");
 	}
 
 	Application::~Application() { 
-		
+		Scripting::ScriptEngine::ShutDown();
 	}
 
 	void Application::Close()
@@ -144,19 +155,31 @@ namespace SC
 		return s_instance->window;
 	}
 
-	void Application::SetRunState(bool EditMode) {
-		_EditMode = EditMode;
+	void Application::OnScenePlay() {
+		_EditMode = false;
 
 		auto& scene = SceneManager::GetCurrentScene();
+		
+		Physics::Init();
+		scene.Awake();
+		scene.Start();
+	}
 
-		if (EditMode) {
-			Physics::ShutDown();
-			scene.Clear();
-		} else {
-			Physics::Init();
-			scene.Awake();
-			scene.Start();
-		}
+	void Application::OnSceneStop() {
+		_EditMode = true;
+
+		auto& scene = SceneManager::GetCurrentScene();
+		
+		Physics::ShutDown();
+		scene.Clear();
+	}
+
+	void Application::AddEndOfFrameFunction(std::function<void ()> func) {
+		Get()->OnFrameEndFunctions.push_back(func);
+	}
+
+	void Application::AddStartOfFrameFunction(std::function<void ()> func) {
+		Get()->OnFrameBeginFunctions.push_back(func);
 	}
 
 	void CloseApp()

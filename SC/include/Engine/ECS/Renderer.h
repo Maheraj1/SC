@@ -12,6 +12,6 @@ namespace SC
 		Shader* shader;
 		Color color;
 
-		void PostRender() { }
+		virtual void PostRender() = 0;
 	};
 }

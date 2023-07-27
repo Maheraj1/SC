@@ -24,8 +24,13 @@ namespace SC {
 			void ApplyParameters();
 
 			virtual uint64_t GetCID() override;
+
+			#ifdef SC_EDITOR_IMPL
+			virtual void OnIGUI(Editor::EditorDrawData& dcmd) override { }
+			virtual void PostIGUI(Editor::EditorDrawData& dcmd) override { }
+			#endif
 		private:
-			void Start();
+			void Start() override;
 			void Serialize() const override;
 			void DeSerialize() override;
 

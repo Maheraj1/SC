@@ -1,0 +1,33 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-c",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_EDITOR_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Wall",
+      "-Wno-undefined-var-template",
+      "-Iinclude",
+      "-I../SC/include",
+      "-I../ext/include/glm",
+      "-I../ext/include/glfw",
+      "-I../ext/include/glad",
+      "-I../ext/include/imgui",
+      "-I../ext/include/stbi",
+      "-I../ext/include/box2d",
+      "-I../ext/include/yaml-cpp",
+      "-o",
+      "EditorAddon.o",
+      "src/EditorAddon.cpp"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SCEditor",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SCEditor/src/EditorAddon.cpp",
+    "output": "/Users/jigneshpatel/Dev/cpp/SC/SCEditor/EditorAddon.o"
+  }
+]

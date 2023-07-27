@@ -4,7 +4,7 @@ include ../ext/ext.mk
 # Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
 # Change this accoding to your choice
 CXX = clang++
-# Options: OpenGL(Only Supported), Metal, DX11
+# Options: OpenGL(currently Only Supported), Metal, DX11
 RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
@@ -18,7 +18,7 @@ SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
 OBJS = $(addsuffix .o, $(basename $(notdir $(SRC))))
 
 WARNS = -Wall -Wno-undefined-var-template
-DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_CORE_IMPL -DSC_SHARED
+DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_EDITOR_IMPL -DSC_SHARED -DSC_DEBUG
 INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
 
 LIBS = -lglfw -lyaml-cpp -limgui-core -lglad -lstbi -lbox2d -lmonosgen-2.0
@@ -27,15 +27,9 @@ OBJ_NAME = libSC
 OBJ = 
 SRC_COUNT = $(words $(SRC))
 
-ifeq ($(OS), Windows_NT)
-	CXX = g++
-	OBJ = $(OBJ_NAME).dll
-	ifeq ($(RENDERER), OpenGL)
-		LIBS += -lopengl32 -luser32 -lgdi32 -lshell32 -lkernel32
-	endif
-else ifeq ($(UNAME_S), Darwin)
+ifeq ($(UNAME_S), Darwin)
 	CXX = clang++
-	OBJ = $(OBJ_NAME).dll
+	OBJ = $(OBJ_NAME).dylib
 	FRAMEWORKS += -framework IOKit -framework CoreVideo -framework Cocoa
 	ifeq ($(RENDERER), OpenGL)
 		FRAMEWORKS += -framework OpenGL
@@ -54,6 +48,14 @@ else ifeq ($(UNAME_S), Darwin)
 	endif
 endif
 
+ifeq ($(OS), Windows_NT)
+	CXX = g++
+	OBJ = $(OBJ_NAME).dll
+	ifeq ($(RENDERER), OpenGL)
+		LIBS += -lopengl32 -luser32 -lgdi32 -lshell32 -lkernel32
+	endif
+endif
+
 CXXFLAGS = $(DEFINES) $(VERSION) $(OTHER_ARGS) $(INCLUDE_DIR) $(WARNS) -c
 LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS) $(EXT_LDFLAGS)
 
@@ -66,17 +68,17 @@ LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS) $(EXT_LDFL
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 
-build: all DL
+build: all
 	@printf "\n\e[32mDone Building SC (Renderer: $(RENDERER))\e[0m\n"
 
-all: base
+all: base DL
 	
 base:
 	@printf "\e[36m<------------------------------------------- Output ------------------------------------------->\e[0m\n\n"
 	@printf "\e[32mBuilding \e[35m$(SRC_COUNT) files\e[32m on\e[36m $(BUILD_TYPE)\e[32m Configration\e[0m\n\n"
 
 DL: $(OBJS)
-	@$(CXX) -shared $^ -o $(OBJ)
+	@$(CXX) -shared $^ -o $(OBJ) $(LDFLAGS) $(OTHER_ARGS)
 	@printf "\n\e[35mBuilt $(SRC_COUNT) Sources files\e[0m\n"
 
 	@mv $(OBJ) bin/$(OBJ)

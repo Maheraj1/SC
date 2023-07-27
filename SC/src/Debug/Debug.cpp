@@ -24,14 +24,20 @@ namespace SC
 	}
 
 	void Debug::LogV(const char* fmt, va_list args) {
-		int size = snprintf(NULL, 0, fmt, args);
-		char* buffer = new char[size + 1];
+		 va_list argsCopy;
+        va_copy(argsCopy, args);
 
-		snprintf(buffer, size, fmt, args);
-        
+        int size = vsnprintf(NULL, 0, fmt, args);
+        char* buffer = new char[size + 1];
+
+        vsnprintf(buffer, size + 1, fmt, argsCopy);
+
         DebugLogOut out;
         out << buffer;
         Log(out);
+
+        delete[] buffer; // Free the dynamically allocated buffer
+        va_end(argsCopy);
 	}
 
 	void Debug::Log(const char* fmt, ...) {

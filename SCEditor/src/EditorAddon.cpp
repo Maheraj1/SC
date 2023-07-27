@@ -2,6 +2,7 @@
 #include "Engine/Core/Application.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/IComponent.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Input/Input.h"
@@ -22,6 +23,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <xlocale/_stdio.h>
  
 
 namespace SC::Editor {
@@ -52,20 +54,20 @@ namespace SC::Editor {
 			ViewPortTex = Internal::SceneRenderer::Render(data, fb);
 	}
 
-	void DrawEntity(Entity& ent) {
+	void DrawEntity(Entity* ent) {
 
-		bool open = ImGui::TreeNode(reinterpret_cast<void*>(ent.GetUUID()), "%s", ent.name.c_str());
+		bool open = ImGui::TreeNode(reinterpret_cast<void*>(ent->GetUUID()), "%s", ent->name.c_str());
 
 		if (ImGui::BeginPopupContextItem()) {
 			if (ImGui::MenuItem("Delete Entity"))
-				SceneManager::GetCurrentScene().DestroyEntity(&ent);
+				SceneManager::GetCurrentScene().DestroyEntity(ent);
 
 			ImGui::EndPopup();
 		}
 
 		if (ImGui::IsItemClicked()) {
-			entSelected = &ent;
-			entSelectedID = ent.GetUUID();
+			entSelected = ent;
+			entSelectedID = ent->GetUUID();
 		}
 
 		if (open) {
@@ -87,7 +89,7 @@ namespace SC::Editor {
 			entSelectedID = 0llu;
 		}
 
-		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 				scene.AddEntity("New Entity");
@@ -96,6 +98,34 @@ namespace SC::Editor {
 		}
 
 		ImGui::End();
+	}
+
+	void DrawIGUIComponents(EditorDrawCommand cmd) {
+		switch (cmd.type) {
+			case EditorType::None:
+				break;
+			case EditorType::Int:
+				ImGui::InputInt(cmd.name.c_str(), (int*)cmd.data, ImGuiInputTextFlags_AutoSelectAll);
+				break;
+			case EditorType::Float:
+				ImGui::InputFloat(cmd.name.c_str(), (float*)cmd.data, ImGuiInputTextFlags_AutoSelectAll);
+				break;
+			case EditorType::Vector2:
+				ImGui::InputFloat2(cmd.name.c_str(), (float*)cmd.data, "%.3f", ImGuiInputTextFlags_AutoSelectAll);
+				break;
+		}
+	}
+
+	void EditorAddon::DrawInspectorComponent(IScript* script) {
+		if (!ImGui::CollapsingHeader((Internal::ComponentData::components[script->GetCID()].qualifiedName + " Component"s).c_str())) return;
+		//TODO
+		EditorDrawData dcmd;
+		script->OnIGUI(dcmd);
+		
+		for (int i = 0; i < dcmd.data.size(); i++) {
+			DrawIGUIComponents(dcmd.data[i]);
+		}
+	
 	}
 
 	void EditorAddon::DrawInspector() {
@@ -117,7 +147,13 @@ namespace SC::Editor {
 			entSelected->name = std::string(buffer);
 		}
 
+		// Transform
+
 		ImGui::Text("Components");
+
+		for (int i = 0; i < entSelected->scripts.size(); i++) {
+			DrawInspectorComponent(entSelected->scripts[i]);
+		}
 
 		ImGui::End();
 	}
@@ -176,7 +212,10 @@ namespace SC::Editor {
 		}
 		
 		if (UI::ImGui::ImageButton(tex, {32.0f, 32.0f})) {
-			app->SetRunState(!app->EditMode);
+			if (app->EditMode) 
+				app->OnAppPlay();
+			else
+				app->OnAppStop();
 		}
 		
 		ImGui::SameLine(offset+ButtonSize+4);
@@ -223,7 +262,7 @@ namespace SC::Editor {
 
 		ImGui::End();
 
-		// ImGui::ShowDemoWindow();
+		ImGui::ShowDemoWindow();
 
 		UI::ImGui::EndFrame();
 	}

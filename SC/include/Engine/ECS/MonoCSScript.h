@@ -25,6 +25,11 @@ namespace SC {
 
 			virtual bool IsNative() override;
 			virtual uint64_t GetCID() override;
+			
+			#ifdef SC_EDITOR_IMPL
+			virtual void OnIGUI(Editor::EditorDrawData& data) override { }
+			virtual void PostIGUI(Editor::EditorDrawData& data) override { }
+			#endif
 		private:
 			Scripting::ScriptInstance runtimeScript;
 

@@ -1,12 +1,14 @@
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Debug/Debug.h"
 #include "Engine/ECS/IScript.h"
+#include "Engine/ECS/MonoCSScript.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Resources/FileSystem.h"
 #include "Engine/Scene/SceneManager.h"
 
 #include "Engine/Serialization/SerializedData.h"
 
+#include "yaml-cpp/emittermanip.h"
 #include "yaml-cpp/yaml.h"
 
 #include <exception>
@@ -17,7 +19,7 @@
 namespace SC
 {
 	YAML::Emitter* SceneSerializer::emt = nullptr;
-	static const char version[8] = "0.0.3b\0";
+	static const char version[8] = "0.0.5a\0";
 
 	SceneSerializer::SceneSerializer() {
 		
@@ -47,15 +49,20 @@ namespace SC
 		for (int i = 0; i < scene.m_objs.size(); i++)
 		{
 			*emt << YAML::BeginMap;
-			*emt << YAML::Key << "UUID" << YAML::Value << scene.m_objs[i]->GetUUID();
 			*emt << YAML::Key << "Name" << YAML::Value << scene.m_objs[i]->name;
+			*emt << YAML::Key << "UUID" << YAML::Value << scene.m_objs[i]->GetUUID();
 			*emt << YAML::Key << "Transform" << YAML::Value << YAML::BeginMap;
 			scene.m_objs[i]->transform._Serialize();
 			*emt << YAML::Key << "Components" << YAML::Value << YAML::BeginSeq;
 
 			for (int i2 = 0; i2 < scene.m_objs[i]->scripts.size(); i2++) {
 				*emt << YAML::BeginMap;
-				*emt << YAML::Key << "Name" << Internal::ComponentData::components[scene.m_objs[i]->scripts[i2]->GetCID()].qualifiedName;
+				*emt << YAML::Key << "IsNative" << YAML::TrueFalseBool << scene.m_objs[i]->scripts[i2]->IsNative();
+				*emt << YAML::Key;
+
+				Internal::Component& comp = Internal::ComponentData::components[scene.m_objs[i]->scripts[i2]->GetCID()];
+
+				*emt << YAML::Key << "Name" << YAML::Value << comp.qualifiedName;
 				scene.m_objs[i]->scripts[i2]->_Serialize();
 			}
 			*emt << YAML::EndSeq;
@@ -94,13 +101,10 @@ namespace SC
 		auto dat = data["Objects"];
 		if (dat)
 		{
-			auto com = data["Components"];
-			if (!data["Components"].IsSequence()) return false;
-
 			for (auto ent: dat)
 			{
-				UUID uid = ent["UUID"].as<uint64_t>();
 				std::string name = ent["Name"].as<std::string>();
+				UUID uid = ent["UUID"].as<uint64_t>();
 
 				auto& _ent = scene.AddEntity(name, uid);
 				auto trans = ent["Transform"];
@@ -112,7 +116,13 @@ namespace SC
 					auto scr = ent["Components"][i];
 					auto scrN = scr["Name"].as<std::string>();
 					Serialization::SerializedData::currentNode = &scr;
-					_ent.AddComponent(Internal::ComponentData::QualifiedNameToCID[scrN]);
+					
+					IScript* script = _ent.AddComponent(Internal::ComponentData::QualifiedNameToCID[scrN]);
+
+					if (!scr["IsNative"].as<bool>()) {
+						((MonoCSScript*)script)->Init(scr["MonoName"].as<std::string>());
+					}
+
 					_ent.scripts[i]->_DeSerialize();
 				}
 			}

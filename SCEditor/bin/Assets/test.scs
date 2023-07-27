@@ -1,24 +1,29 @@
-Version: 0.0.3b
-# Only for internal components
-Components: [RigidBody, BoxCollider, CircleCollider, Camera, SpriteRenderer]
+Version: 0.0.5a
 Objects:
-  - UUID: 15416366223117272720
-    Name: Test
+  - Name: Camera
+    UUID: 3289588258726627577
     Transform:
-      position: [2, 5]
+      position: [0, 0]
       rotation: 0
       scale: [1, 1]
     Components:
-      - Name: SpriteRenderer
-        color: [255, 255, 255]
-        Shader:
-          UUID: 1
-        Texture:
-          UUID: 5966165974821075786
-      - Name: RigidBody
-        mass: 1
+      - IsNative: true
+        Name: SC::Camera
+        size: 5
+        RenderToImage: true
+  - Name: Box
+    UUID: 14826058540979274467
+    Transform:
+      position: [0, 5]
+      rotation: 0
+      scale: [1, 1]
+    Components:
+      - IsNative: true
+        Name: SC::RigidBody
+        mass: 2
         type: 2
-      - Name: BoxCollider
+      - IsNative: true
+        Name: SC::BoxCollider
         Density: 1
         Friction: 0.5
         Restitution: 0
@@ -26,61 +31,37 @@ Objects:
         IsTrigger: false
         size: [1, 1]
         offset: [0, 0]
-  - UUID: 17763623597571062915
-    Name: Ground
+      - IsNative: true
+        Name: SC::SpriteRenderer
+        color: [128, 128, 128]
+        Shader:
+          UUID: 1
+        Texture:
+          UUID: 16592592592526334200
+  - Name: Floor
+    UUID: 16479288162277723206
     Transform:
       position: [0, -5]
       rotation: 0
       scale: [5, 1]
     Components:
-      - Name: SpriteRenderer
-        color: [255, 255, 255]
-        Shader:
-          UUID: 1
-        Texture:
-          UUID: 5966165974821075786
-      - Name: RigidBody
+      - IsNative: true
+        Name: SC::RigidBody
         mass: 1
         type: 0
-      - Name: BoxCollider
+      - IsNative: true
+        Name: SC::BoxCollider
         Density: 1
         Friction: 0.5
         Restitution: 0
         RestitutionThreshold: 0.5
         IsTrigger: false
-        size: [5, 1]
+        size: [1, 1]
         offset: [0, 0]
-  - UUID: 17763623597571062916
-    Name: Test2
-    Transform:
-      position: [0, 10]
-      rotation: 10
-      scale: [5, 1]
-    Components:
-      - Name: SpriteRenderer
-        color: [255, 255, 255]
+      - IsNative: true
+        Name: SC::SpriteRenderer
+        color: [255, 0, 0]
         Shader:
           UUID: 1
         Texture:
-          UUID: 5966165974821075786
-      - Name: RigidBody
-        mass: 1
-        type: 2
-      - Name: BoxCollider
-        Density: 1
-        Friction: .5
-        Restitution: 1
-        RestitutionThreshold: 0.5
-        IsTrigger: false
-        size: [5, 1]
-        offset: [0, 0]
-  - UUID: 5966165974821075783
-    Name: Camera
-    Transform:
-      position: [0, 0]
-      rotation: 0
-      scale: [1, 1]
-    Components:
-      - Name: Camera
-        size: 10
-        RenderToImage: true
+          UUID: 16592592592526334200

@@ -21,11 +21,11 @@ namespace SC {
 	bool MonoCSScript::IsNative() { return false; }
 
 	void MonoCSScript::Serialize() const {
-		SC_ADD_PARAMETER_S((Serialization::SerializableObject*)&runtimeScript, "CSScript");
+		SC_ADD_PARAM<Serialization::SerializableObject>((Serialization::SerializableObject*)&runtimeScript, "CSScript");
 	}
 
 	void MonoCSScript::DeSerialize() {
-		SC_GET_PARAMETER_S((Serialization::SerializableObject*)&runtimeScript, "CSScript");
+		SC_GET_PARAM<Serialization::SerializableObject>((Serialization::SerializableObject*)&runtimeScript, "CSScript");
 	}
 
 	GET_CID_IMPL(MonoCSScript);

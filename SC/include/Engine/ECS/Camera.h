@@ -16,9 +16,9 @@ namespace SC
 		Matrix4 ViewProjection;
 		static Camera* instance;
 
-		void Start();
-		void Update();
-		void OnDestroy();
+		void Start() override;
+		void Update() override;
+		void OnDestroy() override;
 		void Render();
 		void OnApplicationStart();
 
@@ -33,6 +33,11 @@ namespace SC
 		uint32_t GetRenderTexture();
 
 		virtual uint64_t GetCID() override;
+		
+		#ifdef SC_EDITOR_IMPL
+		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
+		#endif
 		
 		float size = 5.0f;
 		bool RenderToImage  = true;

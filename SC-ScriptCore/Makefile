@@ -1,8 +1,8 @@
 build:
 	@printf "\e[36mBuilding SC-ScriptCore\e[0m\n"
-	@dotnet build SC-ScriptCore/SC-ScriptCore.csproj
-	@cp SC-ScriptCore/bin/Debug/net6.0/SC-ScriptCore.dll ../SCEditor/bin/Libs/SC-ScriptCore.dll
-	@cp SC-ScriptCore/bin/Debug/net6.0/SC-ScriptCore.pdb ../SCEditor/bin/Libs/SC-ScriptCore.pdb
+	@dotnet build SCEngine/SCEngine.csproj
+	@cp SCEngine/bin/Debug/net6.0/SCEngine.dll ../SCEditor/bin/Libs/SCEngine.dll
+	@cp SCEngine/bin/Debug/net6.0/SCEngine.pdb ../SCEditor/bin/Libs/SCEngine.pdb
 
 clean:
-	@rm -f ../SCEditor/bin/Libs/SC-ScriptCore.dll ../SCEditor/bin/Libs/SC-ScriptCore.pdb
+	@rm -f ../SCEditor/bin/Libs/SCEngine.dll ../SCEditor/bin/Libs/SCEngine.pdb

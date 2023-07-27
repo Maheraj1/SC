@@ -3,7 +3,6 @@
 #include "Engine/Core/Time.h"
 #include "Engine/ECS/Camera.h"
 #include "Engine/Physics/Physics.h"
-#include "b2_world.h"
 #include "Engine/Scene/SceneManager.h"
 #include "Engine/Window/Window.h"
 #include "Engine/Window/Window.h"
@@ -70,8 +69,8 @@ namespace SC
 			Debug::Error(description, std::to_string(error_code));
 		});
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OpenGLVersion[0]);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OpenGLVersion[1]);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		#ifdef SC_PLATFORM_OSX
