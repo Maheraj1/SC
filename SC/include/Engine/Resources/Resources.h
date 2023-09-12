@@ -19,9 +19,8 @@ namespace SC
 		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* GetResource(uint64_t id)
 		{
-			for (auto&& [name, res] : ResourceMap<T>::data) {
-				if (res.GetID() == id)
-				{
+			for (auto&& res : ResourceMap<T>::data) {
+				if (res.GetID() == id) {
 					return &res;
 				}
 			}
@@ -32,17 +31,28 @@ namespace SC
 		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* GetResource(const char *name)
 		{
-			return &ResourceMap<T>::data.at(name);
+			for (auto&& res : ResourceMap<T>::data) {
+				if (res.name == name) {
+					return &res;
+				}
+			}
+			return nullptr;
 		}
 
 		template<typename T, typename... Args>
 		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* AddResource(const char *name, Args ...args)
 		{
-			ResourceMap<T>::data.try_emplace((std::string)name, args...);
-			return &ResourceMap<T>::data[name];
+			auto res = ResourceMap<T>::data.emplace_back(args...);
+			res.name = name;
+			return &res;
 		}
+		template<typename T>
+		static void SaveResource  (UUID uid);
+		template<typename T>
+		static void ReLoadResource(UUID uid);
 
 		static void LoadFileResources(const char* fp);
+		static void ReLoadFileResources(const char* fp);
 	};
 }

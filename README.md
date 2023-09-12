@@ -1,4 +1,4 @@
-# SC
+# Scandium
 ## Building the project
 ***NOTE***: you can use the ```-j<n>``` option in any of the Makefiles to use more threads to compile faster (n stands for number of threads)
 

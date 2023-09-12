@@ -60,6 +60,30 @@ namespace SC {
 		SC_GET_PARAMETER(size);
 		SC_GET_PARAMETER(offset);
 	}
+
+	#ifdef SC_EDITOR_IMPL
+	void BoxCollider::OnIGUI(Editor::EditorDrawData& dcmd) {
+		dcmd.DrawFloat  (Friction, "Friction");
+		dcmd.DrawFloat  (Density, "Density");
+		dcmd.DrawFloat  (Restitution, "Bounciness");
+		dcmd.DrawFloat  (RestitutionThreshold, "Bounciness Threshold");
+		dcmd.DrawFloat  (IsTrigger, "Is Trigger");
+		dcmd.DrawVector2(size, "Size");
+		dcmd.DrawVector2(offset, "Offset");
+	}
+
+	void BoxCollider::PostIGUI(Editor::EditorDrawData& dcmd) {
+		Friction = *((float*)dcmd.data[0].data);
+		Density = *((float*)dcmd.data[1].data);
+		Restitution = *((float*)dcmd.data[2].data);
+		RestitutionThreshold = *((float*)dcmd.data[3].data);
+		IsTrigger = *((float*)dcmd.data[4].data);
+		size = *((Vector2*)dcmd.data[5].data);
+		offset = *((Vector2*)dcmd.data[6].data);
+	}
+
+	#endif
+
 	
 	GET_CID_IMPL(BoxCollider);
 }

@@ -28,6 +28,7 @@ namespace YAML { class Emitter; class Node; }
 
 namespace SC {
 	class SceneSerializer;
+	class Resources;
 }
 
 namespace SC::Serialization {
@@ -66,5 +67,6 @@ namespace SC::Serialization {
 		static void* GetCurrent();
 
 		friend class SC::SceneSerializer;
+		friend class SC::Resources;
 	};
 }

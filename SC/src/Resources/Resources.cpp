@@ -1,8 +1,12 @@
 #include "Engine/Resources/Resources.h"
 #include "Engine/Debug/Debug.h"
+#include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Resources/FileSystem.h"
+#include "Engine/Resources/ResourceMap.h"
+#include "Engine/Serialization/SerializedData.h"
+#include "yaml-cpp/node/parse.h"
 #include <filesystem>
 #include <sstream>
 #include <yaml-cpp/yaml.h>
@@ -11,25 +15,36 @@
 enum class ResourceType
 {
 	Texture,
-	Shader
+	Shader,
+	Material
 };
 
 namespace SC
 {
 	template<typename T>
 	requires (std::is_base_of_v<Resource, T>)
-	std::unordered_map<std::string, T> ResourceMap<T>::data;
+	std::vector<T> ResourceMap<T>::data;
 
 	template<typename T>
 	requires (std::is_base_of_v<Resource, T>)
 	void ResourceMap<T>::Clear()
 	{
 		for (auto res: ResourceMap<T>::data) {
-			res.second.Delete();
+			res.Delete();
 		}
 	}
 
 	static const char Version[] = "0.0.1a";
+
+	void Resources::ReLoadFileResources(const char *fp) {
+		if (!FileSystem::FileExists(fp)) return;
+
+		ResourceMap<Texture>::Clear();
+		ResourceMap<Shader>::Clear();
+		ResourceMap<Material>::Clear();
+
+		LoadFileResources(fp);
+	}
 
 	void Resources::LoadFileResources(const char* fp)
 	{
@@ -54,14 +69,28 @@ namespace SC
 
 			switch (type) {				
 				case ResourceType::Texture: {
-					Texture* tex = AddResource<Texture>(ResourceFileBaseName, ResourceFile);
-					tex->uuid = file["UUID"].as<uint64_t>();
+					AddResource<Texture>(ResourceFileBaseName, ResourceFile)->uuid = file["UUID"].as<uint64_t>();
 					Debug::Info("Loaded Texture");
 					break;
 				}
 				case ResourceType::Shader: {
 					AddResource<Shader>(ResourceFileBaseName, ResourceFile)->uuid = file["UUID"].as<uint64_t>();
 					Debug::Info("Loaded Shader");
+					break;
+				}
+
+				case ResourceType::Material: {
+					
+					auto mat = AddResource<Material>(ResourceFileBaseName, ResourceFile);
+					mat->uuid = file["UUID"].as<uint64_t>();
+					
+					if (mat->IsSerializable()) {
+						YAML::Node serialFile = YAML::Load(ResourceFile);
+						Serialization::SerializedData::currentNode = &serialFile;
+						mat->DeSerialize();
+					}
+					
+					Debug::Info("Loaded Material");
 					break;
 				}
 			}

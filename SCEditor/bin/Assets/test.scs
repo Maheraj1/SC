@@ -9,7 +9,7 @@ Objects:
     Components:
       - IsNative: true
         Name: SC::Camera
-        size: 5
+        size: 10
         RenderToImage: true
   - Name: Box
     UUID: 14826058540979274467
@@ -37,7 +37,7 @@ Objects:
         Shader:
           UUID: 1
         Texture:
-          UUID: 16592592592526334200
+          UUID: 5966165974821075786
   - Name: Floor
     UUID: 16479288162277723206
     Transform:
@@ -64,4 +64,4 @@ Objects:
         Shader:
           UUID: 1
         Texture:
-          UUID: 16592592592526334200
+          UUID: 5966165974821075786

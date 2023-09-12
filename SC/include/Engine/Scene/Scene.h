@@ -16,7 +16,7 @@ namespace SC
     class SC_API Scene
     {
     private:
-        const char* FilePath;
+        std::string FilePath;
         std::vector<Entity*> m_objs;
         std::vector<Entity*> DestroyList;
         Camera* activeCamera;
@@ -30,7 +30,10 @@ namespace SC
         ~Scene();
 
         void Save();
+        void SaveOnOtherPath(std::string path);
+        
         void Load();
+        void LoadFromOtherPath(std::string path);
 
         Entity& AddEntity(std::string name);
         Entity* AddEntityPtr(std::string name);

@@ -5,6 +5,7 @@
 #include "Engine/Internal/ApplicationAddons.h"
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Texture.h"
+#include "Engine/Scene/Scene.h"
 
 namespace SC::Editor {
 	class EditorAddon: public ApplicationAddons
@@ -21,6 +22,10 @@ namespace SC::Editor {
 
 			void DrawInspectorComponent(IScript* script);
 			void DrawInspector();
+			void DrawToolbar();
+			void DrawViewPort();
+			void DrawMenubar();
+			void DrawStats();
 			
 			Texture* PlayTex;
 			Texture* PauseTex;
@@ -29,6 +34,7 @@ namespace SC::Editor {
 			Vector2f CameraPos = {0, 0};
 			float zoomLevel = 10.0f;
 			float CameraSpeed = 10.0f;
+			Scene originalScene;
 
 			FrameBuffer fb;
 	};

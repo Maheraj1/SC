@@ -3,6 +3,7 @@
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/NativeScript.h"
 #include "Engine/ECS/Renderer.h"
+#include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
 
@@ -34,9 +35,7 @@ namespace SC
 		virtual uint64_t GetCID() override;
 
 	public:
-		ResourceReference<Shader> shader;
-		ResourceReference<Texture> texture;
-		Color color = {255, 255, 255};
+		Material material;
 
 	friend class Internal::Renderer;
 	};

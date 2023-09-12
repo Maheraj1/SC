@@ -29,6 +29,7 @@ namespace SC {
 			virtual uint64_t GetCID() override = 0;
 			#ifdef SC_EDITOR_IMPL
 			virtual void OnIGUI(Editor::EditorDrawData& dcmd) override = 0;
+			virtual void PostIGUI(Editor::EditorDrawData& dcmd) override = 0;
 			#endif
 		private:
 			virtual void Awake() { }

@@ -184,7 +184,7 @@ namespace SC::Internal::UI::ImGui {
 	bool ImageButton(void* tex, Vector2 size)
 	{
 		#ifdef SC_RENDERER_OpenGL
-		return ::ImGui::ImageButton(tex, {size.x, size.y}, {0, 1}, {1, 0}, 0);
+		return ::ImGui::ImageButton(tex, {size.x, size.y}, {0, 1}, {1, 0});
 		#else
 		return ::ImGui::ImageButton(tex, {size.x, size.y});
 		#endif

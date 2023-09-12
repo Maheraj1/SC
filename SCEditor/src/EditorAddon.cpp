@@ -3,6 +3,7 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/IComponent.h"
 #include "Engine/ECS/IScript.h"
+#include "Engine/Input/KeyCode.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Input/Input.h"
@@ -14,6 +15,7 @@
 #include "Engine/ECS/Camera.h"
 #include "Engine/Scene/SceneRenderer.h"
 #include "Engine/Scene/SceneSerializer.h"
+#include "Engine/Core/Platform.h"
 #include "glm/common.hpp"
 #include "glm/geometric.hpp"
 
@@ -24,7 +26,6 @@
 #include <iterator>
 #include <string>
 #include <xlocale/_stdio.h>
- 
 
 namespace SC::Editor {
 	static bool IsViewPortSelected = false;
@@ -35,12 +36,19 @@ namespace SC::Editor {
 	
 	static bool ViewPortOpen;
 	static bool GameViewOpen;
+	static bool sceneUnSaved = false;
 
 	static UUID entSelectedID = 0;
 	static Entity* entSelected;
 
-	void EditorAddon::PreFrameRender() 
-	{	
+	static const char* runtime_scene_path = "Data/rnscne.scsr";
+
+	void SaveScene() {
+		SceneManager::GetCurrentScene().Save();
+		sceneUnSaved = false;
+	}
+
+	void EditorAddon::PreFrameRender() {	
 		Internal::CameraData data;
 		data.RenderToScreen = false;
 		data.pos = CameraPos;
@@ -52,6 +60,8 @@ namespace SC::Editor {
 		
 		if (ViewPortOpen) 
 			ViewPortTex = Internal::SceneRenderer::Render(data, fb);
+
+		if (Input::GetKey(KeyCode::S) && Input::GetKey(KeyCode::LEFT_CONTROL) && sceneUnSaved) SaveScene();
 	}
 
 	void DrawEntity(Entity* ent) {
@@ -76,12 +86,14 @@ namespace SC::Editor {
 	}
 
 	void DrawSceneHeirarchy() {
-		ImGui::Begin("Scene Heirarchy");
+		ImGui::Begin("Heirarchy");
 
 		Scene& scene = SceneManager::GetCurrentScene();
 
-		for (auto&& ent : scene.GetEntities()) {
-			DrawEntity(ent);
+		if (ImGui::CollapsingHeader(((sceneUnSaved ? "*": "")+ "Scene"s).c_str(), ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen)) {
+			for (auto&& ent : scene.GetEntities()) {
+				DrawEntity(ent);
+			}
 		}
 
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
@@ -100,32 +112,44 @@ namespace SC::Editor {
 		ImGui::End();
 	}
 
-	void DrawIGUIComponents(EditorDrawCommand cmd) {
+	void DrawIGUIComponents(EditorDrawCommand& cmd) {
+		bool change = false;
+		ImGui::Text("%s", cmd.name.c_str());
+		ImGui::SameLine();
+
+		std::string id = ("##" + cmd.name);
+
 		switch (cmd.type) {
 			case EditorType::None:
 				break;
 			case EditorType::Int:
-				ImGui::InputInt(cmd.name.c_str(), (int*)cmd.data, ImGuiInputTextFlags_AutoSelectAll);
+				change = ImGui::InputInt(id.c_str(), (int*)cmd.data, ImGuiInputTextFlags_AutoSelectAll);
 				break;
 			case EditorType::Float:
-				ImGui::InputFloat(cmd.name.c_str(), (float*)cmd.data, ImGuiInputTextFlags_AutoSelectAll);
+				change = ImGui::InputFloat(id.c_str(), (float*)cmd.data, .1f, .5f, "%.5f", ImGuiInputTextFlags_AutoSelectAll);
 				break;
 			case EditorType::Vector2:
-				ImGui::InputFloat2(cmd.name.c_str(), (float*)cmd.data, "%.3f", ImGuiInputTextFlags_AutoSelectAll);
+				change = ImGui::InputFloat2(id.c_str(), (float*)cmd.data, "%.5f", ImGuiInputTextFlags_AutoSelectAll);
+				break;
+			case EditorType::Enum:
+				change = ImGui::Combo(id.c_str(), (int*)cmd.data, cmd.as_data.c_str());
 				break;
 		}
+
+		if (!sceneUnSaved)
+			sceneUnSaved = change;
 	}
 
 	void EditorAddon::DrawInspectorComponent(IScript* script) {
-		if (!ImGui::CollapsingHeader((Internal::ComponentData::components[script->GetCID()].qualifiedName + " Component"s).c_str())) return;
-		//TODO
+		if (!ImGui::CollapsingHeader((Internal::ComponentData::components[script->GetCID()].qualifiedName + " Component"s).c_str(), ImGuiTreeNodeFlags_DefaultOpen)) return;
 		EditorDrawData dcmd;
 		script->OnIGUI(dcmd);
 		
 		for (int i = 0; i < dcmd.data.size(); i++) {
 			DrawIGUIComponents(dcmd.data[i]);
 		}
-	
+
+		script->PostIGUI(dcmd);
 	}
 
 	void EditorAddon::DrawInspector() {
@@ -158,27 +182,9 @@ namespace SC::Editor {
 		ImGui::End();
 	}
 
-	void EditorAddon::PostFrameRender() {
-		GameViewTex = SceneManager::GetCurrentScene().GetCurrentCamera()->fb.GetTextureID();
-
+	void EditorAddon::DrawToolbar() {
 		using namespace ::SC::Internal;
 
-		// ImGui Frame
-		UI::ImGui::BeginFrame();
-
-		// MenuBar
-		ImGui::BeginMenuBar();
-
-			
-		if (ImGui::BeginMenu("File")) {
-			ImGui::MenuItem("Quit", "Cmd + Q");
-
-			ImGui::EndMenu();
-		}
-
-		ImGui::EndMenuBar();
-
-		// Toolbar
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 2});
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, {0, 0});
 
@@ -204,18 +210,24 @@ namespace SC::Editor {
 
 		ImGui::SameLine(offset);
 
-		void* tex = reinterpret_cast<void*>(PlayTex-> GetTextureID());
+		void* tex = reinterpret_cast<void*>(StopTex-> GetTextureID());
 		Application* app = Application::Get();
 
-		if (!app->EditMode) {
-			tex = reinterpret_cast<void*>(StopTex-> GetTextureID());
+		if (app->EditMode) {
+			tex = reinterpret_cast<void*>(PlayTex-> GetTextureID());
 		}
 		
 		if (UI::ImGui::ImageButton(tex, {32.0f, 32.0f})) {
-			if (app->EditMode) 
+			if (app->EditMode) {
+				Scene scene = SceneManager::GetCurrentScene();
+				scene.SaveOnOtherPath(runtime_scene_path);
 				app->OnAppPlay();
-			else
+			} else {
 				app->OnAppStop();
+				SceneManager::GetCurrentScene().LoadFromOtherPath(runtime_scene_path);
+				entSelected = nullptr;
+				entSelectedID = 0;
+			}
 		}
 		
 		ImGui::SameLine(offset+ButtonSize+4);
@@ -224,10 +236,10 @@ namespace SC::Editor {
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 		ImGui::End();
+	}
 
-		DrawSceneHeirarchy();
-
-		DrawInspector();
+	void EditorAddon::DrawViewPort() {
+		using namespace ::SC::Internal;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0.0f, 0.0f});
 
@@ -253,14 +265,48 @@ namespace SC::Editor {
 		ImGui::End();
 		
 		ImGui::PopStyleVar();
+	}
 
-		// Stats
+	void EditorAddon::DrawMenubar() {
+		ImGui::BeginMenuBar();
+			
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Save", "ctrl + S")) 
+				SaveScene();
+
+			ImGui::Separator();
+			
+			ImGui::MenuItem("Quit", "Cmd + Q");
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMenuBar();
+	}
+
+	void EditorAddon::DrawStats() {
 		ImGui::Begin("Stats");
 		
-		ImGui::Text("FPS: %f", Time::fps);
-		ImGui::Text("DeltaTime: %f", Time::deltaTime);
+		ImGui::Text("FPS: %0.1f", Time::fps);
+		ImGui::Text("DeltaTime: %0.3f ms", Time::deltaTime*1000.0f);
 
 		ImGui::End();
+	}
+
+	void EditorAddon::PostFrameRender() {
+		GameViewTex = SceneManager::GetCurrentScene().GetCurrentCamera()->fb.GetTextureID();
+
+		using namespace ::SC::Internal;
+
+		// ImGui Frame
+		UI::ImGui::BeginFrame();
+
+		DrawMenubar();
+		DrawToolbar();
+		DrawSceneHeirarchy();
+		DrawViewPort();
+		DrawInspector();
+		DrawStats();
 
 		ImGui::ShowDemoWindow();
 
@@ -270,15 +316,15 @@ namespace SC::Editor {
 	void EditorAddon::Update() {
 		Vector2 move = {0, 0};
 		
-		if (Input::GetKey_UnBlocked(KeyCode::W)) move.y -= CameraSpeed * Time::deltaTime;
-		if (Input::GetKey_UnBlocked(KeyCode::S)) move.y += CameraSpeed * Time::deltaTime;
+		if (Input::GetKey(KeyCode::W)) move.y -= 1;
+		if (Input::GetKey(KeyCode::S)) move.y += 1;
 		
-		if (Input::GetKey_UnBlocked(KeyCode::A)) move.x += CameraSpeed * Time::deltaTime;
-		if (Input::GetKey_UnBlocked(KeyCode::D)) move.x -= CameraSpeed * Time::deltaTime;
+		if (Input::GetKey(KeyCode::A)) move.x += 1;
+		if (Input::GetKey(KeyCode::D)) move.x -= 1;
 
-		// glm::normalize(move);
+		glm::normalize(move);
 
-		CameraPos += move;
+		CameraPos += move * CameraSpeed * (float)Time::deltaTime;
 
 	}
 

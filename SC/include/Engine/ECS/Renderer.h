@@ -2,15 +2,15 @@
 
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/NativeScript.h"
+#include "Engine/Renderer/Material.h"
 
 namespace SC
 {
 	class Texture;
 	class Shader;
 	struct Renderer: public NativeScript {
-		Texture* texture;
-		Shader* shader;
-		Color color;
+		Renderer(Material& mat) :mat(mat) { }
+		Material& mat;
 
 		virtual void PostRender() = 0;
 	};

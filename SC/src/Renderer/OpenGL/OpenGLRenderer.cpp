@@ -144,7 +144,7 @@ void main() {
 		glDeleteShader(fs);
 
 		// Hard coded texture shader
-	 	Shader* shader = Resources::AddResource<Shader>("Sprite");
+	 	Shader* shader = Resources::AddResource<Shader>("Default Sprite");
 		shader->Compile(R"(#shader vert
 #version 410 core
 

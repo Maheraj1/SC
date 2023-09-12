@@ -60,42 +60,42 @@ void PreAppRun()
 {
 	Scene& scene = SceneManager::AddScene("Assets/test.scs");
 	
-	{
-		Entity& cam = scene.AddEntity("Camera");
-		cam.AddComponent(ComponentID<Camera>::cid);
-	}
+	// {
+	// 	Entity& cam = scene.AddEntity("Camera");
+	// 	cam.AddComponent(ComponentID<Camera>::cid);
+	// }
 
-	{
-		Entity& box = scene.AddEntity("Box");
-		box.transform.position.y = 5;
+	// {
+	// 	Entity& box = scene.AddEntity("Box");
+	// 	box.transform.position.y = 5;
 		
-		RigidBody* rb = (RigidBody*)box.AddComponent(ComponentID<RigidBody>::cid);
-		rb->mass = 2.0f;
-		rb->type = RigidBodyType::Dynamic;
+	// 	RigidBody* rb = (RigidBody*)box.AddComponent(ComponentID<RigidBody>::cid);
+	// 	rb->mass = 2.0f;
+	// 	rb->type = RigidBodyType::Dynamic;
 
-		box.AddComponent(ComponentID<BoxCollider>::cid);
+	// 	box.AddComponent(ComponentID<BoxCollider>::cid);
 		
-		SpriteRenderer* sr = (SpriteRenderer*)box.AddComponent(ComponentID<SpriteRenderer>::cid);
-		sr->texture = Resources::GetResource<Texture>("DefaultSquare");
-		sr->shader  = Resources::GetResource<Shader> ("Sprite");
-		sr->color = Color(128, 128, 128);
-	}
+	// 	SpriteRenderer* sr = (SpriteRenderer*)box.AddComponent(ComponentID<SpriteRenderer>::cid);
+	// 	sr->texture = Resources::GetResource<Texture>("DefaultSquare");
+	// 	sr->shader  = Resources::GetResource<Shader> ("Default Sprite");
+	// 	sr->color = Color(128, 128, 128);
+	// }
 
-	{
-		Entity& box = scene.AddEntity("Floor");
-		box.transform.position.y = -5;
-		box.transform.scale.x = 5;
+	// {
+	// 	Entity& box = scene.AddEntity("Floor");
+	// 	box.transform.position.y = -5;
+	// 	box.transform.scale.x = 5;
 		
-		box.AddComponent(ComponentID<RigidBody>::cid);
-		box.AddComponent(ComponentID<BoxCollider>::cid);
+	// 	box.AddComponent(ComponentID<RigidBody>::cid);
+	// 	box.AddComponent(ComponentID<BoxCollider>::cid);
 		
-		SpriteRenderer* sr = (SpriteRenderer*)box.AddComponent(ComponentID<SpriteRenderer>::cid);
-		sr->texture = Resources::GetResource<Texture>("DefaultSquare");
-		sr->shader  = Resources::GetResource<Shader> ("Sprite");
-		sr->color = Color(255, 0, 0);
-	}
+	// 	SpriteRenderer* sr = (SpriteRenderer*)box.AddComponent(ComponentID<SpriteRenderer>::cid);
+	// 	sr->texture = Resources::GetResource<Texture>("DefaultSquare");
+	// 	sr->shader  = Resources::GetResource<Shader> ("Default Sprite");
+	// 	sr->color   = Color(255, 0, 0);
+	// }
 
-	scene.Save();
+	scene.Load();
 
 	Application::Get()->addons.push_back(new Editor::EditorAddon);
 }

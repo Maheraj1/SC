@@ -35,12 +35,13 @@ namespace SC
 	{
 		LoadedScenes.erase(LoadedScenes.begin() + index);
 	}
-
+	//TODO
 	void SceneManager::SaveScene(int index)
 	{
 		
 	}
 
+	//TODO
 	void SceneManager::SaveScene(Scene& scene)
 	{
 		
@@ -60,9 +61,4 @@ namespace SC
 	{
 		return LoadedScenes[0];
 	}
-
-	Scene* SceneManager::GetCurrentScenes()
-	{
-		return &LoadedScenes[0];
-	}	
 }

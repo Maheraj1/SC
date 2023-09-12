@@ -25,8 +25,6 @@ namespace SC {
 			static void SaveScene(Scene& scene);
 
 			static Scene& GetCurrentScene();
-			static Scene* GetCurrentScenes();
-
 			static Scene& GetScene(int index);
 		private:
 			SceneManager();

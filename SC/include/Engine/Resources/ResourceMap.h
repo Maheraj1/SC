@@ -4,7 +4,7 @@
 #include "Engine/Core/Base.h"
 
 #include <type_traits>
-#include <unordered_map>
+#include <vector>
 
 namespace SC 
 {
@@ -18,6 +18,6 @@ namespace SC
 
 		static void Clear();
 		
-		static std::unordered_map<std::string, T> data;
+		static std::vector<T> data;
 	};
 }

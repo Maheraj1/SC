@@ -93,6 +93,7 @@ namespace SC
 			for (int i = 0; i < OnFrameBeginFunctions.size(); i++) {
 				OnFrameBeginFunctions[i]();
 			}
+			OnFrameBeginFunctions.clear();
 
 			for (auto&& addon: addons)
 			{
@@ -115,6 +116,7 @@ namespace SC
 			for (int i = 0; i < OnFrameEndFunctions.size(); i++) {
 				OnFrameEndFunctions[i]();
 			}
+			OnFrameEndFunctions.clear();
 		}
 
 		Debug::Info("Closing Application", "SC::Application");
@@ -158,7 +160,7 @@ namespace SC
 	void Application::OnScenePlay() {
 		_EditMode = false;
 
-		auto& scene = SceneManager::GetCurrentScene();
+		auto scene = SceneManager::GetCurrentScene();
 		
 		Physics::Init();
 		scene.Awake();
@@ -167,11 +169,6 @@ namespace SC
 
 	void Application::OnSceneStop() {
 		_EditMode = true;
-
-		auto& scene = SceneManager::GetCurrentScene();
-		
-		Physics::ShutDown();
-		scene.Clear();
 	}
 
 	void Application::AddEndOfFrameFunction(std::function<void ()> func) {

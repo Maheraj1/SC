@@ -36,7 +36,17 @@ namespace SC {
 	RigidBody::~RigidBody() {
 		if (!body) return;
 		Physics::world->DestroyBody(body);
-		Physics::rigidBodies.erase(Physics::rigidBodies.begin() + physicsID);
+		int rmid = -1;
+		
+		for (int i = 0; Physics::rigidBodies.size(); i++) {
+			if (Physics::rigidBodies[i] != this) continue; 
+			
+			rmid = i;
+			break;
+		}
+
+		Physics::rigidBodies.erase(Physics::rigidBodies.begin() + rmid);
+		body = nullptr;
 	}
 
 	void RigidBody::OnDestroy() {
@@ -72,7 +82,16 @@ namespace SC {
 		this->type = (RigidBodyType)type;
 	}
 	#ifdef SC_EDITOR_IMPL
-	void RigidBody::OnIGUI(Editor::EditorDrawData& dcmd) { }
+	void RigidBody::OnIGUI(Editor::EditorDrawData& dcmd) {
+		dcmd.DrawFloat(mass, "Mass");
+		dcmd.DrawEnum ((int)type, "Static\0Kinematic\0Dynamic\0\0"s, 3, "Type");
+	}
+
+	void RigidBody::PostIGUI(Editor::EditorDrawData& dcmd) {
+		mass = *((float*)dcmd.data[0].data);
+		int type = *((int*)dcmd.data[1].data);
+		this->type = (RigidBodyType)(type);
+	}
 	#endif
 
 	GET_CID_IMPL(RigidBody);

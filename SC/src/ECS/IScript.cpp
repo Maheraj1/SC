@@ -42,26 +42,48 @@ namespace SC::Internal {
 #ifdef SC_EDITOR_IMPL
 namespace SC::Editor { 
 	
-	void EditorDrawData::DrawFloat  (float n  , std::string name) { 
-		data.push_back(EditorDrawCommand{ 
-			.data = (void*)&n, 
-			 .name = name, 
-			  .type = EditorType::Float}); 
-			   }
+	void EditorDrawData::DrawFloat(float n, std::string name) { 
+		auto dat = (float*)malloc(sizeof(float));
+		*dat = n;
+		
+		data.emplace_back((void*)dat, name, EditorType::Float);
+	}
 
-	void EditorDrawData::DrawInt    (int n    , std::string name) { 
-		data.push_back(EditorDrawCommand{ 
-			.data = (void*)&n, 
-			 .name = name, 
-			  .type = EditorType::Int}); 
-			   }
+	void EditorDrawData::DrawInt(int n, std::string name) {
+		auto dat = (int*)malloc(sizeof(int));
+		*dat = n;
+		 
+		data.emplace_back((void*)dat, name, EditorType::Int);
+	}
 
 	void EditorDrawData::DrawVector2(Vector2 n, std::string name) { 
-		data.push_back(EditorDrawCommand{ 
-			.data = (void*)&n, 
-			 .name = name, 
-			  .type = EditorType::Vector2}); 
-			   }
+		auto dat = (Vector2*)malloc(sizeof(Vector2));
+		*dat = n;
+		
+		data.emplace_back((void*)dat, name, EditorType::Vector2);
+	}
+	
+	void EditorDrawData::DrawEnum(int n, std::string enum_names, int size, std::string name) { 
+		auto dat = (int*)malloc(sizeof(int));
+		*dat = n;
 
+		data.emplace_back((void*)dat, name, EditorType::Enum, enum_names, size);
+	}
+
+	void EditorDrawData::Clear() {
+		for (auto&& cmd : data) {
+			cmd.Free();
+		}
+	}
+
+	EditorDrawCommand::EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data, int ai_data) 
+	:data(data), name(name), type(type), as_data(as_data), ai_data(ai_data)
+	{ }
+
+	void EditorDrawCommand::Free() {
+		if (!data) return;
+		free(data);
+		data = nullptr;
+	}
 }
 #endif

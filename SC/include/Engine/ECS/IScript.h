@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/Common.h"
 #include "Engine/Core/Core.h"
 #include "Engine/Core/SCObject.h"
 #include "Engine/Core/UUID.h"
@@ -10,6 +11,7 @@
 #include <array>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <unordered_map>
 
 #define REGISTER_COMPONENT(x) ::SC::Internal::ComponentData::RegisterComponent(#x, typeid(x).name(), [](){ return new x; });\
@@ -61,21 +63,43 @@ namespace SC {
 		enum class EditorType {
 			None = -1,
 			
-			Int, Float,
+			Int, Float, 
+			Enum,
 
 			Vector2
 		};
 
 		struct EditorDrawCommand {
+			// Main data
 			void* data;
+			
+			// Name that will apper in Editor
 			std::string name;
+
+			// Type of data
 			EditorType type;
+
+			// Attached string data if any
+			std::string as_data;
+
+			// Attached int data if any
+			int ai_data;
+
+			EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data = Common::EmptyString, int ai_data = 0);
+			~EditorDrawCommand() = default;
+
+			void Free();
 		};
 		
 		struct EditorDrawData {
 			void DrawFloat  (float n  , std::string name);
 			void DrawInt    (int n    , std::string name);
 			void DrawVector2(Vector2 n, std::string name);
+			
+			// `enum_names` value needs to be seprated by zero or `\0`
+			void DrawEnum(int n, std::string enum_names, int size, std::string name);
+
+			void Clear();
 
 			std::vector<EditorDrawCommand> data;
 		};

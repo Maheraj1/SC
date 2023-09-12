@@ -52,17 +52,22 @@ namespace SC
 		}
 	}
 
+	//TODO
 	void Scene::Clear() {
-		for (int i = 0; i < m_objs.size(); i++) {
-			delete[] m_objs[i];
-			m_objs.erase(m_objs.begin()+i);
-		}
-
-		SC_DeSerialize(*this);
+		// SC_DeSerialize(*this);
 	}
 
 	void Scene::Save() {
 		Application::AddStartOfFrameFunction([&](){SC_Serialize(*this);});
+	}
+
+	void Scene::SaveOnOtherPath(std::string path) {
+		// Application::AddStartOfFrameFunction([&](){SC_SerializeOtherPath(*this, path);});
+		SC_SerializeOtherPath(*this, path);
+	}
+	
+	void Scene::LoadFromOtherPath(std::string path) {
+		SC_DeSerializeOtherPath(*this, path);
 	}
 
 	void Scene::Load() {

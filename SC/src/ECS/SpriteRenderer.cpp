@@ -10,46 +10,25 @@
 
 namespace SC
 {
-	SpriteRenderer::SpriteRenderer()
-	:shader(nullptr), texture(nullptr)
-	{
-
-	}
+	SpriteRenderer::SpriteRenderer():Renderer(material) { }
 
 	void SpriteRenderer::PostRender()
 	{
-		Renderer::texture = texture.obj;
-		Renderer::shader  = shader.obj;
-		Renderer::color   = color;
+		Renderer::mat = material;
 	}
 
-	void SpriteRenderer::Start() {
-		Renderer::texture = texture.obj;
-		Renderer::shader  = shader.obj ;
-		Renderer::color   = color;
-		
-		texture = texture.obj ? texture : Resources::GetResource<Texture>("Square");
-		shader  = shader.obj  ? shader  : Resources::GetResource<Shader> ("Sprite");
-	}
+	void SpriteRenderer::Start() { }
 
 	void SpriteRenderer::Awake() { }
 
 	void SpriteRenderer::Serialize() const
 	{
-		SC_ADD_PARAM((Color16)color, "color");
-
-		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->shader, "Shader");
-		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->texture, "Texture");
+		SC_ADD_PARAMETER(material);
 	}
 
 	void SpriteRenderer::DeSerialize()
 	{
-		Color16 color = {255, 255, 255};
-		SC_GET_PARAM(color, "color");
-		this->color = (Color)color;
-
-		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->shader, "Shader");
-		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->texture, "Texture");
+		SC_GET_PARAMETER(material);
 	}
 
 	GET_CID_IMPL(SpriteRenderer);

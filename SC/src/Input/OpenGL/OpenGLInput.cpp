@@ -8,21 +8,21 @@ namespace SC
 {
 	static GLFWwindow* window;
 
-	bool Input::GetKeyDown_UnBlocked(KeyCode key) {
+	bool Input::GetKeyDown(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(window, (int)key);
 		if (k == GLFW_PRESS) return true;
 		return false;
 	}
 
-	bool Input::GetKeyUp_UnBlocked(KeyCode key) {
+	bool Input::GetKeyUp(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow()), (int)key);
 		if (k == GLFW_RELEASE) return true;
 		return false;
 	}
 
-	bool Input::GetKey_UnBlocked(KeyCode key) {
+	bool Input::GetKey(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		int k = glfwGetKey(static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow()), (int)key);
 		if (k == GLFW_PRESS || k == GLFW_REPEAT) return true;
@@ -39,28 +39,20 @@ namespace SC
 	}
 
 	bool Input::GetMouse(int n) {
-		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_PRESS || status == GLFW_REPEAT) return true;
 		return false;
 	}
 
 	bool Input::GetMouseDown(int n) {
-		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_PRESS) return true;
 		return false;
 	}
 
 	bool Input::GetMouseUp(int n) {
-		if (!state) return false;
 		int status = glfwGetMouseButton(window, n);
 		if (status == GLFW_RELEASE) return true;
 		return false;
 	}
-
-	void Input::SetState(bool _state) {
-		state = _state;
-	}
-
 }

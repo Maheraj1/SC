@@ -31,12 +31,15 @@ namespace SC
 		Serialization::SerializedData::emt = emt;
 	}
 
-	void SceneSerializer::SerializeBinary(const Scene& scene)
-	{
-		
+	void SceneSerializer::SerializeText(const Scene& scene) {
+		SerializeText(scene, scene.FilePath);
 	}
 
-	void SceneSerializer::SerializeText(const Scene& scene)
+	bool SceneSerializer::DeserializeText(Scene& scene) {
+		return DeserializeText(scene, scene.FilePath);
+	}
+
+	void SceneSerializer::SerializeText(const Scene& scene, std::string path)
 	{
 		emt = new YAML::Emitter;
 		Serialization::SerializedData::emt = emt;
@@ -73,23 +76,31 @@ namespace SC
 		*emt << YAML::EndSeq;
 		*emt << YAML::EndMap;
 
-		std::ofstream f(scene.FilePath);
-		f << emt->c_str();
+		auto fp = std::filesystem::path(path).parent_path();
+		
+		if (!FileSystem::DirectoryExists(fp.c_str())) {
+			FileSystem::CreateDirectory(fp.c_str());
+		}
+
+		FileSystem::WriteFile(path.c_str(), emt->c_str());
 		
 		delete emt;
 	}
 
-	bool SceneSerializer::DeserializeText(Scene& scene)
+	bool SceneSerializer::DeserializeText(Scene& scene, std::string path)
 	{
+		int del_size = scene.m_objs.size();
+		for (int i = 0; i < del_size; i++) {
+			delete scene.m_objs[0];
+			scene.m_objs.erase(scene.m_objs.begin());
+		}
 		Physics::ShutDown();
-		scene.m_objs.clear();
+
 		YAML::Node data;
-		try
-		{
-			data = YAML::LoadFile(scene.FilePath);
-		} catch (std::exception e)
-		{
-			Debug::Error("Failed to load " + (std::string)scene.FilePath + " scene", "SC::SceneSerializer::DeserializeText");
+		try {
+			data = YAML::LoadFile(path);
+		} catch (std::exception e) {
+			Debug::Error("Failed to load " + (std::string)path + " scene", "SC::SceneSerializer::DeserializeText");
 			return false;
 		}
 		
@@ -99,10 +110,9 @@ namespace SC
 		Debug::Info((std::string)"Current Scene Loader Version " + version + " Scene file version " + data["Version"].as<std::string>(), "SC::SceneSerializer::DeserializeText");
 		
 		auto dat = data["Objects"];
-		if (dat)
-		{
-			for (auto ent: dat)
-			{
+		if (dat) {
+			for (int i = 0; i < dat.size(); i++) {
+				auto ent = dat[i];
 				std::string name = ent["Name"].as<std::string>();
 				UUID uid = ent["UUID"].as<uint64_t>();
 
@@ -111,8 +121,7 @@ namespace SC
 				Serialization::SerializedData::currentNode = &trans;
 				_ent.transform._DeSerialize();
 				
-				for (int i = 0; i < ent["Components"].size(); i++)
-				{
+				for (int i = 0; i < ent["Components"].size(); i++) {
 					auto scr = ent["Components"][i];
 					auto scrN = scr["Name"].as<std::string>();
 					Serialization::SerializedData::currentNode = &scr;

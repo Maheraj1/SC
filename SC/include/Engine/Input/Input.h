@@ -21,15 +21,8 @@ namespace SC
 		static bool GetMouse(int n);
 		static bool GetMouseDown(int n);
 		static bool GetMouseUp(int n);
-		
-		static void SetState(bool _state);
 	private:
-		static bool state;
-
-		static bool GetKeyDown_UnBlocked(KeyCode key);
-		static bool GetKeyUp_UnBlocked(KeyCode key);
-		static bool GetKey_UnBlocked(KeyCode key);
-
+		
 		Input() = delete;
 		friend class Editor::EditorAddon;
 	};

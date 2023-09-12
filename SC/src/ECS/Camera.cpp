@@ -93,5 +93,9 @@ namespace SC
 	void Camera::OnIGUI(Editor::EditorDrawData& dcmd) {
 		dcmd.DrawFloat(size, "Projection size");
 	}
+
+	void Camera::PostIGUI(Editor::EditorDrawData& dcmd) {
+		size = *((float*)dcmd.data[0].data);
+	}
 	#endif
 }

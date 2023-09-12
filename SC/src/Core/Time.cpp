@@ -31,14 +31,14 @@ namespace SC
     void Time::Update()
     {
         using namespace std::literals::chrono_literals;
-        time_ = glfwGetTime() * 1000.0f;
-        deltaTime_ = (time - lastFrame)/1000.0f;
+        time_ = glfwGetTime(); // s
+        deltaTime_ = (time - lastFrame); // s
 
-        if (CalculateFps) { fps_ = (1000.0f / deltaTime)/1000.0f;}
+        if (CalculateFps) { fps_ = (1.0f / deltaTime);}
 
         lastFrame = time;
         accumulatorFixed += deltaTime;
-        if (LimitFPS) std::this_thread::sleep_for(1ms * ((1000.0f / targetFps) - deltaTime));
+        if (LimitFPS) std::this_thread::sleep_for(1ms * ((1000.0f / targetFps) - (float)deltaTime));
     }
 
     void Time::FixedUpdate()

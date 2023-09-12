@@ -2,6 +2,7 @@
 
 #include "Engine/Core/Core.h"
 #include "Engine/Core/SCObject.h"
+#include "Engine/Serialization/SerializableObject.h"
 #include <sys/types.h>
 
 namespace SC {
@@ -11,6 +12,7 @@ namespace SC {
 			const char* path;
 			virtual uint64_t GetID() const = 0;
 			virtual void Delete() = 0;
+			virtual bool IsSerializable() const { return false; }
 
 			virtual ~Resource() = default;
 	};
