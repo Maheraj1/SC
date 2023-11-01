@@ -67,9 +67,9 @@ namespace SC {
 		dcmd.DrawFloat  (Density, "Density");
 		dcmd.DrawFloat  (Restitution, "Bounciness");
 		dcmd.DrawFloat  (RestitutionThreshold, "Bounciness Threshold");
-		dcmd.DrawFloat  (IsTrigger, "Is Trigger");
 		dcmd.DrawVector2(size, "Size");
 		dcmd.DrawVector2(offset, "Offset");
+		dcmd.DrawBool  (IsTrigger, "Is Trigger");
 	}
 
 	void BoxCollider::PostIGUI(Editor::EditorDrawData& dcmd) {
@@ -77,9 +77,9 @@ namespace SC {
 		Density = *((float*)dcmd.data[1].data);
 		Restitution = *((float*)dcmd.data[2].data);
 		RestitutionThreshold = *((float*)dcmd.data[3].data);
-		IsTrigger = *((float*)dcmd.data[4].data);
-		size = *((Vector2*)dcmd.data[5].data);
-		offset = *((Vector2*)dcmd.data[6].data);
+		size = *((Vector2*)dcmd.data[4].data);
+		offset = *((Vector2*)dcmd.data[5].data);
+		IsTrigger = *((float*)dcmd.data[6].data);
 	}
 
 	#endif

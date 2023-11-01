@@ -1,4 +1,5 @@
 build:
+	@printf "\e[36mBuilding Sandbox-Script-Assembly\e[0m\n"
 	@dotnet build
 	@mv bin/Debug/net6.0/Sandbox-Script-Assembly.dll ../SCEditor/bin/Sandbox-Script-Assembly.dll
 	@mv bin/Debug/net6.0/Sandbox-Script-Assembly.pdb ../SCEditor/bin/Sandbox-Script-Assembly.pdb

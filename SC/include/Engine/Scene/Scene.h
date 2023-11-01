@@ -26,7 +26,7 @@ namespace SC
         void Update();
         void Clear();
     public:
-        Scene(const char* filepath = Common::EmptyString);
+        Scene(const char* filepath = Common::EmptyCString);
         ~Scene();
 
         void Save();

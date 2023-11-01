@@ -1,11 +1,17 @@
 #pragma once
 
 #include "Engine/Resources/ResourceMap.h"
+#include "Engine/Resources/SerializableResource.h"
+#include "Engine/Serialization/SerializedData.h"
 
-#define SC_REGISTER_RESOURCE(x)   template<> std::unordered_map<std::string, x> SC::ResourceMap<x>::data = std::unordered_map<std::string, x>();\
+#define SC_REGISTER_RESOURCE(x)   template<> std::vector<x*> SC::ResourceMap<x>::data = std::vector<x*>();\
 template<>\
-void SC::ResourceMap<x>::Clear()\
-{\
+void SC::ResourceMap<x>::Clear() {\
+	for (auto&& res: SC::ResourceMap<x>::data) {\
+		res->Delete();\
+		delete res;\
+		res = nullptr;\
+	}\
 	SC::ResourceMap<x>::data.clear();\
 }
 #define SC_CLEAR_RESOURCE_DATA(x) SC::ResourceMap<x>::Clear()
@@ -16,43 +22,65 @@ namespace SC
 	{
 	public:
 		template<typename T>
-		// requires (std::is_base_of_v<Resource, T>)
 		inline static T* GetResource(uint64_t id)
 		{
 			for (auto&& res : ResourceMap<T>::data) {
-				if (res.GetID() == id) {
-					return &res;
+				if (res->GetID() == id) {
+					return res;
 				}
 			}
 			return nullptr;
 		}
 
 		template<typename T>
-		// requires (std::is_base_of_v<Resource, T>)
-		inline static T* GetResource(const char *name)
+		inline static T* GetResource(std::string name)
 		{
 			for (auto&& res : ResourceMap<T>::data) {
-				if (res.name == name) {
-					return &res;
+				if (res->name == name) {
+					return res;
 				}
 			}
 			return nullptr;
 		}
 
 		template<typename T, typename... Args>
-		// requires (std::is_base_of_v<Resource, T>)
-		inline static T* AddResource(const char *name, Args ...args)
+		inline static T* AddResource(std::string name, Args ...args)
 		{
-			auto res = ResourceMap<T>::data.emplace_back(args...);
-			res.name = name;
-			return &res;
+			T* res = ResourceMap<T>::data.emplace_back(new T(std::forward<Args>(args)...));
+			res->name = name.c_str();
+			return res;
 		}
 		template<typename T>
-		static void SaveResource  (UUID uid);
-		template<typename T>
-		static void ReLoadResource(UUID uid);
+		inline static bool SaveResource  (UUID uid) {
+			Resource* resource = nullptr;
 
-		static void LoadFileResources(const char* fp);
-		static void ReLoadFileResources(const char* fp);
+			for (auto&& res : ResourceMap<T>::data) {
+				if (res->GetID() == uid) {
+					resource = res;
+					break;
+				}
+			}
+
+			if (!resource || !resource->IsSerializable()) return false;
+
+			SerializableResource* res = (SerializableResource*)resource;
+
+			Serialization::SerializedData::SetNewEmitter();
+			
+			res->Serialize();
+
+			Serialization::SerializedData::SaveEmitter(res->fp);
+			Serialization::SerializedData::emt = nullptr;
+		}
+
+		static void LoadFileResources(std::string fp);
+		static void LoadSerializableFileResources(std::string fp);
+		static void ReLoadFileResources(std::string fp);
+
+		inline static void SetAutoSaveSerializableResource(bool autosave) { Resources::autoSave = autosave; }
+		static void SaveSerializableResource(SerializableResource* serializableResource);
+		static void SaveAllSerializableResource();
+
+		static bool autoSave;
 	};
 }

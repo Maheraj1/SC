@@ -68,6 +68,8 @@ namespace SC
 		 */
 		static std::string JoinPath(std::string a, std::string b);
 
+		static std::string RunProgram(std::string command, std::string args, std::string context = "."s, uint buffersize = 128);
+
 		static std::vector<std::filesystem::path> GetFilesInDirectory(const char* path, const char* ext = nullptr);
 	};
 }

@@ -10,11 +10,19 @@
 
 namespace SC
 {
+    std::function<void(std::string, LogLevel loglevel)> Debug::editorLogCallbackFunc;
+    std::function<void(std::string)> Debug::buildcallbackFunc;
 
     void Debug::Log(std::string text, DebugLogColor color, DebugLogBackGroundColor bg)
     {
         #ifdef SC_DEBUG
-        std::cout << "\e[" << (int)bg << ';' << (int)color << 'm' << text.c_str() << "\e[0m" << std::endl;
+
+        DebugLogOut out;
+        out << bg << color << text.c_str(); 
+        // C++ wants this to be written like this
+        out << DebugLogColor::None << "\n";
+        
+        std::cout << out.str();
         #endif
     }
 	
@@ -24,7 +32,7 @@ namespace SC
 	}
 
 	void Debug::LogV(const char* fmt, va_list args) {
-		 va_list argsCopy;
+		va_list argsCopy;
         va_copy(argsCopy, args);
 
         int size = vsnprintf(NULL, 0, fmt, args);
@@ -81,5 +89,22 @@ namespace SC
     void Debug::Assert(bool condition)
     {
         SC_ASSERT(condition);
+    }
+
+    void Debug::OutputLog(std::string text) {
+        #ifdef SC_EDITOR_IMPL
+        if (buildcallbackFunc)
+            buildcallbackFunc(text);
+        #endif
+    }
+    
+    void Debug::EditorLog(std::string text, LogLevel loglevel) {
+        #ifdef SC_EDITOR_IMPL
+            editorLogCallbackFunc(text, loglevel);
+        #endif
+    }
+
+    void Debug::SetBuildCallbackFunction(std::function<void (std::string)> function) {
+        buildcallbackFunc = function;
     }
 }

@@ -1,12 +1,20 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace SC
 {
+    enum class LogLevel {
+        Message,
+        Info,
+        Warning,
+        Error
+    };
 
     /**
      * @brief Enum with number for colored text output
@@ -151,5 +159,14 @@ namespace SC
          * @param condition 
          */
         static void Assert(bool condition = false);
+
+        static void OutputLog(std::string text);
+        static void EditorLog(std::string text, LogLevel loglevel);
+
+        static void AddCallbackFunction(std::function<void(std::string)> function);
+        static void SetBuildCallbackFunction(std::function<void(std::string)> function);
+
+        static std::function<void(std::string, LogLevel loglevel)> editorLogCallbackFunc;
+        static std::function<void(std::string)> buildcallbackFunc;
     };
 };

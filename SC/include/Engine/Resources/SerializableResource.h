@@ -13,5 +13,7 @@ namespace SC {
 	
 		virtual void Serialize() const override = 0;
 		virtual void DeSerialize() override = 0;
+
+		std::string fp;
 	};
 }

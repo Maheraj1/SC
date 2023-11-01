@@ -1,6 +1,7 @@
 #include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Debug/Debug.h"
 #include "Engine/ECS/Entity.h"
+#include "Engine/Resources/FileSystem.h"
 #include "Engine/Scripting/RegisteredScript.h"
 #include "Engine/Scripting/ScriptAssembly.h"
 
@@ -158,12 +159,14 @@ namespace SC::Scripting {
 		return mono_runtime_invoke(method, obj, params, &exc);
 	}
 
-	void ScriptEngine::LoadClasses() {
+	void ScriptEngine::LoadClasses(ScriptAssembly& assembly, bool isCore) {
 
-		MonoImage* image = data.coreAssembly.GetImage();
+		MonoImage* image = assembly.GetImage();
 
-		data.EntityClass = mono_class_from_name(image, "SCEngine", "Entity");
-		data.ScriptClass = mono_class_from_name(image, "SCEngine", "Script");
+		if (isCore) {
+			data.EntityClass = mono_class_from_name(image, "SCEngine", "Entity");
+			data.ScriptClass = mono_class_from_name(image, "SCEngine", "Script");
+		}
 
 		const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
 		int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
@@ -196,18 +199,40 @@ namespace SC::Scripting {
 
 		// The Script Core
 		data.coreAssembly.Load("Libs/SCEngine.dll", true);
+
+		#ifdef SC_EDITOR_IMPL
 		
-		// The user code
-		data.mainAssembly.Load("Sandbox-Script-Assembly.dll", true);
+		CompileAssembly(data.mainAssembly, "Scandium-ScriptAssembly.csproj");
 
-		LoadClasses();
+		#else
 
-		Utils::PrintAssemblyTypes(data.coreAssembly.GetHandle());
+		data.mainAssembly.Load("Libs/Scandium-ScriptAssembly.dll");
+		
+		#endif
+
+		LoadClasses(data.coreAssembly, true);
+		LoadClasses(data.mainAssembly);
+
+		Utils::PrintAssemblyTypes(data.mainAssembly.GetHandle());
+
+		Debug::EditorLog("Initalized Mono & C# Script system", LogLevel::Info);
+	}
+
+	void ScriptEngine::CompileAssembly(ScriptAssembly &assembly, const char* path) {
+
+		auto out = FileSystem::RunProgram("dotnet", "build");
+		Debug::OutputLog(out);
+
+		data.mainAssembly.Load("bin/Debug/net7.0/Scandium-ScriptAssembly.dll");
 	}
 
 	void ScriptEngine::ShutDownMono() {
 		//FIXME
 		// mono_jit_cleanup(data.domain);
+	}
+
+	ScriptEngine::ScriptEngineData* ScriptEngine::GetData() {
+		return &data;
 	}
 
 	ClassField::~ClassField() {

@@ -9,7 +9,7 @@ namespace SC {
 	class SC_API Resource: public SCObject
 	{
 		public:
-			const char* path;
+			std::string path;
 			virtual uint64_t GetID() const = 0;
 			virtual void Delete() = 0;
 			virtual bool IsSerializable() const { return false; }

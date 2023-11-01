@@ -66,6 +66,9 @@ namespace SC::Serialization {
 		static void* GetEmitter();
 		static void* GetCurrent();
 
+		static void SetNewEmitter();
+		static void SaveEmitter(std::string fp);
+
 		friend class SC::SceneSerializer;
 		friend class SC::Resources;
 	};

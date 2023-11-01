@@ -89,7 +89,7 @@
         },
         {
             "label": "Compile SCImGui",
-            "command": "clang++ -Iinclude -I../external/imgui -Llib -limgui src/Internal/UI/ImGui.cpp -o libSCImGui.dylib -shared -fPIC -DSC_EDITOR_IMPL -I../ext/include/glm -std=c++20 -lglfw -I../ext/include/imgui -Wall -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_RENDERER_OpenGL && cp libSCImGui.dylib ../SCEditor/libSCImGui.dylib && cp libSCImGui.dylib ../SCEditor/bin/libSCImGui.dylib",
+            "command": "clang++ -Iinclude -Llib -L../ext -L../ext/lib/glfw -limgui-glfw-opengl -shared -fPIC -DSC_EDITOR_IMPL -I../ext/include/glm -std=c++20 -lglfw -I../ext/include/imgui -Wall -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_RENDERER_OpenGL src/Internal/UI/ImGui.cpp -o libSCImGui.dylib && cp libSCImGui.dylib ../SCEditor/libSCImGui.dylib && cp libSCImGui.dylib ../SCEditor/bin/libSCImGui.dylib",
             "problemMatcher": "$gcc",
             "type": "shell",
             "options": {
@@ -98,7 +98,8 @@
         },
         {
             "label": "Build SCEditor",
-            "command": "make",
+            "command": "make -j2",
+            "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/SCEditor"
             },

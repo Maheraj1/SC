@@ -143,7 +143,7 @@ namespace SC::Internal::UI::ImGui {
 	void Text(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 
 	bool Button(const char *label);
-	bool ImageButton(void* tex, Vector2 size);
+	bool ImageButton(const char* std_id, void* tex, Vector2 size);
 
 	void ListBox(const char* label, int* currentItem, const char* const *items, int count);
 	void PlotLines(const char* label, const float* values, int valuesCount);

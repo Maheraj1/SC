@@ -33,6 +33,7 @@
 
 SC_REGISTER_RESOURCE(SC::Shader)
 SC_REGISTER_RESOURCE(SC::Texture)
+SC_REGISTER_RESOURCE(SC::Material)
 
 namespace SC
 {
@@ -53,12 +54,24 @@ namespace SC
 		this->WindowProperties = windowProperties;
 	}
 
-	void Application::Run(void(*func)(void)) // func is the PreAppRun function
+	void Application::Run(void(*func)(void), void(*addon_func)(void)) // func is the PreAppRun function
 	{
 		Running = true;
 
 		Resources::LoadFileResources("Assets");
-		Resources::AddResource<Texture>("DefaultSquare")->Generate();
+		{
+			auto tex = Resources::AddResource<Texture>("DefaultSquare");
+			tex->Generate();
+			tex->uuid = 1;
+		}
+		
+		addon_func();
+
+		for (auto addon: addons) {
+			addon->Start();
+		}
+
+		Scripting::ScriptEngine::Init("SC-JIT-Runtime", ".");
 
 		SceneSerializer::Init();
 
@@ -67,16 +80,11 @@ namespace SC
 
 		Debug::Info("Initalized Physics Engine", "SC::Application");
 		
-		if (AutoGenerateTexture) for (auto& [name, tex]: ResourceMap<Texture>::data) tex.Generate();
+		if (AutoGenerateTexture) for (auto& tex: ResourceMap<Texture>::data) tex->Generate();
 		Internal::ComponentData::RegisterAllComponents();
+		Resources::LoadSerializableFileResources("Assets");
 		
 		func();
-		
-
-		for (auto addon: addons)
-		{
-			addon->Start();
-		}
 
 		if (!(IsEditor && EditMode))
 		{
@@ -125,6 +133,7 @@ namespace SC
 
 		SC_CLEAR_RESOURCE_DATA(Texture);
 		SC_CLEAR_RESOURCE_DATA(Shader);
+		SC_CLEAR_RESOURCE_DATA(Material);
 	}
 
 	Application::Application(AppSettings settings)
@@ -134,7 +143,6 @@ namespace SC
 		OnWindowClose += [&](WindowCloseArgs args) {Application::Close();};
 		OnAppPlay.SetListener([&](EventArgs a) { Application::OnScenePlay(); }, 0);
 		OnAppStop.SetListener([&](EventArgs a) { Application::OnSceneStop(); }, 0);
-		Scripting::ScriptEngine::Init("SC-JIT-Runtime", ".");
 	}
 
 	Application::~Application() { 

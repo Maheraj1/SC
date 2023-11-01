@@ -13,6 +13,7 @@
 #include <iostream>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #define REGISTER_COMPONENT(x) ::SC::Internal::ComponentData::RegisterComponent(#x, typeid(x).name(), [](){ return new x; });\
 ::SC::ComponentID<x>::cid = ::SC::Internal::ComponentData::lastID;
@@ -35,14 +36,18 @@ namespace SC {
 	namespace Internal {
 
 		struct Component {
+			// It's actual name
 			std::string qualifiedName;
+			// C++ typename
 			std::string TypeName;
+			// Function to create the script
 			std::function<IScript*(void)> CreateFunc;
+			// Global id of Script
 			uint64_t cid;
 		};
 
 		struct ComponentData {
-			static std::unordered_map<uint64_t, Component> components;
+			static std::vector<Component> components;
 			static std::unordered_map<std::string, uint64_t> TypeNameToCID;
 			static std::unordered_map<std::string, uint64_t> QualifiedNameToCID;
 			static uint64_t lastID;
@@ -63,10 +68,11 @@ namespace SC {
 		enum class EditorType {
 			None = -1,
 			
+			Bool,
 			Int, Float, 
 			Enum,
 
-			Vector2
+			Vector2, Color
 		};
 
 		struct EditorDrawCommand {
@@ -85,18 +91,20 @@ namespace SC {
 			// Attached int data if any
 			int ai_data;
 
-			EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data = Common::EmptyString, int ai_data = 0);
+			EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data = Common::EmptyCString, int ai_data = 0);
 			~EditorDrawCommand() = default;
 
 			void Free();
 		};
 		
 		struct EditorDrawData {
-			void DrawFloat  (float n  , std::string name);
-			void DrawInt    (int n    , std::string name);
-			void DrawVector2(Vector2 n, std::string name);
+			void DrawFloat  (float n   , std::string name);
+			void DrawBool   (bool  n   , std::string name);
+			void DrawInt    (int n     , std::string name);
+			void DrawVector2(Vector2 n , std::string name);
+			void DrawColor  (ColorF n  , std::string name);
 			
-			// `enum_names` value needs to be seprated by zero or `\0`
+			// `enum_names` value needs to be separated by zero or `\0`
 			void DrawEnum(int n, std::string enum_names, int size, std::string name);
 
 			void Clear();

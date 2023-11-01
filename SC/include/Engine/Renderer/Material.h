@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/ECS/IEditorObject.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/Texture.h"
@@ -7,15 +8,23 @@
 #include "Engine/Serialization/ResourceReference.h"
 #include "Engine/Serialization/SerializableObject.h"
 
+// Contains a renderer ready data required for drawing stuff
+
+#ifdef SC_EDITOR_IMPL
+#define IEO , public IEditorObject
+#else
+#define IEO
+#endif
+
 namespace SC {
-	struct Material: public SerializableResource {
+	struct Material: public SerializableResource IEO {
 		Material();
-		Material(const char* fp);
-		~Material() = default;
+		Material(std::string fp);
+		~Material();
 		
 		Color color;
-		Shader shader;
-		Texture texture;
+		ResourceReference<Shader> shader;
+		ResourceReference<Texture> texture;
 
 		void Init();
 
@@ -24,6 +33,13 @@ namespace SC {
 	
 		virtual void Serialize() const override;
 		virtual void DeSerialize() override;
+		
+		#ifdef SC_EDITOR_IMPL
+		
+		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
+		
+		#endif
 	protected:
 
 		std::string fp;

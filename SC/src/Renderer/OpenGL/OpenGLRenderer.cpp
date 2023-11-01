@@ -55,7 +55,7 @@ namespace SC::Internal
 			
 			GLCall(glUseProgram(batch.shader));
 			
-			int32_t tex[MAX_TEXTURE_SLOT_USAGE];
+			int32_t tex[MAX_TEXTURE_SLOT_USAGE] = {};
 
 			for (int i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
 			{

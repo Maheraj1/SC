@@ -6,6 +6,7 @@
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Scene/SceneManager.h"
+#include "glm/detail/type_mat3x4.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include <algorithm>
 
@@ -17,59 +18,58 @@ namespace SC::Internal {
 
 	void Renderer::StartBatch()
 	{
-		static uint64_t sr_cid = ComponentID<SpriteRenderer>::cid;
 		std::vector<Batch> batches(1);
 		batchData.clear();
 
 		uint currentBatch = 0;
 		for (Entity* ent: SceneManager::GetCurrentScene().m_objs)
 		{
-			if (batches[currentBatch].entities.entC == MAX_BATCH_COUNT) currentBatch++;			
+			if (batches[currentBatch].entities.entC == MAX_BATCH_COUNT) currentBatch++;
 
-			SpriteRenderer* sr = (SpriteRenderer*)ent->GetComponent(sr_cid);
+			SpriteRenderer* sr = (SpriteRenderer*)ent->GetAvailRenderer();
 			if (sr == nullptr) continue;
 			
 			sr->PostRender();
 
-			if (batches[currentBatch].shader != sr->shader->GetShaderID())
+			if (batches[currentBatch].shader != sr->material->shader->GetShaderID())
 			{
 				for (int i = 0; i < batches.size(); i++)
 				{
-					if (batches[i].shader == sr->shader->GetShaderID()) {
+					if (batches[i].shader == sr->material->shader->GetShaderID()) {
 						currentBatch = i;
 					} else if (batches[i].shader == 0)
 					{
-						batches[i].shader = sr->shader->GetShaderID();
+						batches[i].shader = sr->material->shader->GetShaderID();
 					} else if (batches.size()-1 == currentBatch) {
 						currentBatch = batches.size();
 						batches.push_back(Batch());
-						batches[currentBatch].shader = sr->shader->GetShaderID();
+						batches[currentBatch].shader = sr->material->shader->GetShaderID();
 					}
 				}
 			}
 
 			for (uint i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
 			{
-				if (batches[currentBatch].Textures[i] == sr->texture->GetTextureID()) /* if texture list has the texture we need break from it add to binding list */
+				if (batches[currentBatch].Textures[i] == sr->material->texture->GetTextureID()) /* if texture list has the texture we need break from it add to binding list */
 				{
 					BatchEnt.textureIndex[BatchEnt.entC] = i;
 					break;
 				}
 				else if (batches[currentBatch].Textures[i] == 0) /* if slot is empty we will use it */
 				{
-					batches[currentBatch].Textures[i] = sr->texture->GetTextureID();
+					batches[currentBatch].Textures[i] = sr->material->texture->GetTextureID();
 					BatchEnt.textureIndex[BatchEnt.entC] = i;
 					break;
 				} else if (i == MAX_TEXTURE_SLOT_USAGE-1) /* if it is last slot and no empty slot is found create a new Batch */
 				{
 					currentBatch = batches.size();
 					batches.push_back(Batch());
-					batches[currentBatch].shader = sr->shader->GetShaderID();
-					batches[currentBatch].Textures[0] = sr->texture->GetTextureID();
+					batches[currentBatch].shader = sr->material->shader->GetShaderID();
+					batches[currentBatch].Textures[0] = sr->material->texture->GetTextureID();
 					BatchEnt.textureIndex[BatchEnt.entC] = i;
 				}
 			}
-			batches[currentBatch].shader = sr->shader->GetShaderID();
+			batches[currentBatch].shader = sr->material->shader->GetShaderID();
 			
 			Matrix4 mat = ent->transform.GetModel(true);
 
@@ -80,8 +80,12 @@ namespace SC::Internal {
 			BatchEnt.pos[BatchEnt.entC * 4 + 3] = (mat * Vector4f(-1.0f,  1.0f, 0.0f, 1.0f));
 
 			// Set all Color Values
+
+			Vector3 colorMat = ((Vector3i)sr->material->color)/255.0f;
+			Vector3 colorBlend = ((Vector3i)sr->blendColor)/255.0f;
+
 			for (int i = 0; i <= 3; i++)
-				BatchEnt.color[(BatchEnt.entC * 4) + i] = ((Vector3i)sr->color)/255.0f;
+				BatchEnt.color[(BatchEnt.entC * 4) + i] = colorMat * colorBlend;
 
 			BatchEnt.entC++;
 		};

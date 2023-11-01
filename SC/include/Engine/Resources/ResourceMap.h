@@ -18,6 +18,6 @@ namespace SC
 
 		static void Clear();
 		
-		static std::vector<T> data;
+		static std::vector<T*> data;
 	};
 }

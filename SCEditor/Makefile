@@ -12,7 +12,7 @@ OBJ = $(addsuffix .o, $(notdir $(basename $(SRC))))
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_EDITOR_IMPL -DSC_DEBUG
 VERSION = -std=c++20
 OTHER_ARGS = -g3 -Wall -Wno-undefined-var-template
-LIBS = -lSC -lSCImGui -limgui
+LIBS = -lSC -limgui-glfw-opengl -lglfw
 LIB_DIR = -L. $(EXT_LDFLAGS)
 
 %.o: src/%.cpp
@@ -20,7 +20,7 @@ LIB_DIR = -L. $(EXT_LDFLAGS)
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 build: $(OBJ)
-	@$(COMPILER) -o $(OBJ_PATH) $^ -g3 $(LIBS) $(LIB_DIR) $(OTHER_ARGS)
+	@$(COMPILER) -o $(OBJ_PATH) $^ $(LIBS) $(LIB_DIR) $(OTHER_ARGS)
 	@printf "\e[32mBuilt $(OBJ_NAME)\e[0m\n"
 
 clean: 

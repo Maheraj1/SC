@@ -5,7 +5,7 @@
 #if defined(SC_EDITOR_IMPL) && !(SC_CORE_IMPL)
 
 #include "Engine/Core/Platform.h"
-#include "Engine/Internal/UI/ImGui.h"
+#include "UI/SCImGui.h"
 
 #include "imgui.h"
 
@@ -181,12 +181,12 @@ namespace SC::Internal::UI::ImGui {
 		return ::ImGui::Button(label);
 	}
 
-	bool ImageButton(void* tex, Vector2 size)
+	bool ImageButton(const char* str_id, void* tex, Vector2 size)
 	{
 		#ifdef SC_RENDERER_OpenGL
-		return ::ImGui::ImageButton(tex, {size.x, size.y}, {0, 1}, {1, 0});
+		return ::ImGui::ImageButton(str_id, tex, {size.x, size.y}, {0, 1}, {1, 0});
 		#else
-		return ::ImGui::ImageButton(tex, {size.x, size.y});
+		return ::ImGui::ImageButton(str_id, tex, {size.x, size.y});
 		#endif
 	}
 

@@ -21,7 +21,7 @@ WARNS = -Wall -Wno-undefined-var-template
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_EDITOR_IMPL -DSC_SHARED -DSC_DEBUG
 INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
 
-LIBS = -lglfw -lyaml-cpp -limgui-glfw-opengl -lglad -lstbi -lbox2d -lmonosgen-2.0
+LIBS = -lglfw -lyaml-cpp -lglad -lstbi -lbox2d -lmonosgen-2.0
 LIB_DIR = -Llib -L$(MONO_LIB)
 OBJ_NAME = libSC
 OBJ = 

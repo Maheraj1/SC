@@ -1,7 +1,7 @@
 Version: 0.0.5a
 Objects:
   - Name: Camera
-    UUID: 3289588258726627577
+    UUID: 4770212123759319347
     Transform:
       position: [0, 0]
       rotation: 0
@@ -9,10 +9,10 @@ Objects:
     Components:
       - IsNative: true
         Name: SC::Camera
-        size: 10
+        size: 5
         RenderToImage: true
   - Name: Box
-    UUID: 14826058540979274467
+    UUID: 16289317212356640607
     Transform:
       position: [0, 5]
       rotation: 0
@@ -33,13 +33,11 @@ Objects:
         offset: [0, 0]
       - IsNative: true
         Name: SC::SpriteRenderer
-        color: [128, 128, 128]
-        Shader:
-          UUID: 1
-        Texture:
-          UUID: 5966165974821075786
+        Material:
+          UUID: 3256165952321071056
+        Color: [128, 128, 128]
   - Name: Floor
-    UUID: 16479288162277723206
+    UUID: 16239060614853636229
     Transform:
       position: [0, -5]
       rotation: 0
@@ -60,8 +58,6 @@ Objects:
         offset: [0, 0]
       - IsNative: true
         Name: SC::SpriteRenderer
-        color: [255, 0, 0]
-        Shader:
-          UUID: 1
-        Texture:
-          UUID: 5966165974821075786
+        Material:
+          UUID: 3256165952321071056
+        Color: [255, 0, 0]

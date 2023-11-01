@@ -1,0 +1,63 @@
+Version: 0.0.5a
+Objects:
+  - Name: Camera
+    UUID: 10231509017556549211
+    Transform:
+      position: [0, 0]
+      rotation: 0
+      scale: [1, 1]
+    Components:
+      - IsNative: true
+        Name: SC::Camera
+        size: 5
+        RenderToImage: true
+  - Name: Box
+    UUID: 15276584620795717670
+    Transform:
+      position: [0, 5]
+      rotation: 0
+      scale: [1, 1]
+    Components:
+      - IsNative: true
+        Name: SC::RigidBody
+        mass: 2
+        type: 2
+      - IsNative: true
+        Name: SC::BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 0
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        size: [1, 1]
+        offset: [0, 0]
+      - IsNative: true
+        Name: SC::SpriteRenderer
+        Material:
+          UUID: 3256165952321071056
+        Color: [128, 128, 128]
+  - Name: Floor
+    UUID: 5024435774814522064
+    Transform:
+      position: [0, -5]
+      rotation: 0
+      scale: [5, 1]
+    Components:
+      - IsNative: true
+        Name: SC::RigidBody
+        mass: 1
+        type: 0
+      - IsNative: true
+        Name: SC::SpriteRenderer
+        Material:
+          UUID: 3256165952321071056
+        Color: [255, 0, 31]
+      - IsNative: true
+        Name: SC::BoxCollider
+        Density: 1
+        Friction: 0.5
+        Restitution: 2
+        RestitutionThreshold: 0.5
+        IsTrigger: false
+        size: [1, 1]
+        offset: [0, 0]

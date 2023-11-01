@@ -1,11 +1,14 @@
 #pragma once
 
+#include "Editor/Console.h"
 #include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Internal/ApplicationAddons.h"
 #include "Engine/Renderer/FrameBuffer.h"
 #include "Engine/Renderer/Texture.h"
 #include "Engine/Scene/Scene.h"
+
+#define EDITOR_I EditorAddon::instance
 
 namespace SC::Editor {
 	class EditorAddon: public ApplicationAddons
@@ -20,12 +23,13 @@ namespace SC::Editor {
 
 		private:
 
-			void DrawInspectorComponent(IScript* script);
+			bool DrawInspectorComponent(IScript* script);
 			void DrawInspector();
 			void DrawToolbar();
 			void DrawViewPort();
 			void DrawMenubar();
 			void DrawStats();
+			void SaveScene();
 			
 			Texture* PlayTex;
 			Texture* PauseTex;
@@ -37,5 +41,17 @@ namespace SC::Editor {
 			Scene originalScene;
 
 			FrameBuffer fb;
+			Console console;
+		public:
+			uint32_t ViewPortTex;
+			uint32_t GameViewTex;
+			bool IsViewPortSelected = false;
+			Vector2i ViewPortSize;
+			bool ViewPortOpen;
+			bool GameViewOpen;
+			bool sceneUnSaved = false;
+
+			static EditorAddon* instance;
+
 	};
 }

@@ -3,11 +3,21 @@
 #include "Engine/Debug/Debug.h"
 
 #include <cstdarg>
+#include <cstdio>
 #include <iostream>
+#include <stdio.h>
 #include <string>
 #include <fstream>
 #include <filesystem>
 #include <vector>
+
+#ifdef _WIN32
+#include <direct.h> // For _chdir on Windows
+#define ChangeDirectory _chdir
+#else
+#include <unistd.h> // For chdir on Unix-like systems
+#define ChangeDirectory chdir
+#endif
 
 namespace SC
 {
@@ -69,6 +79,29 @@ namespace SC
 		}
 
 		return strV;
+	}
+
+	std::string FileSystem::RunProgram(std::string command, std::string args, std::string context, uint buffersize) {
+		char* buffer = (char*)malloc(buffersize);
+		std::string  output;
+
+		if (context != "."s) {
+			ChangeDirectory(context.c_str());
+		}
+
+		FILE* out;
+		out = popen((command + " " + args).c_str(), "r");
+
+		if (out == NULL) {
+			Debug::Error("Couldn't run command: " + command + " " + args);
+			return "ERROR"s;
+		}
+
+		while (fgets(buffer, buffersize, out) != NULL) {
+        	output += buffer;
+    	}
+
+		return output;
 	}
 
 	void FileSystem::WriteFile(const char* path, const char* data)

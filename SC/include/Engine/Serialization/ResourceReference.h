@@ -18,15 +18,21 @@ namespace SC
 	 * @tparam T 
 	 */
 	template<typename T>
-	// requires (std::is_base_of_v<Resource, T>)
+	requires (std::is_base_of_v<Resource, T>)
 	class ResourceReference: public Serialization::SerializableObject
 	{
 		public:
 			T* obj;
 
-			ResourceReference(T* obj)
+			ResourceReference(T* obj = nullptr)
 			:obj(obj)
 			{ }
+
+			~ResourceReference() { }
+
+			void operator=(T* _obj) {
+				obj = _obj;
+			}
 
 			inline void Serialize() const override
 			{

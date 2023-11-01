@@ -9,8 +9,9 @@ namespace SC
 	class Texture;
 	class Shader;
 	struct Renderer: public NativeScript {
-		Renderer(Material& mat) :mat(mat) { }
-		Material& mat;
+		Renderer(Material* mat) :mat(mat) { }
+		Material* mat;
+		Color blendColor;
 
 		virtual void PostRender() = 0;
 	};

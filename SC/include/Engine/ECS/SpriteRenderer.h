@@ -24,8 +24,8 @@ namespace SC
 		void OnApplicationStart();
 
 		#ifdef SC_EDITOR_IMPL
-		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override { }
-		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override { }
+		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
 		#endif
 
 	public:
@@ -35,8 +35,9 @@ namespace SC
 		virtual uint64_t GetCID() override;
 
 	public:
-		Material material;
+		ResourceReference<Material> material;
+		Color color;
 
-	friend class Internal::Renderer;
+		friend class Internal::Renderer;
 	};
 }

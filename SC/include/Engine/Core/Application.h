@@ -69,7 +69,7 @@ namespace SC
 		/**
 		 * @brief Runs The Application
 		 */
-		void Run(void(*func)(void));
+		void Run(void(*func)(void), void(*addon_func)(void));
 
 		/**
 		 * @brief Close Window

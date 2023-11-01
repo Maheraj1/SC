@@ -85,7 +85,7 @@ namespace SC
 
 	Camera::Camera()
 	:fb(1280, 720)
-	{ 
+	{
 		SceneManager::GetCurrentScene().activeCamera = this;
 	}
 

@@ -25,7 +25,9 @@ namespace SC
 	}
 	#endif
 
+	struct Renderer;
 	class MonoCSScript;
+
 	class SC_API Entity
 	{
 	public:
@@ -40,9 +42,14 @@ namespace SC
 		uint64_t GetUUID() const;
 
 		IScript* AddComponent(uint64_t cid);
+		MonoCSScript* AddMonoComponent(uint64_t mono_cid);
 		IScript* GetComponent(uint64_t cid) const;
 		bool HasComponent(uint64_t cid) const;
 		void RemoveComponent(uint64_t cid);
+
+		bool IsRenderAble();
+
+		Renderer* GetAvailRenderer();
 
 		bool operator==(Entity& ent) {
 			return m_id == ent.m_id;

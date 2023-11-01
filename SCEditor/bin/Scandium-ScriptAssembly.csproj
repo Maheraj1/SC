@@ -1,13 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\SC-ScriptCore\SCEngine\SCEngine.csproj" />
+    <Reference Include="SCEngine">
+      <HintPath>../libs/SCEngine.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
+
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  
+
 </Project>

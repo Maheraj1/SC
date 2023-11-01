@@ -38,3 +38,5 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 idea
+
+!SCEditor/bin/

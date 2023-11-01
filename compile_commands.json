@@ -1470,5 +1470,30 @@
     "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
     "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Input/OpenGL/OpenGLInput.cpp",
     "output": "/Users/jigneshpatel/Dev/cpp/SC/SC/OpenGLInput.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang++",
+      "-DSC_RENDERER_OpenGL",
+      "-DGLFW_INCLUDE_NONE",
+      "-DSC_WINDOW_API_GLFW",
+      "-DSC_USE__asm__",
+      "-DSC_EDITOR_IMPL",
+      "-DSC_DEBUG",
+      "-std=c++20",
+      "-g3",
+      "-Iinclude",
+      "-I../ext/include/glm",
+      "-I../ext/include/glfw",
+      "-I../ext/include/glad",
+      "-I../ext/include/stbi",
+      "-I../ext/include/box2d",
+      "-I../ext/include/yaml-cpp",
+      "-I../ext/include/imgui",
+      "-Wall",
+      "-Wno-undefined-var-template"
+    ],
+    "directory": "/Users/jigneshpatel/Dev/cpp/SC/SC",
+    "file": "/Users/jigneshpatel/Dev/cpp/SC/SC/src/Internal/UI/ImGui.cpp"
   }
 ]

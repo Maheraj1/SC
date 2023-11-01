@@ -26,7 +26,7 @@ namespace SC
 		{ }
 
 		WindowProps()
-		:width(1280), height(720), title("SC Engine"), VSync(false)
+		:width(2240), height(1260), title("Scandium Engine"), VSync(false)
 		{ }
 	};
 

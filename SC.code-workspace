@@ -6,7 +6,9 @@
     ],
     "settings": {
         "files.associations": {
+            "*.scmsd": "yaml",
             "*.scrd": "yaml",
+            "*.scsrd": "yaml",
             "*.scs": "yaml",
             "*.scsr": "yaml",
             "*.scmat": "yaml",

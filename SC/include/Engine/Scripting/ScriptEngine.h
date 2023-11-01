@@ -77,9 +77,10 @@ namespace SC::Scripting {
 			static ClassField GetField(ClassField field);
 			static void SetField(ClassField data, Buffer& FieldData);
 
+			static void CompileAssembly(ScriptAssembly& assembly, const char* path);
 		private:
-			static void LoadClasses();
-		private:
+			static void LoadClasses(ScriptAssembly& assembly, bool isCore = false);
+		public:
 			struct ScriptEngineData {
 				ScriptAssembly mainAssembly;
 				ScriptAssembly coreAssembly;
@@ -92,8 +93,9 @@ namespace SC::Scripting {
 				std::vector<RegisteredScript> scripts;
 			};
 
+			static ScriptEngineData* GetData();
+		private:
 			static ScriptEngineData data;
-
 		friend class ScriptInstance;
 	};
 }

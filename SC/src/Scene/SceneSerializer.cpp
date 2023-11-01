@@ -126,7 +126,7 @@ namespace SC
 					auto scrN = scr["Name"].as<std::string>();
 					Serialization::SerializedData::currentNode = &scr;
 					
-					IScript* script = _ent.AddComponent(Internal::ComponentData::QualifiedNameToCID[scrN]);
+					IScript* script = _ent.AddComponent(Internal::ComponentData::QualifiedNameToCID[scrN]+1);
 
 					if (!scr["IsNative"].as<bool>()) {
 						((MonoCSScript*)script)->Init(scr["MonoName"].as<std::string>());

@@ -11,8 +11,8 @@ namespace SC {
 	class SC_API SCObject
 	{
 	public:
-		const char* name = Common::EmptyString;
-		SCObject(const char* name = Common::EmptyString):name(name) {}
+		std::string name = Common::EmptyString;
+		SCObject(std::string name = Common::EmptyString):name(name) {}
 
 		UUID uuid;
 	};

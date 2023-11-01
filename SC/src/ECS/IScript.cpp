@@ -10,14 +10,14 @@ template<typename T>
 uint64_t SC::ComponentID<T>::cid;
 
 namespace SC::Internal {
-	std::unordered_map<uint64_t, Component> ComponentData::components;
+	std::vector<Component> ComponentData::components;
 	std::unordered_map<std::string, uint64_t> ComponentData::TypeNameToCID;
 	std::unordered_map<std::string, uint64_t> ComponentData::QualifiedNameToCID;
-	uint64_t ComponentData::lastID = 1;
+	uint64_t ComponentData::lastID = 0;
 
 	void ComponentData::RegisterComponent(std::string name, std::string typeIDName, std::function<IScript*(void)> func) {
 		lastID++;
-		components.try_emplace(lastID, 
+		components.push_back(
 			Component {
 				.qualifiedName = name,
 				.TypeName = typeIDName,
@@ -25,17 +25,17 @@ namespace SC::Internal {
 				.cid = lastID
 			}
 		);
-		TypeNameToCID.try_emplace(typeIDName, lastID);
-		QualifiedNameToCID.try_emplace(name, lastID);
+		TypeNameToCID.try_emplace(typeIDName, lastID-1);
+		QualifiedNameToCID.try_emplace(name, lastID-1);
 	}
 
 	void ComponentData::RegisterAllComponents() {
-		REGISTER_COMPONENT(SC::MonoCSScript);
 		REGISTER_COMPONENT(SC::Camera);
 		REGISTER_COMPONENT(SC::SpriteRenderer);
 		REGISTER_COMPONENT(SC::RigidBody);
 		REGISTER_COMPONENT(SC::BoxCollider);
 		REGISTER_COMPONENT(SC::CircleCollider);
+		REGISTER_COMPONENT(SC::MonoCSScript);
 	}
 }
 
@@ -47,6 +47,13 @@ namespace SC::Editor {
 		*dat = n;
 		
 		data.emplace_back((void*)dat, name, EditorType::Float);
+	}
+
+	void EditorDrawData::DrawBool(bool n, std::string name) { 
+		auto dat = (bool*)malloc(sizeof(bool));
+		*dat = n;
+		
+		data.emplace_back((void*)dat, name, EditorType::Bool);
 	}
 
 	void EditorDrawData::DrawInt(int n, std::string name) {
@@ -61,6 +68,13 @@ namespace SC::Editor {
 		*dat = n;
 		
 		data.emplace_back((void*)dat, name, EditorType::Vector2);
+	}
+
+	void EditorDrawData::DrawColor(ColorF n, std::string name) { 
+		auto dat = (ColorF*)malloc(sizeof(ColorF));
+		*dat = n;
+		
+		data.emplace_back((void*)dat, name, EditorType::Color);
 	}
 	
 	void EditorDrawData::DrawEnum(int n, std::string enum_names, int size, std::string name) { 

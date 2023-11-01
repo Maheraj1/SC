@@ -1,22 +1,42 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/Core/UUID.h"
+#include "Engine/ECS/IScript.h"
+#include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/ECS/Transform.h"
 #include "Engine/ECS/MonoCSScript.h"
+#include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Scripting/ScriptInstance.h"
 
 namespace SC
 {
+	bool Entity::IsRenderAble() {
+		return HasComponent(ComponentID<SpriteRenderer>::cid);
+	}
+
+	Renderer* Entity::GetAvailRenderer() {
+		return (Renderer*)GetComponent(ComponentID<SpriteRenderer>::cid);
+	}
+
 	IScript* Entity::AddComponent(uint64_t id) {
-		scripts.push_back(Internal::ComponentData::components.at(id).CreateFunc());
+		scripts.push_back(Internal::ComponentData::components.at(id-1).CreateFunc());
 		scripts.back()->entity = this;
 		return scripts.back();
+	}
+
+	MonoCSScript* Entity::AddMonoComponent(uint64_t mono_cid) {
+		scripts.push_back(Internal::ComponentData::components.back().CreateFunc());
+		scripts.back()->entity = this;
+
+		Scripting::ScriptEngine::GetScript(mono_cid);
+
+		return (MonoCSScript*)scripts.back();
 	}
 
 	IScript* Entity::GetComponent(uint64_t id) const {
 		
 		for (auto script : scripts) {
 			if (script->IsNative()) {
-				if (script->GetCID() == id) return script;
+				if (script->GetCID() == id-1) return script;
 			}
 		}
 
@@ -80,4 +100,5 @@ namespace SC
 			scripts.erase(scripts.begin()+i);
 		}
 	}
+
 }
