@@ -1,7 +1,7 @@
 Version: 0.0.5a
 Objects:
   - Name: Camera
-    UUID: 4770212123759319347
+    UUID: 13892661036558129318
     Transform:
       position: [0, 0]
       rotation: 0
@@ -12,7 +12,7 @@ Objects:
         size: 5
         RenderToImage: true
   - Name: Box
-    UUID: 16289317212356640607
+    UUID: 17137185265978484579
     Transform:
       position: [0, 5]
       rotation: 0
@@ -37,7 +37,7 @@ Objects:
           UUID: 3256165952321071056
         Color: [128, 128, 128]
   - Name: Floor
-    UUID: 16239060614853636229
+    UUID: 8015420403029824465
     Transform:
       position: [0, -5]
       rotation: 0

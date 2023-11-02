@@ -24,6 +24,7 @@ namespace SC::Editor {
 		private:
 
 			bool DrawInspectorComponent(IScript* script);
+			void DrawSceneHeirarchy();
 			void DrawInspector();
 			void DrawToolbar();
 			void DrawViewPort();
@@ -35,6 +36,7 @@ namespace SC::Editor {
 			Texture* PauseTex;
 			Texture* StopTex;
 
+
 			Vector2f CameraPos = {0, 0};
 			float zoomLevel = 10.0f;
 			float CameraSpeed = 10.0f;
@@ -43,6 +45,8 @@ namespace SC::Editor {
 			FrameBuffer fb;
 			Console console;
 		public:
+			UUID entSelectedID = 0;
+			Entity* entSelected;
 			uint32_t ViewPortTex;
 			uint32_t GameViewTex;
 			bool IsViewPortSelected = false;
