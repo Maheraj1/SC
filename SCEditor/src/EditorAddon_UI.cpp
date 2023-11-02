@@ -187,10 +187,6 @@ namespace SC::Editor {
 			case Tool::Scale:
 				return ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
 				break;
-			case Tool::Universal:
-				return ImGuizmo::TRANSLATE_X | ImGuizmo::TRANSLATE_Y | ImGuizmo::ROTATE_Z |
-				 ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
-				break;
 		}
 	}
 
@@ -217,9 +213,17 @@ namespace SC::Editor {
 			glm::mat4 transform = entSelected->transform.GetModel();
 			glm::mat4 camView = Utils::GetCameraMatrix(CameraPos);
 			glm::mat4 proj = Utils::GetProjectionMatrix(ViewPortSize, zoomLevel);
+
+			float snapValue = 0.5f;
+			if (current_tool == Tool::Rotate)
+				snapValue = 45.0f;
+			
+			bool snap = Input::GetKey(KeyCode::LEFT_CONTROL);
+			float snapValues[3] = {snapValue, snapValue, snapValue};
 			
 			ImGuizmo::Manipulate(glm::value_ptr(camView), glm::value_ptr(proj), 
-			 ToolToOperation(current_tool), ImGuizmo::MODE::LOCAL, glm::value_ptr(transform));
+			 ToolToOperation(current_tool), ImGuizmo::MODE::LOCAL, glm::value_ptr(transform), nullptr,
+			 snap ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing()) {
 
@@ -236,11 +240,6 @@ namespace SC::Editor {
 						entSelected->transform.rotation = rot.z;
 						break;
 					case Tool::Scale:
-						entSelected->transform.scale = {scale.x, scale.y};
-						break;
-					case Tool::Universal:
-						entSelected->transform.position = pos;
-						entSelected->transform.rotation = rot.z;
 						entSelected->transform.scale = {scale.x, scale.y};
 						break;
 				}
