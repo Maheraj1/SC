@@ -1,14 +1,18 @@
 #pragma once
 
+#include "Engine/Input/Input.h"
 #include "Engine/Input/KeyCode.h"
 
 namespace SC
 {
-	class ApplicationAddons
+	class ApplicationAddon
 	{
 		public:
-			ApplicationAddons() {}
-			virtual ~ApplicationAddons() {}
+			ApplicationAddon() {}
+			virtual ~ApplicationAddon() {}
+			
+			virtual void OnKeyDown(OnKeyDownArgs args) = 0;
+			virtual void OnMouseButtonDown(OnMouseButtonDownArgs args) = 0;
 			virtual void PreFrameRender() = 0;
 			virtual void PostFrameRender() = 0;
 			virtual void Update() = 0;

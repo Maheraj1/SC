@@ -2,6 +2,7 @@
 #include "Editor/ContentBrowser.h"
 #include "Editor/EditorAddon.h"
 #include "Engine/Scripting/ScriptEngine.h"
+#include "ImGuizmo.h"
 #include "UI/SCImGui.h"
 
 #include "Engine/Core/Application.h"
@@ -24,6 +25,8 @@
 #include "Engine/Core/Platform.h"
 
 
+#include "glm/fwd.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 #include "glm/common.hpp"
 #include "glm/geometric.hpp"
@@ -34,6 +37,24 @@
 #include <iterator>
 #include <string>
 #include <xlocale/_stdio.h>
+
+namespace Utils {
+	glm::mat4 GetCameraMatrix(glm::vec2 cam_pos) {
+		glm::mat4 mat(1.0f);
+		
+		mat = glm::translate(mat, {cam_pos.x, cam_pos.y, 1.0f});
+
+		return mat;
+	}
+
+	glm::mat4 GetProjectionMatrix(glm::ivec2 window_size, float zoom_level) {
+		
+		float aspectRatio = (float)window_size.x / (float)window_size.y;
+		glm::mat4 proj = glm::ortho(-aspectRatio * zoom_level, aspectRatio * zoom_level, -zoom_level, zoom_level);
+
+		return proj;
+	}
+}
 
 namespace SC::Editor {
 
@@ -166,6 +187,25 @@ namespace SC::Editor {
 		ViewPortSize = UI::ImGui::GetContentRegionAvail();
 
 		UI::ImGui::Image(reinterpret_cast<void*>(ViewPortTex), UI::ImGui::GetContentRegionAvail());
+
+		if (entSelected) {
+			ImGuizmo::SetOrthographic(true);
+			ImGuizmo::SetDrawlist();
+			
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y,
+			 ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+			glm::mat4 transform = entSelected->transform.GetModel(false, true);
+			glm::mat4 camView = Utils::GetCameraMatrix(CameraPos);
+			glm::mat4 proj = Utils::GetProjectionMatrix(ViewPortSize, zoomLevel);
+			
+			ImGuizmo::Manipulate(glm::value_ptr(camView), glm::value_ptr(proj), 
+			 ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform));
+
+			if (ImGuizmo::IsUsing()) {
+				entSelected->transform.position = glm::vec2(transform[3]);
+			}
+		}
 		
 		ImGui::End();
 
@@ -211,6 +251,10 @@ namespace SC::Editor {
 		ImGui::End();
 	}
 
+	void EditorAddon::DrawGizmos() {
+		if (!enableGizmos) return;
+	}
+
 	void EditorAddon::PostFrameRender() {
 		GameViewTex = SceneManager::GetCurrentScene().GetCurrentCamera()->fb.GetTextureID();
 
@@ -218,6 +262,7 @@ namespace SC::Editor {
 
 		// ImGui Frame
 		UI::ImGui::BeginFrame();
+		ImGuizmo::BeginFrame();
 
 		DrawMenubar();
 		DrawToolbar();
@@ -227,9 +272,10 @@ namespace SC::Editor {
 		DrawStats();
 		DrawContentBrowser();
 		console.DrawConsole();
+		DrawGizmos();
 
 		ImGui::ShowDemoWindow();
-
+		
 		UI::ImGui::EndFrame();
 	}
 

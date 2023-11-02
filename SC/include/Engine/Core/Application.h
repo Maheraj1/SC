@@ -50,7 +50,7 @@ namespace SC
 		
 		static bool AutoGenerateTexture;
 		static bool PlayerLoopStarted;
-		std::vector<ApplicationAddons*> addons;
+		std::vector<ApplicationAddon*> addons;
 
 		static const bool& IsFocused;
 		static const bool& IsEditor;

@@ -1,5 +1,6 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Event.h"
+#include "Engine/Input/Input.h"
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/Camera.h"
 #include "Engine/ECS/IScript.h"
@@ -69,6 +70,8 @@ namespace SC
 
 		for (auto addon: addons) {
 			addon->Start();
+			Input::OnKeyDown.AddListener([&](auto e) {addon->OnKeyDown(e);});
+			Input::OnMouseButtonDown.AddListener([&](auto e) {addon->OnMouseButtonDown(e);});
 		}
 
 		Scripting::ScriptEngine::Init("SC-JIT-Runtime", ".");
@@ -143,6 +146,7 @@ namespace SC
 		OnWindowClose += [&](WindowCloseArgs args) {Application::Close();};
 		OnAppPlay.SetListener([&](EventArgs a) { Application::OnScenePlay(); }, 0);
 		OnAppStop.SetListener([&](EventArgs a) { Application::OnSceneStop(); }, 0);
+		Input::Init();
 	}
 
 	Application::~Application() { 

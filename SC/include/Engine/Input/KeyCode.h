@@ -1,6 +1,6 @@
 #pragma once
 
-enum class KeyCode
+enum class KeyCode: unsigned int
 {
 	SPACE             = 32,
 	APOSTROPHE        = 39,  /* ' */
@@ -96,6 +96,7 @@ enum class KeyCode
 	F23               = 312,
 	F24               = 313,
 	F25               = 314,
+	/* Keypad */
 	KP_0              = 320,
 	KP_1              = 321,
 	KP_2              = 322,
@@ -113,6 +114,7 @@ enum class KeyCode
 	KP_ADD            = 334,
 	KP_ENTER          = 335,
 	KP_EQUAL          = 336,
+	
 	LEFT_SHIFT        = 340,
 	LEFT_CONTROL      = 341,
 	LEFT_ALT          = 342,
@@ -122,4 +124,21 @@ enum class KeyCode
 	RIGHT_ALT         = 346,
 	RIGHT_SUPER       = 347,
 	MENU              = 348,
+};
+
+enum class ModKey: unsigned int {
+	None = 0,
+	Shift = 0x1,
+	Control = 0x2,
+	Alt = 0x4,
+	// Windows key (Windows) or Command (Mac)
+	Super = 0x8,
+	Caps_Lock = 0x10,
+	Num_Lock = 0x20,
+};
+
+enum class MouseButton: unsigned int {
+	Left = 0,
+	Right = 1,
+	Middle = 2
 };

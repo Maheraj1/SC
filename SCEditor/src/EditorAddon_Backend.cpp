@@ -1,5 +1,7 @@
 #include "Editor/ContentBrowser.h"
 #include "Editor/EditorAddon.h"
+
+#include "ImGuizmo.h"
 #include "UI/SCImGui.h"
 
 #include "Engine/Input/KeyCode.h"
@@ -15,6 +17,26 @@
 
 namespace SC::Editor {
 
+	void EditorAddon::OnKeyDown(OnKeyDownArgs args) {
+		switch (args.key) {
+			
+			case KeyCode::S:
+				if (args.modifiers & (uint)ModKey::Control)
+					SaveScene();
+				break;
+			
+			case KeyCode::E:
+				break;
+			case KeyCode::R:
+				break;
+			case KeyCode::T:
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	void EditorAddon::PreFrameRender() {	
 		Internal::CameraData data;
 		data.RenderToScreen = false;
@@ -27,8 +49,6 @@ namespace SC::Editor {
 		
 		if (ViewPortOpen) 
 			ViewPortTex = Internal::SceneRenderer::Render(data, fb);
-
-		if (Input::GetKey(KeyCode::S) && Input::GetKey(KeyCode::LEFT_CONTROL) && sceneUnSaved) SaveScene();
 	}
 
 	void EditorAddon::Update() {

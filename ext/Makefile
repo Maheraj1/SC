@@ -23,10 +23,10 @@ libimgui-glfw-metal.dylib:
 
 # ImGuizmo
 
-_SRC += $(wildcard *.cpp)
+_SRC += $(wildcard imguizmo/*.cpp)
 
 _FLAGS = -std=c++20 -O3
-_CXX_FLAGS = -DGLFW_INCLUDE_NONE -I../include/imgui -L. -limgui-glfw-opengl
+_CXX_FLAGS = -DGLFW_INCLUDE_NONE -Iinclude/imgui -L. -limgui-glfw-opengl
 
 libimguizmo.dylib:
 	@clang++ $(_SRC) -o $@ $(_FLAGS) -shared -fPIC $(_CXX_FLAGS)

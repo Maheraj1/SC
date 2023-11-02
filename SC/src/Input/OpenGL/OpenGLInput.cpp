@@ -1,12 +1,27 @@
 #include "Engine/Core/Application.h"
 #include "Engine/Input/Input.h"
+#include "Engine/Input/KeyCode.h"
 
 #include <GLFW/glfw3.h>
 #include <cstddef>
 
 namespace SC 
 {
+	EventHandler<OnKeyDownArgs> Input::OnKeyDown;
 	static GLFWwindow* window;
+
+	void Input::Init() {
+		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+			if (action == GLFW_PRESS)
+				OnKeyDown.Call({(KeyCode)key, (uint)mods});
+		});
+
+		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) { 
+			if (action == GLFW_PRESS) {
+				OnMouseButtonDown.Call({(MouseButton)button, (uint)mods});
+			}
+		});
+	}
 
 	bool Input::GetKeyDown(KeyCode key) {
 		if (window == NULL) window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());

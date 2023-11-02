@@ -132,7 +132,7 @@ namespace SC::Editor {
 				change = ImGui::Checkbox(id.c_str(), (bool*)cmd.data);
 				break;
 			case EditorType::Float:
-				change = ImGui::DragFloat(id.c_str(), (float*)cmd.data, .1f);
+				change = ImGui::DragFloat(id.c_str(), (float*)cmd.data, .2f);
 				break;
 			case EditorType::Vector2:
 				change = DrawVector2(cmd.name, *(Vector2*)cmd.data, false);
@@ -211,7 +211,7 @@ namespace SC::Editor {
 
 			ImGui::Text("Rotation");
 			ImGui::SameLine();
-			change = ImGui::InputFloat("##Rotation", &entSelected->transform.rotation) ? true: change;
+			change = ImGui::DragFloat("##Rotation", &entSelected->transform.rotation, 0.1f) ? true: change;
 
 			sceneUnSaved = change ? true: sceneUnSaved;
 		}

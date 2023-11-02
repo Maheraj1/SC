@@ -13,7 +13,6 @@ namespace SC
 	{
 	private:
 		uint32_t texID;
-		Matrix4 ViewProjection;
 		static Camera* instance;
 
 		void Start() override;
@@ -28,8 +27,8 @@ namespace SC
 		Camera();
 		~Camera() { }
 
-		Matrix4 GetViewProjection();
-		void ReCalculateViewProjection();
+		Matrix4 GetViewMatrix();
+		Matrix4 GetProjectionMatrix(Vector2i window_size = Vector2i{0, 0});
 		uint32_t GetRenderTexture();
 
 		virtual uint64_t GetCID() override;

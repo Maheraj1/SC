@@ -18,12 +18,12 @@ namespace SC
 	class SC_API Transform: public Serialization::SerializableObject
 	{
 	private:
-		Matrix4 GetModel(bool useScale = true) const;
 		void Serialize() const override;
 		void DeSerialize() override;
 	public:
 		Transform();
 		Transform(Vector2 position, float rotation, Vector2 scale);
+		Matrix4 GetModel(bool useScale = true, bool useRotation = true) const;
 
 		Vector2 position;
 		float rotation;
