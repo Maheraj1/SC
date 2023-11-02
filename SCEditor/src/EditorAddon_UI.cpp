@@ -27,6 +27,7 @@
 
 #include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/trigonometric.hpp"
 #include "imgui.h"
 #include "glm/common.hpp"
 #include "glm/geometric.hpp"
@@ -175,6 +176,20 @@ namespace SC::Editor {
 		ImGui::End();
 	}
 
+	ImGuizmo::OPERATION ToolToOperation(Tool tool) {
+		switch (tool) {
+			case Tool::Translate:
+				return ImGuizmo::TRANSLATE_X | ImGuizmo::TRANSLATE_Y;
+				break;
+			case Tool::Rotate:
+				return ImGuizmo::ROTATE_Z;
+				break;
+			case Tool::Scale:
+				return ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
+				break;
+		}
+	}
+
 	void EditorAddon::DrawViewPort() {
 		using namespace ::SC::Internal;
 
@@ -200,10 +215,18 @@ namespace SC::Editor {
 			glm::mat4 proj = Utils::GetProjectionMatrix(ViewPortSize, zoomLevel);
 			
 			ImGuizmo::Manipulate(glm::value_ptr(camView), glm::value_ptr(proj), 
-			 ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::MODE::LOCAL, glm::value_ptr(transform));
+			 ToolToOperation(current_tool), ImGuizmo::MODE::LOCAL, glm::value_ptr(transform));
 
 			if (ImGuizmo::IsUsing()) {
-				entSelected->transform.position = glm::vec2(transform[3]);
+
+				glm::vec3 pos, rot, scale;
+
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
+				 glm::value_ptr(pos), glm::value_ptr(rot), glm::value_ptr(scale));
+
+				entSelected->transform.position = pos;
+				entSelected->transform.rotation = rot.z;
+				entSelected->transform.scale = scale;
 			}
 		}
 		

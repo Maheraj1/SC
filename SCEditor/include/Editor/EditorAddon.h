@@ -11,6 +11,12 @@
 #define EDITOR_I EditorAddon::instance
 
 namespace SC::Editor {
+	enum class Tool {
+		Translate,
+		Rotate,
+		Scale
+	};
+
 	class EditorAddon: public ApplicationAddon
 	{
 		public:
@@ -48,6 +54,8 @@ namespace SC::Editor {
 
 			FrameBuffer fb;
 			Console console;
+
+			Tool current_tool;
 		public:
 			UUID entSelectedID = 0;
 			Entity* entSelected;

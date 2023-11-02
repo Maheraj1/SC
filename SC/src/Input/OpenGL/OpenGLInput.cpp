@@ -8,14 +8,15 @@
 namespace SC 
 {
 	EventHandler<OnKeyDownArgs> Input::OnKeyDown;
+	EventHandler<OnMouseButtonDownArgs> Input::OnMouseButtonDown;
 	static GLFWwindow* window;
 
 	void Input::Init() {
+		window = static_cast<GLFWwindow*>(Application::GetWindow().GetNativeWindow());
 		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
 			if (action == GLFW_PRESS)
 				OnKeyDown.Call({(KeyCode)key, (uint)mods});
 		});
-
 		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) { 
 			if (action == GLFW_PRESS) {
 				OnMouseButtonDown.Call({(MouseButton)button, (uint)mods});

@@ -17,6 +17,8 @@
 
 namespace SC::Editor {
 
+	void EditorAddon::OnMouseButtonDown(OnMouseButtonDownArgs args) {}
+
 	void EditorAddon::OnKeyDown(OnKeyDownArgs args) {
 		switch (args.key) {
 			
@@ -26,10 +28,13 @@ namespace SC::Editor {
 				break;
 			
 			case KeyCode::E:
+				current_tool = Tool::Translate;
 				break;
 			case KeyCode::R:
+				current_tool = Tool::Rotate;
 				break;
 			case KeyCode::T:
+				current_tool = Tool::Scale;
 				break;
 
 			default:
