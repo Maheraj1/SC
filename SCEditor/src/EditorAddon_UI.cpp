@@ -187,6 +187,10 @@ namespace SC::Editor {
 			case Tool::Scale:
 				return ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
 				break;
+			case Tool::Universal:
+				return ImGuizmo::TRANSLATE_X | ImGuizmo::TRANSLATE_Y | ImGuizmo::ROTATE_Z |
+				 ImGuizmo::SCALE_X | ImGuizmo::SCALE_Y;
+				break;
 		}
 	}
 
@@ -210,7 +214,7 @@ namespace SC::Editor {
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y,
 			 ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
-			glm::mat4 transform = entSelected->transform.GetModel(false, true);
+			glm::mat4 transform = entSelected->transform.GetModel();
 			glm::mat4 camView = Utils::GetCameraMatrix(CameraPos);
 			glm::mat4 proj = Utils::GetProjectionMatrix(ViewPortSize, zoomLevel);
 			
@@ -224,9 +228,23 @@ namespace SC::Editor {
 				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform),
 				 glm::value_ptr(pos), glm::value_ptr(rot), glm::value_ptr(scale));
 
-				entSelected->transform.position = pos;
-				entSelected->transform.rotation = rot.z;
-				entSelected->transform.scale = scale;
+				switch (current_tool) {
+					case Tool::Translate:
+						entSelected->transform.position = pos;
+						break;
+					case Tool::Rotate:
+						entSelected->transform.rotation = rot.z;
+						break;
+					case Tool::Scale:
+						entSelected->transform.scale = {scale.x, scale.y};
+						break;
+					case Tool::Universal:
+						entSelected->transform.position = pos;
+						entSelected->transform.rotation = rot.z;
+						entSelected->transform.scale = {scale.x, scale.y};
+						break;
+				}
+
 			}
 		}
 		

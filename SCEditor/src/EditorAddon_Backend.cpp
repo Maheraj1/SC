@@ -36,6 +36,9 @@ namespace SC::Editor {
 			case KeyCode::T:
 				current_tool = Tool::Scale;
 				break;
+			case KeyCode::Q:
+				current_tool = Tool::Universal;
+				break;
 
 			default:
 				break;

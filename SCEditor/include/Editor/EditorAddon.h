@@ -14,7 +14,8 @@ namespace SC::Editor {
 	enum class Tool {
 		Translate,
 		Rotate,
-		Scale
+		Scale,
+		Universal
 	};
 
 	class EditorAddon: public ApplicationAddon

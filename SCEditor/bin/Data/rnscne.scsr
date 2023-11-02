@@ -26,7 +26,7 @@ Objects:
         Name: SC::BoxCollider
         Density: 1
         Friction: 0.5
-        Restitution: 0.400000006
+        Restitution: 0
         RestitutionThreshold: 0.5
         IsTrigger: false
         size: [1, 1]
@@ -39,9 +39,9 @@ Objects:
   - Name: Floor
     UUID: 8015420403029824465
     Transform:
-      position: [0, -5]
+      position: [0, -7.11428452]
       rotation: 0
-      scale: [5, 1]
+      scale: [8.56435776, 2.93415213]
     Components:
       - IsNative: true
         Name: SC::RigidBody
