@@ -12,6 +12,7 @@
             "*.scs": "yaml",
             "*.scsr": "yaml",
             "*.scmat": "yaml",
+            "*.mh": "objective-c",
             "future": "cpp",
             "array": "cpp",
             "__tuple": "cpp",

@@ -145,46 +145,4 @@ namespace SC
 		glDeleteShader(fs);
 		return true;
 	}
-
-	// Shader variable stuff
-
-	void Shader::SetFloat(const char* VarName, float value)
-	{
-		GLCall(glUniform1f(glGetUniformLocation(m_id, VarName), value));
-	}
-
-	void Shader::SetVector2f(const char* VarName, Vector2f vec)
-	{
-		GLCall(glUniform2f(glGetUniformLocation(m_id, VarName), vec.x, vec.y));
-	}
-
-	void Shader::SetVector3f(const char* VarName, Vector3f vec)
-	{
-		GLCall(glUniform3f(glGetUniformLocation(m_id, VarName), vec.x, vec.y, vec.z));
-	}
-
-	void Shader::SetVector4f(const char* VarName, Vector4f vec)
-	{
-		GLCall(glUniform4f(glGetUniformLocation(m_id, VarName), vec.x, vec.y, vec.z, vec.w));
-	}
-
-	void Shader::SetInt(const char* VarName, int value)
-	{
-		GLCall(glUniform1i(glGetUniformLocation(m_id, VarName), value));
-	}
-
-	void Shader::SetVector2i(const char* VarName, Vector2i vec)
-	{
-		GLCall(glUniform2i(glGetUniformLocation(m_id, VarName), vec.x, vec.y));
-	}
-
-	void Shader::SetVector3i(const char* VarName, Vector3i vec)
-	{
-		GLCall(glUniform3i(glGetUniformLocation(m_id, VarName), vec.x, vec.y, vec.z));
-	}
-
-	void Shader::SetVector4i(const char* VarName,Vector4i vec)
-	{
-		GLCall(glUniform4i(glGetUniformLocation(m_id, VarName), vec.x, vec.y, vec.z, vec.w));
-	}
 }

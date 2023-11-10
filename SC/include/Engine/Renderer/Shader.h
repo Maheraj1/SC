@@ -27,14 +27,14 @@ namespace SC
 
 		// Shader variables functions
 
-		void SetFloat(const char* VarName, float value);
-		void SetVector2f(const char* VarName, Vector2f vec);
-		void SetVector3f(const char* VarName, Vector3f vec);
-		void SetVector4f(const char* VarName, Vector4f vec);
+		// void SetFloat(const char* VarName, float value);
+		// void SetVector2f(const char* VarName, Vector2f vec);
+		// void SetVector3f(const char* VarName, Vector3f vec);
+		// void SetVector4f(const char* VarName, Vector4f vec);
 
-		void SetInt(const char* VarName, int value);
-		void SetVector2i(const char* VarName,Vector2i vec);
-		void SetVector3i(const char* VarName,Vector3i vec);
-		void SetVector4i(const char* VarName,Vector4i vec);
+		// void SetInt(const char* VarName, int value);
+		// void SetVector2i(const char* VarName,Vector2i vec);
+		// void SetVector3i(const char* VarName,Vector3i vec);
+		// void SetVector4i(const char* VarName,Vector4i vec);
 	};
 }

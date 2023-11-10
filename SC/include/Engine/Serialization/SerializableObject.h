@@ -23,7 +23,7 @@ namespace SC::Serialization {
 		friend void SerializedData::AddValue<SerializableObject>(const SerializableObject* dat, const char* name);
 		friend void SerializedData::GetValue<SerializableObject>(SerializableObject* dat, const char* name);
 		
-		friend void SerializedData::AddValue<std::vector<SerializableObject*>>(const std::vector<SerializableObject*>* dat, const char* name);
-		friend void SerializedData::GetValue<std::vector<SerializableObject*>>(std::vector<SerializableObject*>* dat, const char* name);
+		friend void SerializedData::AddValue<std::vector<SerializableObject*> >(const std::vector<SerializableObject*>* dat, const char* name);
+		friend void SerializedData::GetValue<std::vector<SerializableObject*> >(std::vector<SerializableObject*>* dat, const char* name);
 	};
 }

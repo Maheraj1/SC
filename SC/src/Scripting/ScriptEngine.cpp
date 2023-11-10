@@ -13,6 +13,7 @@
 #include "mono/metadata/threads.h"
 
 #include <array>
+#include <filesystem>
 #include <map>
 #include <memory>
 
@@ -222,6 +223,8 @@ namespace SC::Scripting {
 
 		auto out = FileSystem::RunProgram("dotnet", "build");
 		Debug::OutputLog(out);
+
+		std::filesystem::copy_file("bin/Debug/net7.0/Scandium-ScriptAssembly.dll", "Libs/Scandium-ScriptAssembly.dll");
 
 		data.mainAssembly.Load("bin/Debug/net7.0/Scandium-ScriptAssembly.dll");
 	}

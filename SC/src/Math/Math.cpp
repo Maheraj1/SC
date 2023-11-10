@@ -43,48 +43,6 @@ namespace SC
 
         return {x, y, z};
     }
-
-    namespace UnitLiterals {
-        long double operator"" _km(long double n) 
-        {
-            return n/1000;
-        }
-
-        long double operator"" _ham(long double n) 
-        {
-            return n/100;
-        }
-
-        long double operator"" _dam(long double n) 
-        {
-            return n/10;
-        }
-
-        long double operator"" _m(long double n) 
-        {
-            return n;
-        }
-
-        long double operator"" _cm(long double n) 
-        {
-            return n*10;
-        }
-
-        long double operator"" _dm(long double n) 
-        {
-            return n*100;
-        }
-
-        long double operator"" _mm(long double n) 
-        {
-            return n*1000;
-        }
-
-        long double operator"" _um(long double n) 
-        {
-            return n*10000;
-        }
-    }
 };
 
 namespace std {

@@ -25,7 +25,6 @@ namespace SC::Internal
 	unsigned int Renderer::ErrorShaderID;
 
 	bool Renderer::WireFrameMode = false;
-	std::vector<BatchData> Renderer::batchData;
 
 	static uint VBO, EBO;
 	static unsigned int UBO_MVP;
@@ -68,6 +67,8 @@ namespace SC::Internal
 
 			GLCall(glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0));
 		}
+
+		
 	}
 
 	void Renderer::Init()
@@ -123,11 +124,11 @@ layout(std140) uniform Matrix
 void main() {
 	gl_Position = proj * vec4(i_pos.xy, 0.0, 1.0);
 })";
-		const char *fss = R"(#version 410 core
+		const char* fss = R"(#version 410 core
 out vec4 o_color;
 
 void main() {
-	o_color = vec4(1, 0.75294117647, 0.79607843137, 1.0);
+	o_color = vec4()" ERROR_SHADER_COLOR_RGB R"();
 })";
 
         glShaderSource(vs, 1, &vss, NULL);
@@ -165,7 +166,7 @@ layout(std140) uniform Matrix
 };
 
 void main() {
-	gl_Position = proj * vec4(i_pos.xy, 0.0, 1.0);
+	gl_Position = vec4(i_pos.xy, 0.0, 1.0) * proj;
 	vs_out.texCoords = i_texCoords;
 	vs_out.color = i_color;
 	vs_out.tex = i_tex;
@@ -198,12 +199,4 @@ void main() {
 		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4), glm::value_ptr(_proj)));
 	}
 
-
-	EntityBatchArray::EntityBatchArray() { }
-
-	EntityBatchArray::~EntityBatchArray() { }
-
-	void EntityBatchArray::operator++() { entC++;}
-
-	void EntityBatchArray::operator--() { entC--;}
 }

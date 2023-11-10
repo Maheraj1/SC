@@ -3,7 +3,9 @@
 // Core.h file for dynamic libary support
 
 #include <string>
+#ifndef NO_USING_NAMESPACE
 using namespace std::string_literals;
+#endif
 
 #include "Platform.h"
 

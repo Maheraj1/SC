@@ -44,17 +44,6 @@ namespace SC
         static Vector3f Lerp(Vector3f a, Vector3f b, float t);
     };
 
-    namespace UnitLiterals {
-        long double operator"" _km(long double n);
-        long double operator"" _ham(long double n);
-        long double operator"" _dam(long double n);
-        long double operator"" _m(long double n);
-        long double operator"" _cm(long double n);
-        long double operator"" _dm(long double n);
-        long double operator"" _mm(long double n);
-        long double operator"" _um(long double n);
-    }
-
     /**
      * @brief Convertor of glm::vec2/Vector2 to box2dVec2 
      * 

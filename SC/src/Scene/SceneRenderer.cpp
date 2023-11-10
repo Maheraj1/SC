@@ -20,7 +20,7 @@ namespace SC::Internal
 		view = glm::rotate(view, data.Rotation, {0.0f, 0.0f, 1.0f});
 		
 		// Set camera data
-		Renderer::SetMVP(proj*view);
+		Renderer::SetMVP(view*proj);
 
 		// Render current scene
 		Renderer::Render();

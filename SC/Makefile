@@ -4,8 +4,9 @@ include ../ext/ext.mk
 # Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
 # Change this accoding to your choice
 CXX = clang++
-# Options: OpenGL(currently Only Supported), Metal, DX11
-RENDERER = OpenGL
+# Options: OpenGL, Metal, *DX11
+# `*` Not supported
+RENDERER = Metal
 FRAMEWORKS = 
 OTHER_ARGS = -g3
 VERSION = -std=c++20
@@ -40,11 +41,11 @@ ifeq ($(UNAME_S), Darwin)
 
 	# TODO Add Metal Spport	
 	ifeq ($(RENDERER), Metal)
-		FRAMEWORKS += -framework Metal
+		FRAMEWORKS += -framework Metal -framework QuartzCore -framework Foundation
 		DEFINES += -DGLFW_EXPOSE_NATIVE_COCOA
-		SRC += $(wildcard $(SRC_DIR)/Window/Metal/*.cpp)
-		SRC += $(wildcard $(SRC_DIR)/Renderer/Metal/*.cpp)
-		SRC += $(wildcard $(SRC_DIR)/Input/Metal/*.cpp)
+		SRC += $(wildcard $(SRC_DIR)/Window/Metal/*.mm)
+		SRC += $(wildcard $(SRC_DIR)/Renderer/Metal/*.mm)
+		SRC += $(wildcard $(SRC_DIR)/Input/Metal/*.mm)
 	endif
 endif
 
@@ -61,6 +62,11 @@ LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS) $(EXT_LDFL
 
 %.o: src/**/**/%.cpp
 	@$(CXX) -o $@ $< $(CXXFLAGS)
+	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
+
+
+%.o: src/**/**/%.mm
+	@$(CXX) -o $@ $< $(CXXFLAGS) -ObjC++ -fobjc-weak -fobjc-arc
 	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
 
 %.o: src/**/%.cpp
