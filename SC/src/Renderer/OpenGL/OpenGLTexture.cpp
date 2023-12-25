@@ -13,14 +13,14 @@ namespace SC
 	Texture::Texture()
 	:m_id(0),
 	TextureW{GL_REPEAT, GL_REPEAT}, TextureF{GL_LINEAR, GL_LINEAR},
-	Format(GL_RGB8), IFormat(GL_RGB),
+	Format(GL_RGB32F), IFormat(GL_RGB),
 	fp(nullptr)
 	{ }
 
 	Texture::Texture(const char* fp)
 	:m_id(0),
 	TextureW{GL_REPEAT, GL_REPEAT}, TextureF{GL_LINEAR, GL_LINEAR},
-	Format(GL_RGB8), IFormat(GL_RGB),
+	Format(GL_RGB32F), IFormat(GL_RGB),
 	fp(fp)
 	{ }
 

@@ -140,31 +140,6 @@ namespace YAML {
 			return true;
 		}
 	};
-
-	template<>
-	struct convert<SC::Color>
-	{
-		static Node encode(const SC::Color& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, SC::Color& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-
-			rhs.x = node[0].as<uint8_t>();
-			rhs.y = node[1].as<uint8_t>();
-			rhs.z = node[2].as<uint8_t>();
-			return true;
-		}
-	};
 }
 
 namespace SC::Serialization 
@@ -348,27 +323,6 @@ namespace SC::Serialization
 	}
 
 	template<>
-	void SerializedData::AddValue<Color>(const Color& dat, const char* name)
-	{
-		NAME__NULL
-		
-		YAML::Emitter& _emt = *emt;
-		_emt << YAML::Key << name << YAML::Value;
-		_emt << YAML::Flow << YAML::BeginSeq << dat.r << dat.g << dat.b << YAML::EndSeq;
-	}
-
-	template<>
-	void SerializedData::AddValue<Color16>(const Color16& dat, const char* name)
-	{
-		NAME__NULL
-		
-		YAML::Emitter& _emt = *emt;
-		_emt << YAML::Key << name << YAML::Value;
-		_emt << YAML::Flow << YAML::BeginSeq << dat.r << dat.g << dat.b << YAML::EndSeq;
-	}
-
-
-	template<>
 	void SerializedData::AddValue(const SerializableResource* dat, const char* name)
 	{
 		NAME__NULL
@@ -514,13 +468,6 @@ namespace SC::Serialization
 	{
 		NAME__NULL
 		dat = (*currentNode)[name].as<Vector3i>();
-	}
-	template<>
-	void SerializedData::GetValue<>(Color16& dat, const char* name)
-	{
-		NAME__NULL
-		
-		dat = (*currentNode)[name].as<Color16>();
 	}
 
 	template<>

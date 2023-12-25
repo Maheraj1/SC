@@ -20,5 +20,8 @@ namespace SC {
 		return uuid;
 	}
 
-	bool Shader::Compile(const char* src) { return true; }
+	bool Shader::Compile(const char* src) { 
+		
+		return true; 
+	}
 }

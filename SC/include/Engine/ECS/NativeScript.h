@@ -37,6 +37,7 @@ namespace SC {
 			virtual void Update() { }
 			virtual void FixedUpdate() { }
 			virtual void OnDestroy() { }
+			virtual void PreRender() { }
 		friend class Entity;
 	};
 }

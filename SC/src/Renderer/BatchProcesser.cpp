@@ -5,184 +5,130 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Resources/ResourceMap.h"
 #include "Engine/Scene/SceneManager.h"
 #include "glm/detail/type_mat3x4.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include <algorithm>
 
+#define AddNewBatch quad_data.push_back({});currentBatch = &quad_data.back()
+#define BATCH_DATA currentBatch->data
+
 namespace SC::Internal {
-	// just to make code look better
-	#define BatchEnt batches[currentBatch].entities
-	#define CurBatch batches[currentBatch]
 
-	#ifdef BATCH_TYPE_CLASS_ARRAY
-		#define entC_i(i) batches[i].entC
-		#define _entC CurBatch.entC
-		#define BATCH_ENT_FIELD(x, pos) BatchEnt[pos].x
-		#define BATCH_SET_FIELD(field, value) \
-			BATCH_ENT_FIELD(field, _entC)[0] = value;\
-			BATCH_ENT_FIELD(field, _entC)[1] = value;\
-			BATCH_ENT_FIELD(field, _entC)[2] = value;\
-			BATCH_ENT_FIELD(field, _entC)[3] = value;
-	#else
-		#define entC_i(i) batches[i].entities.entC
-		#define _entC BatchEnt.entC
-		#define BATCH_ENT_FIELD(x, pos) BatchEnt.x[pos]
-		#define BATCH_SET_FIELD(field, value) \
-			BATCH_ENT_FIELD(field, _entC + 0) = value;\
-			BATCH_ENT_FIELD(field, _entC + 1) = value;\
-			BATCH_ENT_FIELD(field, _entC + 2) = value;\
-			BATCH_ENT_FIELD(field, _entC + 3) = value;
-	#endif
-	
-	#define NEXT_ENT _entC++
-
-	std::vector<ImQuad> Renderer::quads;
+	std::vector<BatchQuad> Renderer::quad_data;
 	Vector2i Renderer::Resolution = {1280, 720};
-	std::vector<F_Batch_Data_Array> Renderer::batchData;
 
-	void Renderer::StartBatch()
-	{
-		std::vector<Batch> batches(1);
-		batchData.clear();
+	void Renderer::RenderQuad(ImQuad& quad, Shader* shader) {
 
-		uint currentBatch = 0;
-		for (Entity* ent: SceneManager::GetCurrentScene().m_objs)
-		{
-			if (_entC == MAX_BATCH_COUNT) currentBatch++;
+		BatchQuad* currentBatch = nullptr;
 
-			SpriteRenderer* sr = (SpriteRenderer*)ent->GetAvailRenderer();
-			if (sr == nullptr) continue;
+		if (!shader) {
 			
-			sr->PostRender();
+		}
+		
+		if (quad_data.size() == 0) {
+			AddNewBatch;
+			currentBatch->shader = shader;
+		}
+		else {
+			// set shader
 
-			if (batches[currentBatch].shader != sr->material->shader->GetShaderID())
-			{
-				for (int i = 0; i < batches.size(); i++)
-				{
-					if (batches[i].shader == sr->material->shader->GetShaderID()) {
-						currentBatch = i;
-					} else if (batches[i].shader == 0)
-					{
-						batches[i].shader = sr->material->shader->GetShaderID();
-					} else if (batches.size()-1 == currentBatch) {
-						currentBatch = batches.size();
-						batches.push_back(Batch());
-						batches[currentBatch].shader = sr->material->shader->GetShaderID();
-					}
+			for (int i = 0; i < quad_data.size(); i++) {
+				if (quad_data[i].shader->uuid == shader->uuid && quad_data[i].count < MAX_BATCH_COUNT) {
+					currentBatch = &quad_data[i];
 				}
 			}
 
-			for (uint i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
-			{
-				if (batches[currentBatch].Textures[i] == sr->material->texture->GetTextureID()) /* if texture list has the texture we need break from it add to binding list */
-				{
-                    BATCH_SET_FIELD(textureIndex, i);
-					break;
-				}
-				else if (batches[currentBatch].Textures[i] == 0) /* if slot is empty we will use it */
-				{
-					batches[currentBatch].Textures[i] = sr->material->texture->GetTextureID();
-					BATCH_SET_FIELD(textureIndex, i);
-					break;
-				} else if (i == MAX_TEXTURE_SLOT_USAGE-1) /* if it is last slot and no empty slot is found create a new Batch */
-				{
-					currentBatch = batches.size();
-					batches.push_back(Batch());
-					batches[currentBatch].shader = sr->material->shader->GetShaderID();
-					batches[currentBatch].Textures[0] = sr->material->texture->GetTextureID();
-					BATCH_SET_FIELD(textureIndex, i);
-				}
+			if (!currentBatch) {
+				AddNewBatch;
+				currentBatch->shader = shader;
 			}
-			batches[currentBatch].shader = sr->material->shader->GetShaderID();
-			
-			Matrix4 mat = ent->transform.GetModel(true);
+		}
+		
+		uint tex = 0;
 
-			// Set all Vertex Positions
-			BATCH_SET_FIELD(pos, mat * Vector4f(-1.0f, -1.0f, 0.0f, 1.0f));
-			BATCH_SET_FIELD(pos, mat * Vector4f( 1.0f, -1.0f, 0.0f, 1.0f));
-			BATCH_SET_FIELD(pos, mat * Vector4f( 1.0f,  1.0f, 0.0f, 1.0f));
-			BATCH_SET_FIELD(pos, mat * Vector4f(-1.0f,  1.0f, 0.0f, 1.0f));
-
-			// Set all Color Values
-
-			Vector3 colorMat = ((Vector3i)sr->material->color)/255.0f;
-			Vector3 colorBlend = ((Vector3i)sr->blendColor)/255.0f;
-
-			BATCH_SET_FIELD(color, colorMat * colorBlend);
-
-			NEXT_ENT;
-		};
-
-		for (int i = 0; i < batches.size(); i++) {
-			#ifdef BATCH_TYPE_CLASS_ARRAY
-
-
-			for (uint j = 0; j < entC_i(i); j++) {
-				std::array<uint, 6> ind;
-
-				ind[0] = 0;
-				ind[1] = 1;
-				ind[2] = 3;
-
-				ind[3] = 1;
-				ind[4] = 2;
-				ind[5] = 3;
-				
-				std::array<Vector2f, 4> texCoords;
-
-				texCoords[0] = {0, 0};
-				texCoords[1] = {1, 0};
-				texCoords[2] = {1, 1};
-				texCoords[3] = {0, 1};
-
-				batchData[i][j] = F_Batch_Data(BATCH_ENT_FIELD(pos, j), texCoords, BATCH_ENT_FIELD(color, j), 
-						BATCH_ENT_FIELD(textureIndex, j), ind, batches[i].Textures, batches[i].shader, entC_i(i)
-				);
+		for (int i = 0; i < currentBatch->textures.size(); i++) {
+			// if the texture already exists set the index of the texture
+			if (currentBatch->textures[i]->uuid == quad.texture->uuid) {
+				tex = i;
 			}
-
-			#else
-			std::array<uint, MAX_BATCH_COUNT * 6> ind;
-
-			for (int v = 0; v/6 < _entC; v += 6) {
-				ind[v + 0] = 0 + ((v / 6 ) * 4);
-				ind[v + 1] = 1 + ((v / 6 ) * 4);
-				ind[v + 2] = 3 + ((v / 6 ) * 4);
-
-				ind[v + 3] = 1 + ((v / 6 ) * 4);
-				ind[v + 4] = 2 + ((v / 6 ) * 4);
-				ind[v + 5] = 3 + ((v / 6 ) * 4);
-			}
-			
-			std::array<Vector2f, MAX_BATCH_COUNT * 4> texCoords;
-
-			int offset = 0;
-			for (int i2 = 0; i2 < _entC; i2++) {
-				texCoords[offset + 0] = {0, 0};
-				texCoords[offset + 1] = {1, 0};
-				texCoords[offset + 2] = {1, 1};
-				texCoords[offset + 3] = {0, 1};
-				offset += 4;
-			}
-
-			batchData.emplace_back(batches[i].entities.pos,
-									texCoords,
-									batches[i].entities.color,
-									batches[i].entities.textureIndex,
-									ind,
-									batches[i].Textures,
-									batches[i].shader,
-									entC_i(i)
-									);
-			#endif
 		}
 
-		batches.clear();
-	}
+		if (!tex) {
+			// There are available slots
+			if (currentBatch->textureCount < MAX_TEXTURE_SLOT_USAGE) {
+				currentBatch->textures[currentBatch->textureCount] = quad.texture;
+				tex = currentBatch->textureCount;
+				currentBatch->textureCount++;
+			} 
+			// No texture slot available
+			else {
+				AddNewBatch;
+				currentBatch->shader = shader;
+				currentBatch->textures[0] = quad.texture;
+				tex = 0;
+				currentBatch->textureCount++;
+			}
+		}
 
-	void Renderer::RenderQuad(Vector2 pos, float rot, Vector2 scale, Color color) {
-		quads.push_back({pos, rot, scale, color});
-	}
 
+		int offset_vert = currentBatch->count * 4;
+		
+		// Texture
+
+		// tex
+
+		BATCH_DATA[offset_vert + 0].tex = tex;
+		BATCH_DATA[offset_vert + 1].tex = tex;
+		BATCH_DATA[offset_vert + 2].tex = tex;
+		BATCH_DATA[offset_vert + 3].tex = tex;
+
+		// Texture coordinates	
+
+		BATCH_DATA[offset_vert + 0].tex_coords = {0, 0};
+		BATCH_DATA[offset_vert + 1].tex_coords = {1, 0};
+		BATCH_DATA[offset_vert + 2].tex_coords = {1, 1};
+		BATCH_DATA[offset_vert + 3].tex_coords = {0, 1};
+
+		// Color
+		BATCH_DATA[offset_vert + 0].color = quad.color;
+		BATCH_DATA[offset_vert + 1].color = quad.color;
+		BATCH_DATA[offset_vert + 2].color = quad.color;
+		BATCH_DATA[offset_vert + 3].color = quad.color;
+
+		// Position
+
+		Matrix4 mat = quad.transform.GetModel();
+
+		BATCH_DATA[offset_vert + 0].position = 
+			(Vector2f)(mat * Vector4f(-1.0f, -1.0f, 0.0f, 1.0f));
+
+		BATCH_DATA[offset_vert + 1].position = 
+			(Vector2f)(mat * Vector4f( 1.0f, -1.0f, 0.0f, 1.0f));
+
+		BATCH_DATA[offset_vert + 2].position = 
+			(Vector2f)(mat * Vector4f( 1.0f,  1.0f, 0.0f, 1.0f));
+
+		BATCH_DATA[offset_vert + 3].position = 
+			(Vector2f)(mat * Vector4f(-1.0f,  1.0f, 0.0f, 1.0f));
+	
+		// Indices
+
+		int offset_ind = currentBatch->count * 6;
+
+		currentBatch->indices[offset_ind + 0] = 0;
+		currentBatch->indices[offset_ind + 1] = 1;
+		currentBatch->indices[offset_ind + 2] = 3;
+
+		currentBatch->indices[offset_ind + 3] = 1;
+		currentBatch->indices[offset_ind + 4] = 2;
+		currentBatch->indices[offset_ind + 5] = 3;
+	}
+	
+	
+	void Renderer::RenderQuad(ImQuad& quad, uint64_t shader) {
+		RenderQuad(quad, Resources::GetResource<Shader>(shader));
+	}
 }

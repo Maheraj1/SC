@@ -8,6 +8,7 @@
 #include "Engine/Debug/Timmer.h"
 
 #include "glm/fwd.hpp"
+#include <cstddef>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <glad/glad.h>
@@ -31,6 +32,11 @@ namespace SC::Internal
 
 	static Matrix4 proj;
 
+	struct BatchData {
+		std::array<Vector2f, Renderer::MAX_BATCH_COUNT> pos;
+		std::array<Vector2f, Renderer::MAX_BATCH_COUNT> texCoords;
+	};
+
 	void Renderer::Render()
 	{
 		// Vector4f pos = proj * Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
@@ -42,30 +48,27 @@ namespace SC::Internal
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		for (const BatchData &batch : batchData)
+		for (const BatchQuad &quad_dat : quad_data)
 		{
-			if (batch.size <= 0) continue;
+			if (quad_dat.count <= 0) continue;
 
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, 64 * MAX_BATCH_COUNT, &batch.pos[0]));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 64 * MAX_BATCH_COUNT, 32 * MAX_BATCH_COUNT, &batch.texCoords[0]));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 96 * MAX_BATCH_COUNT, 48 * MAX_BATCH_COUNT, &batch.color[0]));
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 144 * MAX_BATCH_COUNT, 16 * MAX_BATCH_COUNT,&batch.tex[0]));
-			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &batch.indices[0]));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad_dat.data), &quad_dat.data));
+			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &quad_dat.indices[0]));
 			
-			GLCall(glUseProgram(batch.shader));
+			GLCall(glUseProgram(quad_dat.shader->GetShaderID()));
 			
 			int32_t tex[MAX_TEXTURE_SLOT_USAGE] = {};
 
-			for (int i = 0; i < MAX_TEXTURE_SLOT_USAGE; i++)
+			for (int i = 0; i < quad_dat.textureCount; i++)
 			{
 				GLCall(glActiveTexture(GL_TEXTURE0 + i));
-				GLCall(glBindTexture(GL_TEXTURE_2D, batch.Textures[i]));
+				GLCall(glBindTexture(GL_TEXTURE_2D, quad_dat.textures[i]->GetTextureID()));
 				tex[i] = i;
 			}
 
-			GLCall(glUniform1iv(glGetUniformLocation(batch.shader, "u_textures"), MAX_TEXTURE_SLOT_USAGE, tex));
+			GLCall(glUniform1iv(glGetUniformLocation(quad_dat.shader->GetShaderID(), "u_textures"), quad_dat.textureCount, tex));
 
-			GLCall(glDrawElements(GL_TRIANGLES, 6 * batch.size, GL_UNSIGNED_INT, 0));
+			GLCall(glDrawElements(GL_TRIANGLES, 6 * quad_dat.count, GL_UNSIGNED_INT, 0));
 		}
 
 		
@@ -86,25 +89,25 @@ namespace SC::Internal
 		glGenBuffers(1, &EBO);
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 24 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 6 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, 160 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData) * 4 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, 0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, position)));
 		glEnableVertexAttribArray(0);
 		
 		// texCoords
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8, reinterpret_cast<void*>(64 * MAX_BATCH_COUNT)); // 16 Positions 4 bytes each = 64 bytes
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, color)));
 		glEnableVertexAttribArray(1);
 
 		// color
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 12, reinterpret_cast<void*>(96 * MAX_BATCH_COUNT)); // 8 Coords 4 bytes each = 32 bytes + last (64 bytes) = 96
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, tex_coords)));
 		glEnableVertexAttribArray(2);
 
 		// texIndex
-		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 4, reinterpret_cast<void*>(144 * MAX_BATCH_COUNT)); // 4 Colors 12 byte each = 48 bytes + last (96 bytes) = 144
+		glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, tex)));
 		glEnableVertexAttribArray(3);
 
 		/// Error Shader

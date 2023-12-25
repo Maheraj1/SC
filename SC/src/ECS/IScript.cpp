@@ -70,8 +70,8 @@ namespace SC::Editor {
 		data.emplace_back((void*)dat, name, EditorType::Vector2);
 	}
 
-	void EditorDrawData::DrawColor(ColorF n, std::string name) { 
-		auto dat = (ColorF*)malloc(sizeof(ColorF));
+	void EditorDrawData::DrawColor(Color n, std::string name) { 
+		auto dat = (Color*)malloc(sizeof(Color));
 		*dat = n;
 		
 		data.emplace_back((void*)dat, name, EditorType::Color);

@@ -6,7 +6,7 @@ include ../ext/ext.mk
 CXX = clang++
 # Options: OpenGL, Metal, *DX11
 # `*` Not supported
-RENDERER = Metal
+RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
 VERSION = -std=c++20

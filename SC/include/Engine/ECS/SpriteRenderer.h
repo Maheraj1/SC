@@ -19,7 +19,7 @@ namespace SC
 		void DeSerialize() override;
 		void Start() override;
 		void Awake() override;
-		void PostRender() override;
+		void PreRender() override;
 		void OnRender() { }
 		void OnApplicationStart();
 

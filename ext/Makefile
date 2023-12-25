@@ -32,7 +32,7 @@ libimgui-glfw-metal.dylib: $(OBJ) imgui_impl_metal.o
 _SRC += $(wildcard imguizmo/*.cpp)
 
 _FLAGS = -std=c++20 -O3
-_CXX_FLAGS = -DGLFW_INCLUDE_NONE -Iinclude/imgui -L. -limgui-glfw-metal
+_CXX_FLAGS = -DGLFW_INCLUDE_NONE -Iinclude/imgui -L. -limgui-glfw-$(RENDERER)
 
 libimguizmo.dylib:
 	@clang++ $(_SRC) -o $@ $(_FLAGS) $(_CXX_FLAGS) $(LD_FLAGS)

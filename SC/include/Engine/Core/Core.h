@@ -24,3 +24,5 @@ using namespace std::string_literals;
         #define SC_API
     #endif
 #endif
+
+#define SC_HDR_MAX_VALUE 10

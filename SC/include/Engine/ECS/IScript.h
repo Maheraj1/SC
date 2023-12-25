@@ -30,6 +30,7 @@ namespace SC {
 			Update,
 			FixedUpdate,
 			OnDestroy,
+			PreRender
 		};
 	}
 	
@@ -102,7 +103,7 @@ namespace SC {
 			void DrawBool   (bool  n   , std::string name);
 			void DrawInt    (int n     , std::string name);
 			void DrawVector2(Vector2 n , std::string name);
-			void DrawColor  (ColorF n  , std::string name);
+			void DrawColor  (Color n  , std::string name);
 			
 			// `enum_names` value needs to be separated by zero or `\0`
 			void DrawEnum(int n, std::string enum_names, int size, std::string name);

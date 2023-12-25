@@ -1,5 +1,6 @@
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Math/Math.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Resources/ResourceMap.h"
 #include "Engine/Resources/Resources.h"
 #include "Engine/Renderer/Shader.h"
@@ -11,12 +12,18 @@
 namespace SC
 {
 	SpriteRenderer::SpriteRenderer()
-	:Renderer(nullptr) { }
+	:Renderer(nullptr)
+	 { }
 
-	void SpriteRenderer::PostRender()
+	void SpriteRenderer::PreRender()
 	{
 		Renderer::mat = material.obj;
-		Renderer::blendColor = color;
+		Internal::ImQuad quad;
+		quad.color = color * material->color;
+		quad.texture = material->texture.obj;
+		quad.transform = entity->transform;
+
+		Internal::Renderer::RenderQuad(quad, material->shader.obj);
 	}
 
 	void SpriteRenderer::Start() { 
@@ -28,16 +35,13 @@ namespace SC
 	void SpriteRenderer::Serialize() const
 	{
 		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
-		SC_ADD_PARAM((Color16)color, "Color");
+		SC_ADD_PARAM(color, "Color");
 	}
 
 	void SpriteRenderer::DeSerialize()
 	{	
 		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
-
-		Color16 color = {0, 0, 0};
 		SC_GET_PARAM(color, "Color");
-		this->color = color;
 	}
 
 	GET_CID_IMPL(SpriteRenderer);
@@ -49,11 +53,11 @@ namespace SC
 	#ifdef SC_EDITOR_IMPL
 	
 	void SpriteRenderer::OnIGUI(Editor::EditorDrawData& dcmd) { 
-		dcmd.DrawColor((color/255.0f), "Color");
+		dcmd.DrawColor((color), "Color");
 	}
 	
 	void SpriteRenderer::PostIGUI(Editor::EditorDrawData& dcmd) { 
-		color = (*((ColorF*)(dcmd.data[0].data))) * 255.0f;
+		color = (*((Color*)(dcmd.data[0].data)));
 	}
 	#endif
 

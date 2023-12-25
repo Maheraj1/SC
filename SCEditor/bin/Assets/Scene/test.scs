@@ -35,7 +35,7 @@ Objects:
         Name: SC::SpriteRenderer
         Material:
           UUID: 3256165952321071056
-        Color: [128, 128, 128]
+        Color: [0.5, 0.5, 0.5]
   - Name: Floor
     UUID: 8015420403029824465
     Transform:
@@ -60,4 +60,4 @@ Objects:
         Name: SC::SpriteRenderer
         Material:
           UUID: 3256165952321071056
-        Color: [255, 0, 0]
+        Color: [1, 0, 0]

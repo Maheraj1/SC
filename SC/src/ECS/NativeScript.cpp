@@ -24,6 +24,9 @@ namespace SC {
 			case Scripting::BuiltinFunction::OnDestroy:
 				OnDestroy();
 				break;
+			case Scripting::BuiltinFunction::PreRender:
+				PreRender();
+				break;
 		}
 	}
 }

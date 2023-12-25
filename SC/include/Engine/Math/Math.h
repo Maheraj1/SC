@@ -23,11 +23,10 @@ namespace SC
     typedef glm::ivec3 Vector3i;
     typedef glm::ivec4 Vector4i;
 
-    typedef glm::vec<3, uint8_t> Color;
-    typedef glm::vec<3, short> Color16;
-
-    typedef glm::fvec3 ColorF;
-    typedef glm::dvec3 ColorD;
+    // [0 - 1] range
+    typedef glm::fvec3 Color;
+    //! Not currently implemented
+    typedef glm::dvec3 ColorHDR;
 
     typedef glm::mat4 Matrix4;
 

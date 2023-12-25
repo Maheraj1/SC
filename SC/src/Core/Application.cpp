@@ -118,7 +118,6 @@ namespace SC
 				Time::FixedUpdate();
 			}
 			
-			Internal::Renderer::StartBatch();
 			window.OnUpdate();
 			
 			SceneManager::GetCurrentScene().CleanFrame();

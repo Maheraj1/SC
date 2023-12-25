@@ -52,7 +52,7 @@ namespace SC::Internal {
 		mvp_buffer = [gpu newBufferWithLength:sizeof(Matrix4) options:MTLResourceStorageModeShared];
 		// 4 vertices each object
 		vertex_buffer = [gpu newBufferWithLength:sizeof(Vertex_data) * MAX_BATCH_COUNT * 4 options:MTLResourceStorageModeShared];
-		index_buffer = [gpu newBufferWithLength:sizeof(uint32_t) * MAX_BATCH_COUNT * 4 options:MTLResourceStorageModeShared];
+		index_buffer = [gpu newBufferWithLength:sizeof(uint32_t) * MAX_BATCH_COUNT * 6 options:MTLResourceStorageModeShared];
 
 		// Shaders
 		MTLCompileOptions* compileOptions = [MTLCompileOptions new];
@@ -90,6 +90,8 @@ fragment float4 f_error(
 
 		RenderPiplineState_ErrorShader = [gpu newRenderPipelineStateWithDescriptor:rpd error:nullptr];
 
+		
+
 		// Hard Coded texture shader
 		Shader* shader = Resources::AddResource<Shader>("Default Sprite");
 		shader->Compile(R"(
@@ -107,9 +109,11 @@ vertex Fragment_data v_sprite(
     return Fragment_data(float4(in[vid].position, 0, 1) * vp.vp), in.color);
 }
 fragment float4 f_sprite(
-    Fragment_data in [[stage_in]])
+	uint tex [[buffer(0)]],
+    Fragment_data in [[stage_in]],
+	texture2d<float, access::sample>* textures [[texture]])
 {
-    return float4(in.color, 1);
+    return textures[] float4(in.color, 1);
 }
 		)");
 		shader->uuid = 1;
@@ -121,32 +125,44 @@ fragment float4 f_sprite(
 
 	void Renderer::Render() {
 
+		id<MTLCommandBuffer> cb = [commandQueue commandBuffer];
+
+		auto drawable = [layer nextDrawable];
+
+		Debug::Assert(drawable);
+
+		MTLRenderPassDescriptor* rpd = [MTLRenderPassDescriptor new];
+		MTLRenderPassColorAttachmentDescriptor* cd = rpd.colorAttachments[0];
+		cd.texture = drawable.texture;
+		cd.loadAction = MTLLoadActionClear;
+		cd.clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
+		cd.storeAction = MTLStoreActionStore;
+
+
 		for (auto&& batch: batchData) {
-			id<MTLCommandBuffer> cb = [commandQueue commandBuffer];
-
-			auto drawable = [layer nextDrawable];
-
-			Debug::Assert(drawable);
-
-			MTLRenderPassDescriptor* rpd = [MTLRenderPassDescriptor new];
-			MTLRenderPassColorAttachmentDescriptor* cd = rpd.colorAttachments[0];
-        	cd.texture = drawable.texture;
-        	cd.loadAction = MTLLoadActionClear;
-        	cd.clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
-        	cd.storeAction = MTLStoreActionStore;
-
 			id<MTLRenderCommandEncoder> rce = [cb renderCommandEncoderWithDescriptor:rpd];
 
 			[rce setVertexBuffer:mvp_buffer offset:0 atIndex:0];
 			[rce setVertexBytes: &mvp_mat length:sizeof(mvp_mat) atIndex:0];
 
-			[rce setVertexBuffer:vertex_buffer offset:vertex_buffer.allocatedSize atIndex:1];
-			[rce setVertexBytes:batch.data() length:sizeof(batch) atIndex:1];
+			[rce setVertexBuffer:vertex_buffer offset:sizeof(mvp_mat) atIndex:1];
+			[rce setVertexBytes:batch.data.data() length:sizeof(batch.data) atIndex:1];
+
+			uint* indices = (uint*)[index_buffer contents];
+			memcpy(indices, batch.indices.data(), sizeof(batch.indices));
+
+			// TODO: set this to the actual shader
+			[rce setRenderPipelineState: RenderPiplineState_ErrorShader];
 
 			//TODO: set textures using setFragmentTextures
 
-			// [rce drawIndexedPrimitives:MTLPrimitiveTypeTriangle indexCount:4 indexType:MTLIndexTypeUInt32 indexBuffer: index_buffer indexBufferOffset:sizeof(Vertex_data)];
+			[rce drawIndexedPrimitives:MTLPrimitiveTypeTriangle indexCount:batch.indices.size() indexType:MTLIndexTypeUInt32 indexBuffer: index_buffer indexBufferOffset:0];
+
+			[rce endEncoding];
 		}
+		
+		[cb presentDrawable:drawable];
+		[cb commit];
 	}
 
 	void Renderer::SetMVP(Matrix4 _proj) {

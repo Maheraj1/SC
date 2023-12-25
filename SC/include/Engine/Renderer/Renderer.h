@@ -17,37 +17,22 @@
 
 #define ERROR_SHADER_COLOR_RGB ERROR_SHADER_COLOR_R ERROR_SHADER_COLOR_G ERROR_SHADER_COLOR_B
 
-#ifdef BATCH_TYPE_CLASS_ARRAY
-	#define T_Batch_Data EntityBatch
-	#define F_Batch_Data BatchEntityData
-	#define T_Batch_Data_Array std::array<T_Batch_Data, Renderer::MAX_BATCH_COUNT>
-	#define F_Batch_Data_Array std::array<F_Batch_Data, Renderer::MAX_BATCH_COUNT>
-#else
-	#define T_Batch_Data EntityBatchArray
-	#define F_Batch_Data BatchData
-	#define T_Batch_Data_Array T_Batch_Data
-	#define F_Batch_Data_Array F_Batch_Data
-#endif
-
 namespace SC::Internal
 {
-	class BatchEntityData;
-	class BatchData;
 	struct CameraData;
-
+	struct BatchQuad;
 
 	struct ImQuad {
-		Vector2 position;
-		float rotation;
-		Vector2 scale;
+		Transform transform;
 		Color color;
+		Texture* texture;
 	};
 
 	class SC_API Renderer
 	{
 	public:
-		static const int MAX_BATCH_COUNT = 100;
-		static const unsigned int MAX_TEXTURE_SLOT_USAGE = 10;
+		static const uint MAX_BATCH_COUNT = 100;
+		static const ushort MAX_TEXTURE_SLOT_USAGE = 10;
 		
 		static bool WireFrameMode;
 		static bool IsFrameBuffer;
@@ -60,119 +45,41 @@ namespace SC::Internal
 		static void Init();
 		static void Render();
 		static void CleanUp();
-		static void StartBatch();
 
-		static void RenderQuad(Vector2 pos, float rotation, Vector2 scale, Color color);
+		static void RenderQuad(ImQuad& quad, Shader* shader);
+		static void RenderQuad(ImQuad& quad, uint64_t shader = 1);
 
 		static void SetMVP(Matrix4 proj);
 
 	private:
-		static std::vector<F_Batch_Data_Array> batchData;
-		static std::vector<ImQuad> quads;
+		static std::vector<BatchQuad> quad_data;
 		Renderer() {}
 	};
-
-	#ifdef BATCH_TYPE_CLASS_ARRAY
-	class SC_API EntityBatch
-	{
-	public:
-		EntityBatch() = default;
-		~EntityBatch() = default;
-
-		std::array<Vector4f, 4> pos;
-		std::array<ColorF, 4> color;
-		std::array<float, 4> textureIndex;
+	// Raw Vertex data
+	struct SC_API VertexData {
+		Vector2f position;
+		Color color;
+		Vector2f tex_coords;
+		uint tex;
 	};
 
-	class SC_API BatchEntityData
-	{
-	public:
-	
-		BatchEntityData(std::array<Vector4f, 4> pos,
-				  std::array<Vector2f, 4> texCoords,
-				   std::array<ColorF, 4> color,
-					std::array<float, 4> tex, 
-					 std::array<uint, 6> indices,
-		 			  std::array<uint, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures,
-						uint shader,
-						 uint size
-						 )
-		  :pos(pos), texCoords(texCoords), color(color), tex(tex), indices(indices), Textures(Textures), shader(shader), size(size)
-		   { }
+	struct SC_API BatchQuad {
+		// 4 vertices of quad
+		/*
+		q1: v1, v2, v3, v4,
+		q2: v5, v6, v7, v8,
+		...
+		*/
+		std::array<VertexData, Renderer::MAX_BATCH_COUNT * 4> data;
 		
-		~BatchEntityData() = default;
-
-		std::array<Vector4f, 4> pos;
-		std::array<Vector2f, 4> texCoords;
-		std::array<ColorF, 4> color;
-		std::array<float, 4> tex;
-		std::array<uint, 6> indices;
-		std::array<uint, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures;
-		uint shader;
-		uint size;
-		
-	};
-
-
-	#else
-
-	class SC_API EntityBatchArray
-	{
-	public:
-		EntityBatchArray() = default;
-		~EntityBatchArray() = default;
-
-		std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos;
-		std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color;
-		std::array<float, Renderer::MAX_BATCH_COUNT * 4> textureIndex;
-		uint32_t entC;
-	};
-
-	/**
-	 * @brief A Batch Data that contains raw data about the batch
-	 * 
-	 */
-	class SC_API BatchData
-	{
-	public:
-	
-		BatchData(std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos,
-				  std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> texCoords,
-				   std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color,
-					std::array<float, Renderer::MAX_BATCH_COUNT * 4> tex, 
-					 std::array<uint, Renderer::MAX_BATCH_COUNT * 6> indices,
-		 			  std::array<uint, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures,
-						uint shader,
-						 uint size
-						)
-		  :pos(pos), texCoords(texCoords), color(color), tex(tex), indices(indices), Textures(Textures), shader(shader), size(size)
-		   { }
-		
-		~BatchData() = default;
-
-		std::array<Vector4f, Renderer::MAX_BATCH_COUNT * 4> pos;
-		std::array<Vector2f, Renderer::MAX_BATCH_COUNT * 4> texCoords;
-		std::array<ColorF, Renderer::MAX_BATCH_COUNT * 4> color;
-		std::array<float, Renderer::MAX_BATCH_COUNT * 4> tex;
+		// 6 for 6 vertex in a quad
 		std::array<uint, Renderer::MAX_BATCH_COUNT * 6> indices;
-		std::array<uint, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures;
-		uint shader;
-		uint size;
-	};
+		
+		std::array<Texture*, Renderer::MAX_TEXTURE_SLOT_USAGE> textures;
 
-	#endif
-
-	/**
-	 * @brief A Batch data storage to use to arrange data
-	 * 
-	 */
-	struct SC_API Batch
-	{
-		T_Batch_Data_Array entities;
-		std::array<uint, Renderer::MAX_TEXTURE_SLOT_USAGE> Textures;
-		uint shader;
-		#ifdef BATCH_TYPE_CLASS_ARRAY
-		uint32_t entC;
-		#endif
+		Shader* shader;
+		// count of number of quads
+		uint count = 0;
+		ushort textureCount = 0;
 	};
 }
