@@ -45,11 +45,8 @@ namespace SC
 			void SetVSync(bool enabled);
 			Matrix4 GetScreenCoords();
 			bool IsVSync();
-
-		public:
-			Color clear_color;
 		private:
-			void Clear();
+			void Clear(Color clear_color);
 		private:
 			WindowProps m_data;
 			void* m_window;

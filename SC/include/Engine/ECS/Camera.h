@@ -40,6 +40,7 @@ namespace SC
 		
 		float size = 5.0f;
 		bool RenderToImage  = true;
+		Color clear_color;
 		FrameBuffer fb;
 		friend class Window;
 	};

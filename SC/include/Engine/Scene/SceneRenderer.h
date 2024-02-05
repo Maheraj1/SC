@@ -13,6 +13,7 @@ namespace SC::Internal
 		float Rotation;
 		float zoomLevel = 1;
 		bool RenderToScreen;
+		Color clear_color;
 	};
 
 	class SceneRenderer

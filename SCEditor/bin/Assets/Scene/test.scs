@@ -11,6 +11,7 @@ Objects:
         Name: SC::Camera
         size: 5
         RenderToImage: true
+        ClearColor: [0.200000003, 0.200000003, 0.200000003]
   - Name: Box
     UUID: 17137185265978484579
     Transform:

@@ -35,7 +35,7 @@ namespace SC::Internal
 			fb.Bind();
 		}
 
-		Application::GetWindow().Clear();
+		Application::GetWindow().Clear(data.clear_color);
 		RenderScene(data);
 
 		if (!data.RenderToScreen) {
@@ -47,12 +47,12 @@ namespace SC::Internal
 	}
 
 	uint32_t SceneRenderer::Render(const CameraData& data, FrameBuffer& fb) {
-		Application::GetWindow().Clear();
+		Application::GetWindow().Clear(data.clear_color);
 		fb.Bind();
 		Vector2 WSize = Application::GetWindow().GetWindowSize();
 
 		Application::GetWindow().SetWindowSize(data.WindowSize);
-		Application::GetWindow().Clear();
+		Application::GetWindow().Clear(data.clear_color);
 		
 		RenderScene(data);
 

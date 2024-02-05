@@ -66,6 +66,7 @@ namespace SC
 	{
 		SC_ADD_PARAMETER(size);
 		SC_ADD_PARAMETER(RenderToImage);
+		SC_ADD_PARAMETER_S(clear_color, "ClearColor");
 	}
 
 	void Camera::OnApplicationStart() {
@@ -76,6 +77,7 @@ namespace SC
 	{
 		SC_GET_PARAMETER(size);
 		SC_GET_PARAMETER(RenderToImage);
+		SC_GET_PARAMETER_S(clear_color, "ClearColor");
 	}
 
 	void Camera::Render()
@@ -86,9 +88,10 @@ namespace SC
 		data.RenderToScreen = true;
 		data.zoomLevel = size;
 		data.Rotation = entity->transform.rotation;
+		data.clear_color = clear_color;
 		fb.Invalidate();
 
-		if ((RenderToImage) || (Application::IsEditor && Application::EditMode))
+		if ((RenderToImage) || (Application::IsEditor))
 			Internal::SceneRenderer::Render(data, fb);
 		else
 			Internal::SceneRenderer::Render(data);
@@ -110,10 +113,12 @@ namespace SC
 	#ifdef SC_EDITOR_IMPL
 	void Camera::OnIGUI(Editor::EditorDrawData& dcmd) {
 		dcmd.DrawFloat(size, "Projection size");
+		dcmd.DrawColor(clear_color, "Background color");
 	}
 
 	void Camera::PostIGUI(Editor::EditorDrawData& dcmd) {
 		size = *((float*)dcmd.data[0].data);
+		clear_color = *((Color*)dcmd.data[1].data);
 	}
 	#endif
 }
