@@ -19,6 +19,7 @@ SC is not fully complete but has a lot of features:
 - Custom shaders
 - A FileSystem and Resource management system
 - ApplicationAddons allows to create a overlay or add engine features (*Not stable*)
+- Simple rendering setup which has build time graphics api selection *(e.g OpenGL, Metal, Vulkan, DirectX, etc)*
 - Editor Application (*Not stable and **Experimental***)
 ## Optimizations
 - Minimal use of heap memory

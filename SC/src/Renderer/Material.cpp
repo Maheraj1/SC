@@ -31,7 +31,7 @@ namespace SC {
 	#ifdef SC_EDITOR_IMPL
 
 	void Material::OnIGUI(Editor::EditorDrawData& dcmd) { 
-		dcmd.DrawColor(color/255.0f, "Color");
+		dcmd.DrawColor(color, "Color");
 	}
 
 	void Material::PostIGUI(Editor::EditorDrawData& dcmd) { 

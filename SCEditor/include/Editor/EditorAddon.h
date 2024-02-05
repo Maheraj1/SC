@@ -67,6 +67,7 @@ namespace SC::Editor {
 			bool GameViewOpen;
 			bool sceneUnSaved = false;
 			bool enableGizmos = true;
+			bool debug = false;
 
 			static EditorAddon* instance;
 

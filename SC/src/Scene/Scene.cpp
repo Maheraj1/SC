@@ -38,6 +38,11 @@ namespace SC
 			objs->Update();
 		}
 	}
+	void Scene::PreRender() {
+		for (Entity* objs : m_objs) {
+			objs->PreRender();
+		}
+	}
 
 	void Scene::DestroyEntity(Entity *ent) {
 		DestroyList.push_back(ent);

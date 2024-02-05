@@ -60,6 +60,7 @@ namespace SC
 		void Update();
 		void Awake();
 		void Destroy();
+		void PreRender();
 
 		UUID m_id;
 

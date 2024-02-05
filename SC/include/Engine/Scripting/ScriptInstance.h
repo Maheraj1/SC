@@ -43,6 +43,7 @@ namespace SC::Scripting {
 			MonoMethod* Update; 
 			MonoMethod* FixedUpdate; 
 			MonoMethod* OnDestroy;
+			MonoMethod* PreRender;
 		};
 		BuiltinFunctionsData funcDat;
 		RegisteredScript* rs;

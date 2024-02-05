@@ -61,8 +61,6 @@ namespace SC::Editor {
 
 	EditorAddon* EditorAddon::instance = nullptr;
 
-	static const char* runtime_scene_path = "Data/rnscne.scsr";
-
 	void DrawEntity(Entity* ent) {
 		
 		auto ent_str_id = std::to_string(ent->GetUUID());
@@ -117,62 +115,6 @@ namespace SC::Editor {
 			ImGui::EndPopup();
 		}
 
-		ImGui::End();
-	}
-
-	void EditorAddon::DrawToolbar() {
-		using namespace ::SC::Internal;
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 2});
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, {0, 0});
-
-		ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
-
-		auto col =  ImGui::GetStyle().Colors;
-		
-		auto col_active = col[(int)ImGuiCol_ButtonActive];
-		col_active.w = 0.25f;
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, col_active);
-
-		auto col_hovered = col[(int)ImGuiCol_ButtonHovered];
-		col_hovered.w = 0.25f;
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, col_hovered);
-
-		ImGui::Begin("Toolbar", nullptr, (int)ImGuiWindowFlags_NoDecoration | 
-												(int)ImGuiWindowFlags_NoScrollWithMouse);
-
-		static const float ButtonSize = 32.0f;
-		const float offset = (ImGui::GetWindowContentRegionMax().x * 0.5f) - ButtonSize;
-
-		// TODO: Make Scene Pause Work
-
-		ImGui::SameLine(offset);
-
-		void* tex = reinterpret_cast<void*>(StopTex-> GetTextureID());
-		Application* app = Application::Get();
-
-		if (app->EditMode) {
-			tex = reinterpret_cast<void*>(PlayTex-> GetTextureID());
-		}
-		
-		if (UI::ImGui::ImageButton("Stop-PlayBtn", tex, {32.0f, 32.0f})) {
-			if (app->EditMode) {
-				Scene scene = SceneManager::GetCurrentScene();
-				scene.SaveOnOtherPath(runtime_scene_path);
-				app->OnAppPlay();
-			} else {
-				app->OnAppStop();
-				SceneManager::GetCurrentScene().LoadFromOtherPath(runtime_scene_path);
-				entSelected = nullptr;
-				entSelectedID = 0;
-			}
-		}
-		
-		ImGui::SameLine(offset+ButtonSize+4);
-		UI::ImGui::ImageButton("PauseBtn", reinterpret_cast<void*>(PauseTex->GetTextureID()), {32.0f, 32.0f});
-
-		ImGui::PopStyleVar(2);
-		ImGui::PopStyleColor(3);
 		ImGui::End();
 	}
 
@@ -271,9 +213,14 @@ namespace SC::Editor {
 				SaveScene();
 
 			ImGui::Separator();
-			
+
 			ImGui::MenuItem("Quit", "Cmd + Q");
 
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Engine")) {
+			ImGui::Checkbox("Debug", &debug);
 			ImGui::EndMenu();
 		}
 
@@ -286,8 +233,25 @@ namespace SC::Editor {
 		ImGui::Text("FPS: %0.1f", Time::fps);
 		ImGui::Text("DeltaTime: %0.3f ms", Time::deltaTime*1000.0f);
 
-		ImGui::Text("Entity Selected Id: %llu", (uint64_t)entSelectedID);
+		if (!debug) {
+			ImGui::End();
+			return;
+		}
+			
 
+		ImGui::Text("Entity Selected Id: %llu", (uint64_t)entSelectedID);
+			
+		if (entSelected) {
+			auto sp = (SpriteRenderer*)(entSelected->GetComponent(ComponentID<::SC::SpriteRenderer>().cid));
+			if (sp) {
+				ImGui::TextWrapped("Entity Selected SpriteRenderer texture: %s %llu", 
+					sp->material->texture->name.c_str(), sp->material->texture->GetID()
+						);
+			}
+		}
+
+		ImGui::Text("Startup time: %.2f", Application::s_instance->startupTime);
+		
 		ImGui::End();
 	}
 

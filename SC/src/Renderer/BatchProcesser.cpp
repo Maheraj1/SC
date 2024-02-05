@@ -11,6 +11,7 @@
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include <algorithm>
+#include <limits>
 
 #define AddNewBatch quad_data.push_back({});currentBatch = &quad_data.back()
 #define BATCH_DATA currentBatch->data
@@ -23,10 +24,6 @@ namespace SC::Internal {
 	void Renderer::RenderQuad(ImQuad& quad, Shader* shader) {
 
 		BatchQuad* currentBatch = nullptr;
-
-		if (!shader) {
-			
-		}
 		
 		if (quad_data.size() == 0) {
 			AddNewBatch;
@@ -47,16 +44,18 @@ namespace SC::Internal {
 			}
 		}
 		
-		uint tex = 0;
+		uint tex = std::numeric_limits<uint>().max();
 
 		for (int i = 0; i < currentBatch->textures.size(); i++) {
+			if (!currentBatch->textures[i]) break;
+			
 			// if the texture already exists set the index of the texture
 			if (currentBatch->textures[i]->uuid == quad.texture->uuid) {
 				tex = i;
 			}
 		}
 
-		if (!tex) {
+		if (tex == std::numeric_limits<uint>().max()) {
 			// There are available slots
 			if (currentBatch->textureCount < MAX_TEXTURE_SLOT_USAGE) {
 				currentBatch->textures[currentBatch->textureCount] = quad.texture;
@@ -75,56 +74,64 @@ namespace SC::Internal {
 
 
 		int offset_vert = currentBatch->count * 4;
+		auto& offset_vert_0 = BATCH_DATA[offset_vert + 0];
+		auto& offset_vert_1 = BATCH_DATA[offset_vert + 1];
+		auto& offset_vert_2 = BATCH_DATA[offset_vert + 2];
+		auto& offset_vert_3 = BATCH_DATA[offset_vert + 3];
+
 		
 		// Texture
 
 		// tex
 
-		BATCH_DATA[offset_vert + 0].tex = tex;
-		BATCH_DATA[offset_vert + 1].tex = tex;
-		BATCH_DATA[offset_vert + 2].tex = tex;
-		BATCH_DATA[offset_vert + 3].tex = tex;
+		offset_vert_0.tex = tex;
+		offset_vert_1.tex = tex;
+		offset_vert_2.tex = tex;
+		offset_vert_3.tex = tex;
 
 		// Texture coordinates	
 
-		BATCH_DATA[offset_vert + 0].tex_coords = {0, 0};
-		BATCH_DATA[offset_vert + 1].tex_coords = {1, 0};
-		BATCH_DATA[offset_vert + 2].tex_coords = {1, 1};
-		BATCH_DATA[offset_vert + 3].tex_coords = {0, 1};
+		offset_vert_0.tex_coords = {0, 0};
+		offset_vert_1.tex_coords = {1, 0};
+		offset_vert_2.tex_coords = {1, 1};
+		offset_vert_3.tex_coords = {0, 1};
 
 		// Color
-		BATCH_DATA[offset_vert + 0].color = quad.color;
-		BATCH_DATA[offset_vert + 1].color = quad.color;
-		BATCH_DATA[offset_vert + 2].color = quad.color;
-		BATCH_DATA[offset_vert + 3].color = quad.color;
+		offset_vert_0.color = quad.color;
+		offset_vert_1.color = quad.color;
+		offset_vert_2.color = quad.color;
+		offset_vert_3.color = quad.color;
 
 		// Position
 
 		Matrix4 mat = quad.transform.GetModel();
 
-		BATCH_DATA[offset_vert + 0].position = 
+		offset_vert_0.position = 
 			(Vector2f)(mat * Vector4f(-1.0f, -1.0f, 0.0f, 1.0f));
 
-		BATCH_DATA[offset_vert + 1].position = 
+		offset_vert_1.position = 
 			(Vector2f)(mat * Vector4f( 1.0f, -1.0f, 0.0f, 1.0f));
 
-		BATCH_DATA[offset_vert + 2].position = 
+		offset_vert_2.position = 
 			(Vector2f)(mat * Vector4f( 1.0f,  1.0f, 0.0f, 1.0f));
 
-		BATCH_DATA[offset_vert + 3].position = 
+		offset_vert_3.position = 
 			(Vector2f)(mat * Vector4f(-1.0f,  1.0f, 0.0f, 1.0f));
 	
 		// Indices
 
 		int offset_ind = currentBatch->count * 6;
+		int offset_ind_quad = offset_ind / 6 * 4;
 
-		currentBatch->indices[offset_ind + 0] = 0;
-		currentBatch->indices[offset_ind + 1] = 1;
-		currentBatch->indices[offset_ind + 2] = 3;
+		currentBatch->indices[offset_ind + 0] = 0 + offset_ind_quad;
+		currentBatch->indices[offset_ind + 1] = 1 + offset_ind_quad;
+		currentBatch->indices[offset_ind + 2] = 3 + offset_ind_quad;
 
-		currentBatch->indices[offset_ind + 3] = 1;
-		currentBatch->indices[offset_ind + 4] = 2;
-		currentBatch->indices[offset_ind + 5] = 3;
+		currentBatch->indices[offset_ind + 3] = 1 + offset_ind_quad;
+		currentBatch->indices[offset_ind + 4] = 2 + offset_ind_quad;
+		currentBatch->indices[offset_ind + 5] = 3 + offset_ind_quad;
+
+		currentBatch->count++;
 	}
 	
 	

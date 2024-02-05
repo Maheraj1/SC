@@ -23,7 +23,7 @@ namespace SC {
 	class IScript;
 
 	namespace Scripting {
-		enum class BuiltinFunction {
+		enum class BuiltinFunction{
 			None = -1,
 			Awake = 0,
 			Start,

@@ -80,6 +80,7 @@ namespace SC::Internal
 		Shader* shader;
 		// count of number of quads
 		uint count = 0;
+		// count of number of textures
 		ushort textureCount = 0;
 	};
 }

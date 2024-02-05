@@ -48,6 +48,7 @@ namespace SC
 	}
 
 	Window::Window(const WindowProps& props)
+	:clear_color(.1, .1, .1)
 	{
 		#ifdef SC_GL_VER
 			int OpenGLVersion[2] = {SC_GL_VER};
@@ -163,6 +164,6 @@ namespace SC
 	void Window::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(.1f, .1f, .1f, 1.0f);
+		glClearColor(clear_color.r, clear_color.g, clear_color.b, 1.0f);
 	}
 }

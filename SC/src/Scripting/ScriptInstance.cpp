@@ -67,6 +67,7 @@ namespace SC::Scripting {
 		REGISTER_FUNC(Update);
 		REGISTER_FUNC(FixedUpdate);
 		REGISTER_FUNC(OnDestroy);
+		REGISTER_FUNC(PreRender);
 	}
 
 	void ScriptInstance::DestroyInstance() {
@@ -108,7 +109,10 @@ namespace SC::Scripting {
 				ScriptEngine::RunMethod(funcDat.OnDestroy, instance, nullptr);
 				break;
 
-		}
+			case BuiltinFunction::PreRender:
+				ScriptEngine::RunMethod(funcDat.PreRender, instance, nullptr);
+				break;
+}
 	}
 
 	ClassField ScriptInstance::GetField(MonoClassField* field) const {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Common.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/SpriteRenderer.h"
@@ -24,6 +25,7 @@ namespace SC
         void Start();
         void Awake();
         void Update();
+        void PreRender();
         void Clear();
     public:
         Scene(const char* filepath = Common::EmptyCString);

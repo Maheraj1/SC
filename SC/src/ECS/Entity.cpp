@@ -84,6 +84,12 @@ namespace SC
         }
     }
 
+	void Entity::PreRender() {
+        for (auto &&script : scripts) {
+			script->CallBuiltinFunction(Scripting::BuiltinFunction::PreRender);
+        }
+    }
+
     uint64_t Entity::GetUUID() const {
         return m_id;
     }

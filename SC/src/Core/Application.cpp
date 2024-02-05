@@ -49,6 +49,8 @@ namespace SC
 	const bool& Application::IsFocused = Application::_IsFocused;
 	const bool& Application::IsEditor = Application::_IsEditor;
 	const bool& Application::EditMode = Application::_EditMode;
+
+	static std::chrono::time_point<std::chrono::steady_clock> tp_start;
 	
 	AppSettings::AppSettings(WindowProps windowProperties)
 	{
@@ -98,6 +100,14 @@ namespace SC
 
 		PlayerLoopStarted = true;
 		Debug::Info("Starting PlayerLoop", "SC::Application");
+		
+		{
+			// Debug Stuff
+			auto tp_end = std::chrono::high_resolution_clock::now();
+
+			std::chrono::duration<float> time_taken = tp_end - tp_start;
+			Application::startupTime = time_taken.count();
+		}
 
 		while (Running)
 		{
@@ -118,6 +128,7 @@ namespace SC
 				Time::FixedUpdate();
 			}
 			
+			SceneManager::GetCurrentScene().PreRender();
 			window.OnUpdate();
 			
 			SceneManager::GetCurrentScene().CleanFrame();
@@ -141,6 +152,8 @@ namespace SC
 	Application::Application(AppSettings settings)
 	:window(settings.WindowProperties)
 	{
+		tp_start = std::chrono::high_resolution_clock::now();
+
 		s_instance = this;
 		OnWindowClose += [&](WindowCloseArgs args) {Application::Close();};
 		OnAppPlay.SetListener([&](EventArgs a) { Application::OnScenePlay(); }, 0);

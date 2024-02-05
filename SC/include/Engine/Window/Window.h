@@ -45,6 +45,9 @@ namespace SC
 			void SetVSync(bool enabled);
 			Matrix4 GetScreenCoords();
 			bool IsVSync();
+
+		public:
+			Color clear_color;
 		private:
 			void Clear();
 		private:

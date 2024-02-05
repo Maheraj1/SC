@@ -56,6 +56,8 @@ namespace SC
 		static const bool& IsEditor;
 		static const bool& EditMode;
 
+		float startupTime;
+
 	public:
 		/**
 		 * @brief Create Application instance

@@ -224,7 +224,8 @@ namespace SC::Scripting {
 		auto out = FileSystem::RunProgram("dotnet", "build");
 		Debug::OutputLog(out);
 
-		std::filesystem::copy_file("bin/Debug/net7.0/Scandium-ScriptAssembly.dll", "Libs/Scandium-ScriptAssembly.dll");
+		std::filesystem::copy_file("bin/Debug/net7.0/Scandium-ScriptAssembly.dll", 
+		"Libs/Scandium-ScriptAssembly.dll", std::filesystem::copy_options::overwrite_existing);
 
 		data.mainAssembly.Load("bin/Debug/net7.0/Scandium-ScriptAssembly.dll");
 	}

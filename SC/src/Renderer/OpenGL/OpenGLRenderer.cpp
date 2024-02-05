@@ -52,8 +52,8 @@ namespace SC::Internal
 		{
 			if (quad_dat.count <= 0) continue;
 
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad_dat.data), &quad_dat.data));
-			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 24 * MAX_BATCH_COUNT, &quad_dat.indices[0]));
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad_dat.data), quad_dat.data.data()));
+			GLCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(quad_dat.indices), quad_dat.indices.data()));
 			
 			GLCall(glUseProgram(quad_dat.shader->GetShaderID()));
 			
@@ -71,7 +71,7 @@ namespace SC::Internal
 			GLCall(glDrawElements(GL_TRIANGLES, 6 * quad_dat.count, GL_UNSIGNED_INT, 0));
 		}
 
-		
+		quad_data.clear();
 	}
 
 	void Renderer::Init()
@@ -98,12 +98,12 @@ namespace SC::Internal
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, position)));
 		glEnableVertexAttribArray(0);
 		
-		// texCoords
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, color)));
+		// color
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, color)));
 		glEnableVertexAttribArray(1);
 
-		// color
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, tex_coords)));
+		// texCoords
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, tex_coords)));
 		glEnableVertexAttribArray(2);
 
 		// texIndex
@@ -153,8 +153,8 @@ void main() {
 #version 410 core
 
 layout (location = 0) in vec2  i_pos;
-layout (location = 1) in vec2  i_texCoords;
-layout (location = 2) in vec3  i_color;
+layout (location = 1) in vec3  i_color;
+layout (location = 2) in vec2  i_texCoords;
 layout (location = 3) in float i_tex;
 
 out VS_OUT {
@@ -169,7 +169,7 @@ layout(std140) uniform Matrix
 };
 
 void main() {
-	gl_Position = vec4(i_pos.xy, 0.0, 1.0) * proj;
+	gl_Position = proj * vec4(i_pos.xy, 0.0, 1.0);
 	vs_out.texCoords = i_texCoords;
 	vs_out.color = i_color;
 	vs_out.tex = i_tex;
