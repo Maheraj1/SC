@@ -91,7 +91,7 @@ namespace SC
 		data.clear_color = clear_color;
 		fb.Invalidate();
 
-		if ((RenderToImage) || (Application::IsEditor))
+		if (RenderToImage || Application::IsEditor)
 			Internal::SceneRenderer::Render(data, fb);
 		else
 			Internal::SceneRenderer::Render(data);

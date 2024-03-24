@@ -6,6 +6,7 @@
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Resources/ResourceMap.h"
+#include "Engine/Resources/Resources.h"
 #include "Engine/Scene/SceneManager.h"
 #include "glm/detail/type_mat3x4.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
@@ -14,11 +15,15 @@
 #include <limits>
 
 #define AddNewBatch quad_data.push_back({});currentBatch = &quad_data.back()
+#define AddNewBatch_L line_data.push_back({});currentBatch = &line_data.back()
 #define BATCH_DATA currentBatch->data
 
 namespace SC::Internal {
 
+	float BatchLine::thickness = 5.0f;
 	std::vector<BatchQuad> Renderer::quad_data;
+	std::vector<BatchLine> Renderer::line_data;
+	std::vector<BatchLineStrip> Renderer::line_strip_data;
 	Vector2i Renderer::Resolution = {1280, 720};
 
 	void Renderer::RenderQuad(ImQuad& quad, Shader* shader) {
@@ -72,15 +77,13 @@ namespace SC::Internal {
 			}
 		}
 
-
 		int offset_vert = currentBatch->count * 4;
 		auto& offset_vert_0 = BATCH_DATA[offset_vert + 0];
 		auto& offset_vert_1 = BATCH_DATA[offset_vert + 1];
 		auto& offset_vert_2 = BATCH_DATA[offset_vert + 2];
 		auto& offset_vert_3 = BATCH_DATA[offset_vert + 3];
-
 		
-		// Texture
+		/// Texture
 
 		// tex
 
@@ -133,9 +136,67 @@ namespace SC::Internal {
 
 		currentBatch->count++;
 	}
-	
+	// TODO: Complete this
+	void Renderer::RenderLine(ImLine& line, Shader* shader) {
+		
+		if (line.color.size() != line.vertices.size()) {
+			Debug::Error("Color & Vertices vector isn't of same size", "SC::Internal::Renderer::RenderLine");
+			return;
+		}
+		
+		if (line.IsStripped) {
+			BatchLineStrip* current_batch = nullptr;
+			line_strip_data.push_back({});
+			current_batch = &line_strip_data.back();
+
+			current_batch->shader = shader;
+			current_batch->thickness = line.thickness;
+
+			for (int i = 0; i < line.vertices.size(); i++) {
+				current_batch->data[i].position = line.vertices[i];
+				current_batch->data[i].color    = line.color[i];
+			}
+
+			current_batch->count = line.vertices.size();
+
+		} else {
+			BatchLine* currentBatch = nullptr;
+			if (line_data.size() == 0) {
+				AddNewBatch_L;
+				currentBatch->shader = shader;
+			}
+			else {
+				// set shader
+
+				for (int i = 0; i < line_data.size(); i++) {
+					if (line_data[i].shader->uuid == shader->uuid && line_data[i].count < MAX_SINGLE_LINE_BATCH_SIZE) {
+						currentBatch = &line_data[i];
+					}
+				}
+
+				if (!currentBatch) {
+					AddNewBatch_L;
+					currentBatch->shader = shader;
+				}
+			}
+
+			for (int i = 0; i < line.vertices.size(); i += 2) {
+
+				int offset_vert = currentBatch->count * 4 + i;
+				auto& offset_vert_ = BATCH_DATA[offset_vert + 0];
+
+				offset_vert_.color = line.color[i];
+				offset_vert_.position = line.vertices[i];
+			}
+			// currentBatch->count;
+		}
+	}
 	
 	void Renderer::RenderQuad(ImQuad& quad, uint64_t shader) {
 		RenderQuad(quad, Resources::GetResource<Shader>(shader));
+	}
+
+	void Renderer::RenderLine(ImLine& line, uint64_t shader) {
+		RenderLine(line, Resources::GetResource<Shader>(shader));
 	}
 }

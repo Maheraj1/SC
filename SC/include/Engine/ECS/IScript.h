@@ -102,7 +102,7 @@ namespace SC {
 			void DrawFloat  (float n   , std::string name);
 			void DrawBool   (bool  n   , std::string name);
 			void DrawInt    (int n     , std::string name);
-			void DrawVector2(Vector2 n , std::string name);
+			void DrawVector2(Vector2F n , std::string name);
 			void DrawColor  (Color n  , std::string name);
 			
 			// `enum_names` value needs to be separated by zero or `\0`

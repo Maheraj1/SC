@@ -29,7 +29,7 @@ namespace SC
 		static bool GetKeyUp(KeyCode key);
 		static bool GetKey(KeyCode key);
 
-		static Vector2 GetMousePos();
+		static Vector2F GetMousePos();
 		
 		static bool GetMouse(int n);
 		static bool GetMouseDown(int n);

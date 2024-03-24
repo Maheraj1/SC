@@ -22,12 +22,12 @@ namespace SC
 		void DeSerialize() override;
 	public:
 		Transform();
-		Transform(Vector2 position, float rotation, Vector2 scale);
+		Transform(Vector2F position, float rotation, Vector2F scale);
 		Matrix4 GetModel(bool useScale = true, bool useRotation = true) const;
 
-		Vector2 position;
+		Vector2F position;
 		float rotation;
-		Vector2 scale;
+		Vector2F scale;
 
 		friend class Camera;
 		friend class Internal::Renderer;

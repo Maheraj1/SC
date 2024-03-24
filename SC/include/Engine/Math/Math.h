@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
+#include "Vector2.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-volatile"
@@ -15,7 +16,7 @@ namespace SC
 {
     // Type defines
 
-    typedef glm::fvec2 Vector2f;
+    typedef SC::A::Vector2 Vector2f;
     typedef glm::fvec3 Vector3f;
     typedef glm::fvec4 Vector4f;
 
@@ -30,9 +31,7 @@ namespace SC
 
     typedef glm::mat4 Matrix4;
 
-    typedef Vector2f Vector2;
-    typedef Vector3f Vector3;
-    typedef Vector4f Vector4;
+    typedef Vector2f Vector2F;
 
     Vector3f operator/(Vector3i vec, float n);
 

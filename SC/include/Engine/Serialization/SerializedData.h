@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <string>
 #include <sys/_types/_u_char.h>
+#include <vector>
 
 #define SC_ADD_PARAM SC::Serialization::SerializedData::AddValue
 #define SC_GET_PARAM SC::Serialization::SerializedData::GetValue
@@ -50,6 +51,9 @@ namespace SC::Serialization {
 		template<typename T>
 		static void AddValue(const T* dat, const char* name);
 
+		template<typename T>
+		static void AddValue(const std::vector<T> dat, const char* name);
+
 		static void AddValueRaw(const Buffer& buf, const char* name);
 
 		// DeSerialize
@@ -59,6 +63,9 @@ namespace SC::Serialization {
 
 		template<typename T>
 		static void GetValue(T* dat, const char* name);
+
+		template<typename T>
+		static void GetValue(const std::vector<T> dat, const char* name);
 
 		static void GetValueRaw(Buffer& buf, const char* name);
 		
