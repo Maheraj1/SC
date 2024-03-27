@@ -1,4 +1,5 @@
 #include "Engine/ECS/IScript.h"
+#include "Engine/ECS/LineRenderer.h"
 #include "Engine/ECS/MonoCSScript.h"
 #include "Engine/ECS/SpriteRenderer.h"
 #include "Engine/Physics/BoxCollider.h"
@@ -35,6 +36,7 @@ namespace SC::Internal {
 		REGISTER_COMPONENT(SC::RigidBody);
 		REGISTER_COMPONENT(SC::BoxCollider);
 		REGISTER_COMPONENT(SC::CircleCollider);
+		REGISTER_COMPONENT(SC::LineRenderer);
 		REGISTER_COMPONENT(SC::MonoCSScript);
 	}
 }
@@ -63,8 +65,8 @@ namespace SC::Editor {
 		data.emplace_back((void*)dat, name, EditorType::Int);
 	}
 
-	void EditorDrawData::DrawVector2(Vector2 n, std::string name) { 
-		auto dat = (Vector2*)malloc(sizeof(Vector2));
+	void EditorDrawData::DrawVector2(Vector2f n, std::string name) { 
+		auto dat = (Vector2f*)malloc(sizeof(Vector2f));
 		*dat = n;
 		
 		data.emplace_back((void*)dat, name, EditorType::Vector2);

@@ -6,6 +6,7 @@
 #include "Engine/Scripting/ScriptEngine.h"
 #include "Engine/Scripting/SerializableField.h"
 #include "Engine/Serialization/SerializableObject.h"
+#include "Engine/Serialization/SerializableVector.h"
 #include "Engine/Serialization/SerializedData.h"
 #include "mono/metadata/class.h"
 #include "mono/metadata/metadata.h"
@@ -13,6 +14,7 @@
 #include "mono/utils/mono-error.h"
 
 #include <array>
+#include <memory>
 #include <string>
 #include <sys/_types/_int8_t.h>
 #include <unordered_map>
@@ -145,7 +147,7 @@ namespace SC::Scripting {
 	void ScriptInstance::Serialize() const {
 		SC_ADD_PARAMETER_S(name, "ScriptName");
 
-		std::vector<Serialization::SerializableObject*> sfields;
+		SerializableVector<Serialization::SerializableObject*> sfields;
 		
 		for (auto[name, field]: fields) {
 			ClassField clsField = GetField(field);
@@ -156,10 +158,10 @@ namespace SC::Scripting {
 
 			_field.data.Data = (uint8_t*)clsField.value;
 
-			sfields.push_back((Serialization::SerializableObject*)&_field);
+			sfields->push_back((Serialization::SerializableObject*)&_field);
 		}
 
-		SC_ADD_PARAM<std::vector<Serialization::SerializableObject*>>(&sfields, "Fields");
+		SC_ADD_PARAM<SerializableObj>(&sfields, "Fields");
 	}
 
 	SerializableField* FindField(std::vector<SerializableField*> fields, const ClassField& fieldToFind) {
@@ -176,16 +178,14 @@ namespace SC::Scripting {
 	}
 
 	void ScriptInstance::DeSerialize() {
-		std::vector<Serialization::SerializableObject*> _sfields;
+		SerializableVector<Scripting::SerializableField*> _fields;
 		
 		SC_GET_PARAMETER_S(_name, "ScriptName");
-		SC_GET_PARAM<std::vector<Serialization::SerializableObject*>>(&_sfields, "Fields");
-
-		std::vector<Scripting::SerializableField*>* _fields = (std::vector<Scripting::SerializableField*>*)(&_sfields);
+		SC_GET_PARAM<SerializableObj>((SerializableObj*)&_fields, "Fields");
 
 		for (auto[name, field]: fields) {
 			ClassField clsField = GetField(field);
-			auto _field = FindField(*_fields, clsField);
+			auto _field = FindField(_fields.data, clsField);
 			
 			if (!_field) continue;
 

@@ -6,12 +6,12 @@
 
 namespace SC
 {
-    Vector2 FromBox2dVector2(b2Vec2 vec)
+    Vector2f FromBox2dVector2(b2Vec2 vec)
     {
-        return Vector2(vec.x, vec.y);
+        return Vector2f(vec.x, vec.y);
     }
     
-    b2Vec2 ToBox2dVector2(Vector2 vec)
+    b2Vec2 ToBox2dVector2(Vector2f vec)
     {
         return b2Vec2(vec.x, vec.y);
     }

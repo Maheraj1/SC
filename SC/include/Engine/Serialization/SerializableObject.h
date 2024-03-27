@@ -20,10 +20,7 @@ namespace SC::Serialization {
 			// Internal functions
 			void _Serialize() const;
 			void _DeSerialize();
-		friend void SerializedData::AddValue<SerializableObject>(const SerializableObject* dat, const char* name);
-		friend void SerializedData::GetValue<SerializableObject>(SerializableObject* dat, const char* name);
-		
-		friend void SerializedData::AddValue<std::vector<SerializableObject*> >(const std::vector<SerializableObject*>* dat, const char* name);
-		friend void SerializedData::GetValue<std::vector<SerializableObject*> >(std::vector<SerializableObject*>* dat, const char* name);
+		friend void SerializedData::AddValue<SerializableObject>(const SerializableObject* dat, const char* name, bool list);
+		friend void SerializedData::GetValue<SerializableObject>(SerializableObject* dat, const char* name, bool list, int i);
 	};
 }

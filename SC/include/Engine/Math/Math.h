@@ -16,7 +16,7 @@ namespace SC
 {
     // Type defines
 
-    typedef SC::A::Vector2 Vector2f;
+    typedef glm::fvec2 Vector2f;
     typedef glm::fvec3 Vector3f;
     typedef glm::fvec4 Vector4f;
 
@@ -32,6 +32,7 @@ namespace SC
     typedef glm::mat4 Matrix4;
 
     typedef Vector2f Vector2F;
+    typedef Vector2f Vector2;
 
     Vector3f operator/(Vector3i vec, float n);
 

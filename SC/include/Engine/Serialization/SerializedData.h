@@ -46,28 +46,24 @@ namespace SC::Serialization {
 	public:
 		// Serialize
 		template<typename T>
-		static void AddValue(const T& dat, const char* name);
+		static void AddValue(const T& dat, const char* name, bool list = false);
 
 		template<typename T>
-		static void AddValue(const T* dat, const char* name);
+		static void AddValue(const T* dat, const char* name, bool list = false);
 
-		template<typename T>
-		static void AddValue(const std::vector<T> dat, const char* name);
+		static void AddValueRaw(const Buffer& buf, const char* name, bool list = false);
 
-		static void AddValueRaw(const Buffer& buf, const char* name);
-
+		static void AddSeq(const char* key, bool end = false);
+		static void AddMap(bool end = false);
 		// DeSerialize
 
 		template<typename T>
-		static void GetValue(T& dat, const char* name);
+		static void GetValue(T& dat, const char* name, bool list = false, int i = 0);
 
 		template<typename T>
-		static void GetValue(T* dat, const char* name);
+		static void GetValue(T* dat, const char* name, bool list = false, int i = 0);
 
-		template<typename T>
-		static void GetValue(const std::vector<T> dat, const char* name);
-
-		static void GetValueRaw(Buffer& buf, const char* name);
+		static void GetValueRaw(Buffer& buf, const char* name, bool list = false, int i = 0);
 		
 		// Helper functions
 		static void* GetEmitter();

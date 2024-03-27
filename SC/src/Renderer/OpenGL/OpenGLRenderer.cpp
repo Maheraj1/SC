@@ -23,7 +23,6 @@
 namespace SC::Internal
 {
 	unsigned int Renderer::VAO;
-	unsigned int Renderer::VAO_Line;
 	unsigned int Renderer::VAO_Line_Strip;
 	unsigned int Renderer::Current_VAO;
 	unsigned int Renderer::ErrorShaderID;
@@ -31,7 +30,6 @@ namespace SC::Internal
 	bool Renderer::WireFrameMode = false;
 
 	static uint VBO, EBO;
-	static unsigned int VBO_Line;
 	static unsigned int VBO_Line_Strip;
 	static unsigned int Current_VBO;
 	static unsigned int UBO_MVP;
@@ -86,14 +84,14 @@ namespace SC::Internal
 
 		/// Line Rendering
 
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO_Line));
-		GLCall(glBindVertexArray(VAO_Line));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip));
+		GLCall(glBindVertexArray(VAO_Line_Strip));
 
-		for (const BatchLine& lines : line_data) {
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(lines.data), lines.data.data()));
-			GLCall(glUseProgram(lines.shader->GetShaderID()));
+		for (const BatchLineStrip& line_strip : line_strip_data) {
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(line_strip.data), line_strip.data.data()));
+			GLCall(glUseProgram(line_strip.shader->GetShaderID()));
 
-			GLCall(glDrawArrays(GL_LINES, 0, lines.count * 2));
+			GLCall(glDrawArrays(GL_LINE_STRIP, 0, line_strip.count));
 		}
 	}
 
@@ -136,19 +134,15 @@ namespace SC::Internal
 		glEnableVertexAttribArray(3);
 
 		/// Line Buffers
-		uint VAO_line[2] = {0, 0};
+		uint VAO_line_Strip;
 
-		glGenVertexArrays(2, VAO_line);
+		glGenVertexArrays(1, &VAO_line_Strip);
 
-		VAO_Line = VAO_line[0];
-		VAO_Line_Strip = VAO_line[1];
-
-		//* Simple Lines
-		glBindVertexArray(VAO_Line);
+		glBindVertexArray(VAO_line_Strip);
 		
-		glGenBuffers(1, &VBO_Line);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_Line);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData_Line) * 2 * MAX_SINGLE_LINE_BATCH_SIZE, nullptr, GL_DYNAMIC_DRAW);
+		glGenBuffers(1, &VBO_Line_Strip);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData_Line) * MAX_LINE_SIZE, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData_Line), (void*)(offsetof(VertexData_Line, position)));

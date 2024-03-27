@@ -55,7 +55,6 @@ namespace SC::Internal
 		static bool IsFrameBuffer;
 
 		static unsigned int VAO;
-		static unsigned int VAO_Line;
 		static unsigned int VAO_Line_Strip;
 		static unsigned int Current_VAO;
 		static uint ErrorShaderID;

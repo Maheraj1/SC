@@ -3,6 +3,7 @@
 #include "Engine/Core/Platform.h"
 #include "Engine/ECS/Camera.h"
 #include "Engine/ECS/IScript.h"
+#include "Engine/ECS/LineRenderer.h"
 #include "Engine/Physics/BoxCollider.h"
 #include "Engine/Physics/RigidBody.h"
 #include "Engine/Renderer/Texture.h"
@@ -81,7 +82,7 @@ void PreAppRun()
 		
 	// 	SpriteRenderer* sr = (SpriteRenderer*)box.AddComponent(ComponentID<SpriteRenderer>::cid);
 	// 	sr->material.obj = Resources::GetResource<Material>("DefaultMaterial");
-	// 	sr->color = Color(128, 128, 128);
+	// 	sr->color = Color(.5, .5, .5);
 	// }
 
 	// {
@@ -94,8 +95,22 @@ void PreAppRun()
 		
 	// 	SpriteRenderer* sr = (SpriteRenderer*)floor.AddComponent(ComponentID<SpriteRenderer>::cid);
 	// 	sr->material.obj = Resources::GetResource<Material>("DefaultMaterial");
-	// 	sr->color = Color(255, 0, 0);
+	// 	sr->color = Color(1, 0, 0);
+	// } 
+	
+	// {
+	// 	Entity& line = scene.AddEntity("Line");
+		
+	// 	LineRenderer* lr = (LineRenderer*)line.AddComponent(ComponentID<LineRenderer>::cid);
+	// 	lr->material.obj = Resources::GetResource<Material>("DefaultMaterial");
+	// 	lr->color = Color(0, 1, 0);
+
+	// 	lr->points->push_back(LineRenderer::Point({5, 4}, {0, 1, 0}));
+	// 	lr->points->push_back(LineRenderer::Point({-5, -4}, {0, .5, 0}));
+	// 	lr->points->push_back(LineRenderer::Point({1, -2} , {0, .25, 0}));
 	// }
+
+	// scene.Save();
 
 	scene.Load();
 }

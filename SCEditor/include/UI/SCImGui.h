@@ -176,7 +176,7 @@ namespace SC::Internal::UI::ImGui {
 
 	void PopStyleVar(int n = 1);
 
-	void PushStyleColor(ImGuiCol idx, Vector4 value);
+	void PushStyleColor(ImGuiCol idx, Vector4f value);
 	void PopStyleColor(int n = 1);
 
 	Vector2 GetWindowContentRegionMin();

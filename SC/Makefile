@@ -18,7 +18,7 @@ SRC_DIR = src
 SRC = $(wildcard $(SRC_DIR)/**/*.cpp)
 OBJS = $(addsuffix .o, $(basename $(notdir $(SRC))))
 
-WARNS = -Wall -Wno-undefined-var-template
+WARNS = -Wall -Wno-undefined-var-template -Wno-deprecated-volatile
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_EDITOR_IMPL -DSC_SHARED -DSC_DEBUG
 INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
 

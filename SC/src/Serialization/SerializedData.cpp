@@ -11,15 +11,24 @@
 #include "yaml-cpp/emittermanip.h"
 #include "yaml-cpp/node/parse.h"
 #include "yaml-cpp/yaml.h"
+#include <_types/_uint32_t.h>
 #include <cctype>
 #include <cstddef>
 #include <stdexcept>
 #include <sys/_types/_u_char.h>
 
-#define NAME__NULL() if (name == nullptr) throw std::runtime_error("name of parameter is required");
+#define NAME__NULL() if (name == nullptr && !list) throw std::runtime_error("name of parameter is required");
 #define ADD_Value(Add_Line) NAME__NULL()\
 YAML::Emitter& _emt = *emt;\
-Add_Line;
+if (!list)\
+	_emt << YAML::Key << name;\
+_emt << YAML::Value << Add_Line;
+
+#define GET_Value(Get_Type) NAME__NULL()\
+if (list)\
+dat = (*currentNode)[name][i].as<Get_Type>();\
+else {\
+dat = (*currentNode)[name].as<Get_Type>();}
 
 namespace YAML {
 
@@ -156,148 +165,104 @@ namespace SC::Serialization
 	void SerializedData::SaveEmitter(std::string fp) { FileSystem::WriteFile(fp.c_str(), emt->c_str()); }
 
 	template<>
-	void SerializedData::AddValue<int>(const int& dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<int>(const int& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<unsigned int>(const unsigned int& dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<unsigned int>(const unsigned int& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
+	template<>
+	void SerializedData::AddValue(const size_t& dat, const char* name, bool list) {
+		ADD_Value(dat)
+	}
 	
 	template<>
-	void SerializedData::AddValue<int64_t>(const int64_t& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<int64_t>(const int64_t& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<uint64_t>(const uint64_t& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<uint64_t>(const uint64_t& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 
 	template<>
-	void SerializedData::AddValue<int16_t>(const int16_t& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<int16_t>(const int16_t& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<uint16_t>(const uint16_t& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<uint16_t>(const uint16_t& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<float>(const float& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<float>(const float& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 		
 	template<>
-	void SerializedData::AddValue<double>(const double& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
-	}
-
-	template<>
-	void SerializedData::AddValue<long double>(const long double& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value)
-		_emt.WriteStreamable(dat);
+	void SerializedData::AddValue<double>(const double& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 	
 	template<>
-	void SerializedData::AddValue<signed char>(const signed char& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<signed char>(const signed char& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<unsigned char>(const unsigned char& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<unsigned char>(const unsigned char& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<bool>(const bool& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<bool>(const bool& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<std::string>(const std::string& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << dat)
+	void SerializedData::AddValue<std::string>(const std::string& dat, const char* name, bool list) {
+		ADD_Value(dat)
 	}
 
 	template<>
-	void SerializedData::AddValue<Vector2f>(const Vector2f& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value)
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << YAML::EndSeq;
+	void SerializedData::AddValue<Vector2f>(const Vector2f& dat, const char* name, bool list) {
+		ADD_Value(YAML::Flow << YAML::BeginSeq << dat.x << dat.y << YAML::EndSeq);
 	}
 
 	template<>
-	void SerializedData::AddValue<Vector2i>(const Vector2i& dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value)
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << YAML::EndSeq;
+	void SerializedData::AddValue<Vector2i>(const Vector2i& dat, const char* name, bool list) {
+		ADD_Value(YAML::Flow << YAML::BeginSeq << dat.x << dat.y << YAML::EndSeq);
 	}
 
 	template<>
-	void SerializedData::AddValue<Vector3f>(const Vector3f& dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value)
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << YAML::EndSeq;
+	void SerializedData::AddValue<Vector3f>(const Vector3f& dat, const char* name, bool list) {
+		ADD_Value(YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << YAML::EndSeq);
 	}
 
 	template<>
-	void SerializedData::AddValue<Vector3i>(const Vector3i& dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value)
-		_emt << YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << YAML::EndSeq;
+	void SerializedData::AddValue<Vector3i>(const Vector3i& dat, const char* name, bool list) {
+		ADD_Value(YAML::Flow << YAML::BeginSeq << dat.x << dat.y << dat.z << YAML::EndSeq);
 	}
 
 	template<>
-	void SerializedData::AddValue(const SerializableResource* dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << YAML::BeginMap)
+	void SerializedData::AddValue(const SerializableResource* dat, const char* name, bool list) {
+		ADD_Value(YAML::BeginMap)
 		dat->Serialize();
 	}
 
 	template<>
-	void SerializedData::AddValue(const SerializableObject* dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << YAML::BeginMap)
+	void SerializedData::AddValue(const SerializableObject* dat, const char* name, bool list) {
+		ADD_Value(YAML::BeginMap)
 		dat->_Serialize();
 	}
 
-	template<>
-	void SerializedData::AddValue(const std::vector<Vector2f>* dat, const char* name) {
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << YAML::BeginSeq << YAML::Flow)
-		
-		for (int i = 0; i < dat->size(); i++) {
-			_emt << YAML::BeginMap;
-			AddValue(dat, name);
-			_emt << YAML::EndMap;
-		}
-	}
-
-	template<>
-	void SerializedData::AddValue(const std::vector<SerializableObject*>* dat, const char* name)
-	{
-		ADD_Value(_emt << YAML::Key << name << YAML::Value << YAML::BeginSeq << YAML::Flow)
-		
-		for (int i = 0; i < dat->size(); i++) {
-			_emt << YAML::BeginMap;
-			dat->at(i)->_Serialize();
-		}
-	}
-	
-
-	void SerializedData::AddValueRaw(const Buffer& buf, const char* name)
-	{
+	void SerializedData::AddValueRaw(const Buffer& buf, const char* name, bool list) {
 		NAME__NULL()
 		
 		YAML::Binary bin((u_char*)buf.Data, buf.Size);
@@ -305,164 +270,139 @@ namespace SC::Serialization
 		_emt << YAML::Key << name << YAML::Value << bin;
 	}
 
+	//* Get Value
 
 	template<>
-	void SerializedData::GetValue<>(int& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<int>();
+	void SerializedData::GetValue(int& dat, const char* name, bool list, int i) {
+		GET_Value(int)
 	}
+
 	template<>
-	void SerializedData::GetValue<>(unsigned int& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<unsigned int>();
+	void SerializedData::GetValue(uint32_t& dat, const char* name, bool list, int i) {
+		GET_Value(unsigned int)
 	}
 	
 	template<>
-	void SerializedData::GetValue<>(int64_t& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<int64_t>();
-	}
-	template<>
-	void SerializedData::GetValue<>(uint64_t& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<uint64_t>();
+	void SerializedData::GetValue(int64_t& dat, const char* name, bool list, int i) {
+		GET_Value(int64_t)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(int16_t& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<int16_t>();
+	void SerializedData::GetValue(uint64_t& dat, const char* name, bool list, int i) {
+		GET_Value(uint64_t)
 	}
+
 	template<>
-	void SerializedData::GetValue<>(uint16_t& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<uint16_t>();
+	void SerializedData::GetValue(int16_t& dat, const char* name, bool list, int i) {
+		GET_Value(int16_t)
+	}
+
+	template<>
+	void SerializedData::GetValue(uint16_t& dat, const char* name, bool list, int i) {
+		GET_Value(uint16_t)
+	}
+
+	template<>
+	void SerializedData::GetValue(size_t& dat, const char* name, bool list, int i) {
+		GET_Value(size_t)
 	}
 	
 	template<>
-	void SerializedData::GetValue<>(signed char& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<signed char>();
-	}
-	template<>
-	void SerializedData::GetValue<>(unsigned char& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<unsigned char>();
+	void SerializedData::GetValue(signed char& dat, const char* name, bool list, int i) {
+		GET_Value(signed char)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(bool& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<bool>();
+	void SerializedData::GetValue(unsigned char& dat, const char* name, bool list, int i) {
+		GET_Value(unsigned char)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(float& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<float>();
-	}
-	template<>
-	void SerializedData::GetValue<>(double& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<double>();
+	void SerializedData::GetValue(bool& dat, const char* name, bool list, int i) {
+		GET_Value(bool)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(std::string& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<std::string>();
+	void SerializedData::GetValue(float& dat, const char* name, bool list, int i) {
+		GET_Value(float)
 	}
 
-	void SerializedData::GetValueRaw(Buffer& buf, const char* name)
-	{
+	template<>
+	void SerializedData::GetValue(double& dat, const char* name, bool list, int i) {
+		GET_Value(double)
+	}
+
+	template<>
+	void SerializedData::GetValue(std::string& dat, const char* name, bool list, int i) {
+		GET_Value(std::string)
+	}
+
+	void SerializedData::GetValueRaw(Buffer& buf, const char* name, bool list, int i) {
 		NAME__NULL()
 		
-		auto bin = (*currentNode)[name].as<YAML::Binary>();
+		YAML::Binary bin;
+		if (list)
+			bin = (*currentNode)[i].as<YAML::Binary>();
+		else
+			bin = (*currentNode)[name].as<YAML::Binary>();
 		buf = Buffer(bin.size());
 		buf.Data = (uint8_t*)bin.data();
 	}
 
 	template<>
-	void SerializedData::GetValue<>(Vector2f& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<Vector2f>();
+	void SerializedData::GetValue(Vector2f& dat, const char* name, bool list, int i) {
+		GET_Value(Vector2f)
 	}
+	
 	template<>
-	void SerializedData::GetValue<>(Vector2i& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<Vector2i>();
+	void SerializedData::GetValue(Vector2i& dat, const char* name, bool list, int i) {
+		GET_Value(Vector2i)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(Vector3f& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<Vector3f>();
-	}
-	template<>
-	void SerializedData::GetValue<>(Vector3i& dat, const char* name)
-	{
-		NAME__NULL()
-		dat = (*currentNode)[name].as<Vector3i>();
+	void SerializedData::GetValue(Vector3f& dat, const char* name, bool list, int i) {
+		GET_Value(Vector3f)
 	}
 
 	template<>
-	void SerializedData::GetValue<>(SerializableResource* dat, const char* name)
-	{
+	void SerializedData::GetValue(Vector3i& dat, const char* name, bool list, int i) {
+		GET_Value(Vector3i)
+	}
+
+	template<>
+	void SerializedData::GetValue(SerializableResource* dat, const char* name, bool list, int i) {
 		NAME__NULL()
 		auto nodeBackup = currentNode;
-		auto node =(*currentNode)[name];
+		YAML::Node node;
+
+		if (list)
+			node = (*currentNode)[i];
+		else
+			node = (*currentNode)[name];
+		
 		currentNode = &node;
 		dat->DeSerialize();
 		currentNode = nodeBackup;
 	}
 
 	template<>
-	void SerializedData::GetValue<>(SerializableObject* dat, const char* name)
-	{
+	void SerializedData::GetValue(SerializableObject* dat, const char* name, bool list, int i) {
 		NAME__NULL()
 		auto nodeBackup = currentNode;
-		auto node =(*currentNode)[name];
+		YAML::Node node;
+
+		if (list)
+			node = (*currentNode)[i];
+		else
+			node = (*currentNode)[name];
+
 		currentNode = &node;
 		dat->_DeSerialize();
 		currentNode = nodeBackup;
 	}
 
 	template<>
-	void SerializedData::GetValue<>(std::vector<SerializableObject*>* dat, const char* name)
-	{
-		NAME__NULL()
-		auto nodeBackup = currentNode;
-		auto node =(*currentNode)[name];
-		currentNode = &node;
-
-		auto listNode = currentNode;
-		
-		for (int i = 0; i < listNode->size(); i++) {
-			currentNode = &listNode[i];
-			dat->at(i)->_DeSerialize();
-		}
-		
-		currentNode = nodeBackup;
-	}
-
-	template<>
-	void SerializedData::GetValue<>(std::vector<Scripting::SerializableField*>* dat, const char* name)
-	{
+	void SerializedData::GetValue(std::vector<Scripting::SerializableField*>* dat, const char* name, bool list, int i) {
 		NAME__NULL()
 		auto nodeBackup = currentNode;
 		auto node =(*currentNode)[name];
@@ -479,5 +419,20 @@ namespace SC::Serialization
 		}
 		
 		currentNode = nodeBackup;
+	}
+
+	//* Internal functions
+	void SerializedData::AddSeq(const char* key, bool end) {
+		if (end)
+			*emt << YAML::EndSeq;
+		else
+		 	*emt << YAML::Key << key << YAML::Value << YAML::BeginSeq;
+	}
+
+	void SerializedData::AddMap(bool end) { 
+		if (end)
+			*emt << YAML::EndMap;
+		else
+			*emt << YAML::BeginMap;
 	}
 }

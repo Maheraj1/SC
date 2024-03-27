@@ -245,7 +245,7 @@ namespace SC::Internal::UI::ImGui {
 		::ImGui::PopStyleVar(n);
 	}
 
-	void PushStyleColor(ImGuiCol idx, Vector4 value) {
+	void PushStyleColor(ImGuiCol idx, Vector4f value) {
 		::ImGui::PushStyleColor((int)idx, {value.x, value.y, value.z, value.w});
 	}
 
