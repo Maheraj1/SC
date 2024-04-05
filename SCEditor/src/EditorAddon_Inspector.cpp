@@ -1,4 +1,6 @@
 #include "Editor/EditorAddon.h"
+#include "Engine/ECS/IEditorObject.h"
+#include "Engine/ECS/IScript.h"
 #include "imgui.h"
 
 #pragma region Defines
@@ -115,12 +117,31 @@ namespace SC::Editor {
 		return change;
 	}
 
-	void DrawIGUIComponents(EditorDrawCommand& cmd, bool count_change = true) {
+	bool DrawIGUIComponents(EditorDrawCommand& cmd, bool count_change = true) {
 		bool change = false;
 		ImGui::Text("%s", cmd.name.c_str());
 		ImGui::SameLine();
+		
+		std::string id = ("##" + cmd.name + std::to_string(uint64_t(UUID())));
 
-		std::string id = ("##" + cmd.name);
+		if (cmd.list) {
+			EditorDrawCommand _cmd = cmd;
+			_cmd.list = false;
+
+			ImGui::BeginChild(id.c_str(), {0, 0}, true);
+			
+			for (int i = 0; i < cmd.ai_data; i++) {
+
+				ImGui::SeparatorText(("Element " + std::to_string(i)).c_str());
+
+				_cmd.data = (std::uint8_t*)(cmd.data) + cmd.asize_data * i;
+				change = DrawIGUIComponents(_cmd) ? true : change;
+			}
+
+			ImGui::EndChild();
+
+			goto end;
+		}
 
 		switch (cmd.type) {
 			case EditorType::None:
@@ -145,10 +166,23 @@ namespace SC::Editor {
 					ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_InputRGB |
 					 ImGuiColorEditFlags_Float);
 				break;
+			case EditorType::Custom:
+				EditorDrawData dcmd;
+				((IEditorObject*)cmd.data)->OnIGUI(dcmd);
+				
+				for (int i = 0; i < dcmd.data.size(); i++) {
+					change = DrawIGUIComponents(dcmd.data[i], false) ? true : change;
+				}
+
+				((IEditorObject*)cmd.data)->PostIGUI(dcmd);
+				break;
 		}
+
+		end:
 
 		if (!EDITOR_I->sceneUnSaved && count_change)
 			EDITOR_I->sceneUnSaved = change;
+		return change;
 	}
 
 	bool EditorAddon::DrawInspectorComponent(IScript* script) {
@@ -168,8 +202,6 @@ namespace SC::Editor {
 			}
 
 			script->PostIGUI(dcmd);
-
-
 		}
 		
 		if (ImGui::BeginPopupContextItem(comp_id.c_str(), ImGuiPopupFlags_MouseButtonRight)) {

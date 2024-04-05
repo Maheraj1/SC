@@ -389,12 +389,12 @@ namespace SC::Serialization
 	void SerializedData::GetValue(SerializableObject* dat, const char* name, bool list, int i) {
 		NAME__NULL()
 		auto nodeBackup = currentNode;
-		YAML::Node node;
+		auto node = *currentNode;
 
 		if (list)
-			node = (*currentNode)[i];
+			node = (node)[name][i];
 		else
-			node = (*currentNode)[name];
+			node = (node)[name];
 
 		currentNode = &node;
 		dat->_DeSerialize();

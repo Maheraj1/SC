@@ -1,5 +1,7 @@
 #include "Engine/ECS/LineRenderer.h"
 #include "Engine/Core/Base.h"
+#include "Engine/ECS/IEditorObject.h"
+#include "Engine/ECS/IScript.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Serialization/SerializedData.h"
 
@@ -20,24 +22,23 @@ namespace SC {
 	void LineRenderer::Serialize() const
 	{
 		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
-		SC_ADD_PARAM(color, "Color");
 		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&points, "Points");
 	}
 
 	void LineRenderer::DeSerialize()
 	{	
 		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
-		SC_GET_PARAM(color, "Color");
+		SC_GET_PARAM<SerializableObj>((SerializableObj*)&points, "Points");
 	}
 
 	#ifdef SC_EDITOR_IMPL
 
 	void LineRenderer::OnIGUI(Editor::EditorDrawData& dcmd) {
-
+		dcmd.DrawList(points->data(), "Points", points->size(), Editor::EditorType::Custom, sizeof(Point));
 	}
 
 	void LineRenderer::PostIGUI(Editor::EditorDrawData& dcmd) {
-
+		points.data = *((std::vector<Point>*)(dcmd.data[0].data));
 	}
 
 	#endif
@@ -60,5 +61,15 @@ namespace SC {
 	void LineRenderer::Point::DeSerialize() {
 		SC_GET_PARAMETER(position);
 		SC_GET_PARAMETER(color);
+	}
+
+	void LineRenderer::Point::OnIGUI(Editor::EditorDrawData& dcmd) {
+		dcmd.DrawVector2(position, "Position");
+		dcmd.DrawColor	(color, "Color");
+	}
+
+	void LineRenderer::Point::PostIGUI(Editor::EditorDrawData& dcmd) {
+		position = *((Vector2f*)dcmd.data[0].data);
+		color = *((Color*)dcmd.data[1].data);
 	}
 }

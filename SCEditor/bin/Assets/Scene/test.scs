@@ -73,7 +73,6 @@ Objects:
         Name: SC::LineRenderer
         Material:
           UUID: 3256165952321071056
-        Color: [0, 1, 0]
         Points:
           Size: 3
           Data:

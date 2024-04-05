@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/ECS/IEditorObject.h"
 #include "Engine/Serialization/SerializableVector.h"
 #include "Engine/Serialization/SerializedData.h"
 #include "Renderer.h"
@@ -31,9 +32,8 @@ namespace SC {
 	public:
 		ResourceReference<Material> material;
 		SerializableVector<Point> points;
-		Color color;
 
-		struct Point: public SerializableObj {
+		struct Point: public IEditorObject, public Serialization::SerializableObject {
 
 			Vector2f position;
 			Color color;
@@ -43,6 +43,11 @@ namespace SC {
 			virtual ~Point() = default;
 			void Serialize() const override;
 			void DeSerialize() override;
+
+			#ifdef SC_EDITOR_IMPL
+			virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+			virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
+			#endif
 		};
 
 		friend class Internal::Renderer;

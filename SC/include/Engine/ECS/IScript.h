@@ -15,12 +15,14 @@
 #include <unordered_map>
 #include <vector>
 
-#define REGISTER_COMPONENT(x) ::SC::Internal::ComponentData::RegisterComponent(#x, typeid(x).name(), [](){ return new x; });\
+#define REGISTER_COMPONENT(x)\
+::SC::Internal::ComponentData::RegisterComponent(#x, typeid(x).name(), [](){ return new x; });\
 ::SC::ComponentID<x>::cid = ::SC::Internal::ComponentData::lastID;
 
 namespace SC {
 	class Entity;
 	class IScript;
+	class IEditorObject;
 
 	namespace Scripting {
 		enum class BuiltinFunction{
@@ -53,7 +55,8 @@ namespace SC {
 			static std::unordered_map<std::string, uint64_t> QualifiedNameToCID;
 			static uint64_t lastID;
 
-			static void RegisterComponent(std::string name, std::string qualifiedName, std::function<IScript*(void)> func);
+			static void RegisterComponent(std::string name, std::string qualifiedName, 
+					std::function<IScript*(void)> func);
 			static void RegisterAllComponents();
 		};
 	}
@@ -73,7 +76,9 @@ namespace SC {
 			Int, Float, 
 			Enum,
 
-			Vector2, Color
+			Vector2, Color,
+
+			Custom
 		};
 
 		struct EditorDrawCommand {
@@ -92,26 +97,38 @@ namespace SC {
 			// Attached int data if any
 			int ai_data;
 
-			EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data = Common::EmptyCString, int ai_data = 0);
+			// Attached size data if any
+			std::size_t asize_data;
+
+			bool list;
+
+			EditorDrawCommand(void* data, std::string name, EditorType type, 
+				bool list = false, std::string as_data = Common::EmptyCString, int ai_data = 0, std::size_t asize_data = 0);
 			~EditorDrawCommand() = default;
 
 			void Free();
 		};
 		
 		struct EditorDrawData {
-			void DrawFloat  (float n   , std::string name);
-			void DrawBool   (bool  n   , std::string name);
-			void DrawInt    (int n     , std::string name);
-			void DrawVector2(Vector2F n , std::string name);
-			void DrawColor  (Color n  , std::string name);
+			void DrawFloat  (float n, 		std::string name);
+			void DrawBool   (bool  n, 		std::string name);
+			void DrawInt    (int n, 		std::string name);
+			void DrawVector2(Vector2F n, 	std::string name);
+			void DrawColor  (Color n,		std::string name);
+			// `size_obj` required only when type is custom
+			void DrawList   (void* data, 	std::string name, int count, EditorType type, std::size_t size_obj = 0);
 			
 			// `enum_names` value needs to be separated by zero or `\0`
 			void DrawEnum(int n, std::string enum_names, int size, std::string name);
+
+			void DrawCustom(IEditorObject* obj, std::string name);
 
 			void Clear();
 
 			std::vector<EditorDrawCommand> data;
 		};
+
+		std::size_t GetMemorySize(EditorType type);
 
 	}
 	#endif

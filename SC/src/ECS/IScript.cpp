@@ -6,6 +6,7 @@
 #include "Engine/Physics/CircleCollider.h"
 #include "Engine/Physics/RigidBody.h"
 #include "Engine/ECS/Camera.h"
+#include <algorithm>
 
 template<typename T>
 uint64_t SC::ComponentID<T>::cid;
@@ -78,12 +79,20 @@ namespace SC::Editor {
 		
 		data.emplace_back((void*)dat, name, EditorType::Color);
 	}
+
+	void EditorDrawData::DrawList(void* _data, std::string name, int count, EditorType type, std::size_t size) {
+		auto _size = (type == EditorType::Custom ? size : GetMemorySize(type));
+		auto dat = malloc(_size * count);
+		memcpy(dat, _data, _size * count);
+
+		data.emplace_back((void*)dat, name, type, true, Common::EmptyString, count, size);
+	}
 	
 	void EditorDrawData::DrawEnum(int n, std::string enum_names, int size, std::string name) { 
 		auto dat = (int*)malloc(sizeof(int));
 		*dat = n;
 
-		data.emplace_back((void*)dat, name, EditorType::Enum, enum_names, size);
+		data.emplace_back((void*)dat, name, EditorType::Enum, false, enum_names, size);
 	}
 
 	void EditorDrawData::Clear() {
@@ -92,14 +101,42 @@ namespace SC::Editor {
 		}
 	}
 
-	EditorDrawCommand::EditorDrawCommand(void* data, std::string name, EditorType type, std::string as_data, int ai_data) 
-	:data(data), name(name), type(type), as_data(as_data), ai_data(ai_data)
+	EditorDrawCommand::EditorDrawCommand(void* data, std::string name, EditorType type, bool list, std::string as_data, int ai_data, std::size_t asize_data) 
+	:data(data), name(name), type(type), as_data(as_data), ai_data(ai_data), asize_data(asize_data), list(list)
 	{ }
 
 	void EditorDrawCommand::Free() {
 		if (!data) return;
 		free(data);
 		data = nullptr;
+	}
+
+	std::size_t GetMemorySize(EditorType type) {
+		switch (type) {
+			case EditorType::None:
+			return 0; break;
+
+			case EditorType::Bool:
+			return sizeof(bool); break; 
+
+			case EditorType::Int:
+			return sizeof(int); break;
+
+			case EditorType::Float:
+			return sizeof(float); break;
+
+			case EditorType::Enum:
+			return sizeof(int); break;
+
+			case EditorType::Vector2:
+			return sizeof(Vector2f); break;
+			
+			case EditorType::Color:
+			return sizeof(Color); break;
+			
+			case EditorType::Custom:
+			return 0;break;
+		}
 	}
 }
 #endif
