@@ -75,20 +75,33 @@ namespace SC::Internal::UI::ImGui {
 		::ImGui::StyleColorsDark();
 		SetColors();
 		
+		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplGlfw_InitForOpenGL(window, true);
 		::ImGui_ImplOpenGL3_Init("#version 410 core");
+		#elif defined(SC_RENDERER_Metal)
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+    	ImGui_ImplMetal_Init(device);
+		#endif
 	}
 
 	void ShutDown()
 	{
+		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplOpenGL3_Shutdown();
+		#elif defined(SC_RENDERER_Metal)
+		::ImGui_ImplMetal_Shutdown();
+		#endif
 		::ImGui_ImplGlfw_Shutdown();
 		::ImGui::DestroyContext();
 	}
 
 	void BeginFrame()
 	{
+		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplOpenGL3_NewFrame();
+		#elif defined(SC_RENDERER_Metal)
+		::ImGui_ImplMetal_NewFrame();
+		#endif
 		::ImGui_ImplGlfw_NewFrame();
 		::ImGui::NewFrame();
 

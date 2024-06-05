@@ -1,6 +1,6 @@
 #define NO_USING_NAMESPACE
+#include "functional"
 
-#include "Engine/Core/Application.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Scene/SceneManager.h"
 #include "glm/ext/matrix_clip_space.hpp"
@@ -9,12 +9,28 @@
 #include "Engine/Core/Time.h"
 #include "Engine/Window/Window.h"
 #include "Engine/ECS/Camera.h"
+#include "Engine/Core/Application.h"
 
 #include "GLFW/glfw3.h"
 #include "GLFW/glfw3native.h"
 
 namespace SC {
 	static uint8_t s_windowInstanceCount = 0;
+
+	void GLFW_Error(int error_code, const char* description){
+		Debug::Error(description, std::to_string(error_code));
+	}
+
+	void GLFW_WindowSize(GLFWwindow* window, int width, int height) {
+		// glViewport(0, 0, width, height);
+		#ifdef SC_RUNTIME
+		Internal::Renderer::ViewPortSize = {width, height};
+		#endif
+	}
+
+	void GLFW_WIN_CLOSE(GLFWwindow* window) {
+		Application::Get()->OnWindowClose.Call();
+	}
 
 	void Window::SetVSync(bool enabled)
 	{
@@ -56,9 +72,7 @@ namespace SC {
 
 		m_data = props;
 
-		glfwSetErrorCallback([](int error_code, const char* description) {
-			Debug::Error(description, std::to_string(error_code));
-		});
+		glfwSetErrorCallback(GLFW_Error);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
@@ -76,16 +90,9 @@ namespace SC {
 
 		glfwMakeContextCurrent(window);
 		
-		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
-			Application::Get()->OnWindowClose.Call({});
-		});
+		glfwSetWindowCloseCallback(window, GLFW_WIN_CLOSE);
 
-		glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height){
-			// glViewport(0, 0, width, height);
-			#ifdef SC_RUNTIME
-			Internal::Renderer::ViewPortSize = {width, height};
-			#endif
-		});
+		glfwSetFramebufferSizeCallback(window, GLFW_WindowSize);
 
 		glfwSetWindowAspectRatio(window, 16, 9);
 
@@ -112,18 +119,17 @@ namespace SC {
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
-		Clear();
 
-		auto app = Application::Get();
+		Application* app = Application::Get();
 		
-		for(auto addon: app->addons)
+		for(ApplicationAddon* addon: app->addons)
 		{
 			addon->PreFrameRender();
 		}
 
 		SceneManager::GetCurrentScene().GetCurrentCamera()->Render();
 
-		for(auto addon: app->addons)
+		for(ApplicationAddon* addon: app->addons)
 		{
 			addon->PostFrameRender();
 		}
@@ -143,8 +149,7 @@ namespace SC {
 		
 	}
 
-	void Window::Clear()
-	{
+	void Window::Clear(Color clear_color) {
 		
 	}
 }

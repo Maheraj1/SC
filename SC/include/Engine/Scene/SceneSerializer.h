@@ -23,6 +23,9 @@
 
 namespace SC
 {
+	namespace Serialization {
+		class SerializedData;
+	}
 	class SC_API SceneSerializer
 	{
 	private:

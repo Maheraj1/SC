@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Engine/Core/Common.h"
-#include "Engine/ECS/IScript.h"
 #include "Engine/Math/Math.h"
-#include "Engine/ECS/Entity.h"
-#include "Engine/ECS/SpriteRenderer.h"
+#include <vector>
+#include "Engine/Core/UUID.h"
 
 namespace SC::Internal { class Renderer; }
 
 namespace SC
 {
     class Camera;
+    class Entity;
     /**
      * @brief Scene class for objects and logic for mainloop
      */

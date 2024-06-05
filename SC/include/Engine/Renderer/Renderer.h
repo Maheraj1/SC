@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Engine/Math/Math.h"
-#include "Engine/ECS/Entity.h"
 #include "Engine/Scene/Scene.h"
+#include "Engine/ECS/Transform.h"
 #include "glm/detail/qualifier.hpp"
 #include "glm/fwd.hpp"
 
@@ -17,12 +17,19 @@
 
 #define ERROR_SHADER_COLOR_RGB ERROR_SHADER_COLOR_R ERROR_SHADER_COLOR_G ERROR_SHADER_COLOR_B
 
+namespace SC {
+	class Texture;
+	class Shader;
+}
+
 namespace SC::Internal
 {
 	struct CameraData;
 	struct BatchQuad;
 	struct BatchLineStrip;
 	struct BatchLine;
+
+	struct Point;
 
 	struct ImQuad {
 		Transform transform;
@@ -31,9 +38,7 @@ namespace SC::Internal
 	};
 
 	struct ImLine {
-		// both vectors must be of same size
-		std::vector<Vector2f> vertices;
-		std::vector<Color> color;
+		std::vector<Point> points;
 		
 		// Only for stripped lines
 		float thickness = 5.0f;
@@ -48,7 +53,7 @@ namespace SC::Internal
 	public:
 		static const uint MAX_BATCH_COUNT = 100;
 		static const ushort MAX_TEXTURE_SLOT_USAGE = 10;
-		static const ushort MAX_LINE_SIZE = 50;
+		static const ushort MAX_LINE_SIZE = 10;
 		static const ushort MAX_SINGLE_LINE_BATCH_SIZE = 50;
 		
 		static bool WireFrameMode;
@@ -62,7 +67,7 @@ namespace SC::Internal
 		static Vector2i Resolution;
 		
 		static void Init();
-		static void Render();
+		static void Render(Color color = {0, 0, 0});
 		static void CleanUp();
 
 		static void RenderQuad(ImQuad& quad, Shader* shader);

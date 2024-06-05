@@ -17,7 +17,11 @@
 	EditorAddon::instance->sceneUnSaved = true;}\
 	ImGui::CloseCurrentPopup();
 
+#define CHANGE if (!EDITOR_I->sceneUnSaved && count_change) EDITOR_I->sceneUnSaved = change;
+
 #pragma endregion
+
+#pragma region Code
 
 namespace SC::Editor {
 
@@ -117,6 +121,10 @@ namespace SC::Editor {
 		return change;
 	}
 
+	bool DrawIGUIList() {
+		
+	}
+
 	bool DrawIGUIComponents(EditorDrawCommand& cmd, bool count_change = true) {
 		bool change = false;
 		ImGui::Text("%s", cmd.name.c_str());
@@ -127,20 +135,25 @@ namespace SC::Editor {
 		if (cmd.list) {
 			EditorDrawCommand _cmd = cmd;
 			_cmd.list = false;
+			_cmd.name = Common::EmptyString;
 
-			ImGui::BeginChild(id.c_str(), {0, 0}, true);
+			ImGui::BeginChild((id).c_str(), {0, 200}, true);
 			
 			for (int i = 0; i < cmd.ai_data; i++) {
 
-				ImGui::SeparatorText(("Element " + std::to_string(i)).c_str());
-
-				_cmd.data = (std::uint8_t*)(cmd.data) + cmd.asize_data * i;
-				change = DrawIGUIComponents(_cmd) ? true : change;
+				if (ImGui::CollapsingHeader(("Element " + std::to_string(i)).c_str())) {
+					_cmd.data = (std::uint8_t*)(cmd.data) + cmd.asize_data * i;
+					change = DrawIGUIComponents(_cmd) ? true : change;
+				}
 			}
+
+			// ImGui::Separator();
+			// ImGui::SameLine();
 
 			ImGui::EndChild();
 
-			goto end;
+			CHANGE
+			return change;
 		}
 
 		switch (cmd.type) {
@@ -156,7 +169,7 @@ namespace SC::Editor {
 				change = ImGui::DragFloat(id.c_str(), (float*)cmd.data, .2f);
 				break;
 			case EditorType::Vector2:
-				change = DrawVector2(cmd.name, *(Vector2*)cmd.data, false);
+				change = DrawVector2(cmd.name, *((Vector2*)cmd.data), false);
 				break;
 			case EditorType::Enum:
 				change = ImGui::Combo(id.c_str(), (int*)cmd.data, cmd.as_data.c_str());
@@ -178,10 +191,7 @@ namespace SC::Editor {
 				break;
 		}
 
-		end:
-
-		if (!EDITOR_I->sceneUnSaved && count_change)
-			EDITOR_I->sceneUnSaved = change;
+		CHANGE
 		return change;
 	}
 
@@ -297,3 +307,4 @@ namespace SC::Editor {
 		ImGui::End();
 	}
 }
+#pragma endregion

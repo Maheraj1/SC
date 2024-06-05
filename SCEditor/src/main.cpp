@@ -103,7 +103,6 @@ void PreAppRun()
 		
 	// 	LineRenderer* lr = (LineRenderer*)line.AddComponent(ComponentID<LineRenderer>::cid);
 	// 	lr->material.obj = Resources::GetResource<Material>("DefaultMaterial");
-	// 	lr->color = Color(0, 1, 0);
 
 	// 	lr->points->push_back(LineRenderer::Point({5, 4}, {0, 1, 0}));
 	// 	lr->points->push_back(LineRenderer::Point({-5, -4}, {0, .5, 0}));

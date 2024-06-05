@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Engine/Core/Core.h"
 #include "Engine/Resources/Resource.h"
+#include "Engine/Core/Platform.h"
 
 namespace SC {
 	enum class TextureProperties: unsigned int
@@ -44,6 +44,9 @@ namespace SC {
 		const char* fp;
 
 		bool Valid;
+		#ifdef SC_RENDERER_Metal
+		void* obj;
+		#endif
 	public:
 		Texture();
 		Texture(const char* fp);

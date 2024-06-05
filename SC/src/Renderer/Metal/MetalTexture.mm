@@ -16,7 +16,9 @@ namespace SC {
 
 	void Texture::Delete() { }
 
-	void Texture::Generate() { }
+	void Texture::Generate() { 
+		
+	}
 
 	void Texture::SetAttribute(TextureParameters param, TextureProperties value) { }
 

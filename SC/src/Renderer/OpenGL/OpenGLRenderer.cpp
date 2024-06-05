@@ -41,24 +41,20 @@ namespace SC::Internal
 		std::array<Vector2f, Renderer::MAX_BATCH_COUNT> texCoords;
 	};
 
-	void Renderer::Render()
-	{
-		if (WireFrameMode)
-		{
+	void Renderer::Render() {
+		if (WireFrameMode) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		} else
-		{
+		} else {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
 		/// Quad Rendering
 
+		GLCall(glBindVertexArray(VAO));
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-		GLCall(glBindVertexArray(VAO));
 
-		for (const BatchQuad &quad_dat : quad_data)
-		{
+		for (const BatchQuad &quad_dat : quad_data) {
 			if (quad_dat.count <= 0) continue;
 
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(quad_dat.data), quad_dat.data.data()));
@@ -84,19 +80,21 @@ namespace SC::Internal
 
 		/// Line Rendering
 
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip));
 		GLCall(glBindVertexArray(VAO_Line_Strip));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip));
 
 		for (const BatchLineStrip& line_strip : line_strip_data) {
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(line_strip.data), line_strip.data.data()));
 			GLCall(glUseProgram(line_strip.shader->GetShaderID()));
 
-			GLCall(glDrawArrays(GL_LINE_STRIP, 0, line_strip.count));
+			GLCall(glDrawArrays(GL_LINES, 0, line_strip.count));
 		}
+
+		line_strip_data.clear();
 	}
 
-	void Renderer::Init()
-	{	
+	void Renderer::Init() {	
 		// Create Uniform buffer for ModelViewProjection it will store the product of View and Projection
 		glGenBuffers(1, &UBO_MVP);
 		glBindBuffer(GL_UNIFORM_BUFFER, UBO_MVP);
@@ -137,7 +135,6 @@ namespace SC::Internal
 		uint VAO_line_Strip;
 
 		glGenVertexArrays(1, &VAO_line_Strip);
-
 		glBindVertexArray(VAO_line_Strip);
 		
 		glGenBuffers(1, &VBO_Line_Strip);
@@ -274,8 +271,7 @@ void main() {
 		shader_line->uuid = 2;
 	}
 
-	void Renderer::SetMVP(Matrix4 _proj)
-	{
+	void Renderer::SetMVP(Matrix4 _proj) {
 		proj = _proj;
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, UBO_MVP));
 		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4), glm::value_ptr(_proj)));

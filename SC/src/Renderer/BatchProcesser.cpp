@@ -138,58 +138,19 @@ namespace SC::Internal {
 	}
 	// TODO: Complete this
 	void Renderer::RenderLine(ImLine& line, Shader* shader) {
-		
-		if (line.color.size() != line.vertices.size()) {
-			Debug::Error("Color & Vertices vector isn't of same size", "SC::Internal::Renderer::RenderLine");
-			return;
+		BatchLineStrip* currentBatch = nullptr;
+		line_strip_data.push_back({});
+		currentBatch = &line_strip_data.back();
+
+		currentBatch->shader = shader;
+		currentBatch->thickness = line.thickness;
+
+		for (int i = 0; i < line.points.size(); i++) {
+			currentBatch->data[i].position = line.points[i].position;
+			currentBatch->data[i].color    = line.points[i].color;
 		}
-		
-		if (line.IsStripped) {
-			BatchLineStrip* current_batch = nullptr;
-			line_strip_data.push_back({});
-			current_batch = &line_strip_data.back();
 
-			current_batch->shader = shader;
-			current_batch->thickness = line.thickness;
-
-			for (int i = 0; i < line.vertices.size(); i++) {
-				current_batch->data[i].position = line.vertices[i];
-				current_batch->data[i].color    = line.color[i];
-			}
-
-			current_batch->count = line.vertices.size();
-
-		} else {
-			BatchLine* currentBatch = nullptr;
-			if (line_data.size() == 0) {
-				AddNewBatch_L;
-				currentBatch->shader = shader;
-			}
-			else {
-				// set shader
-
-				for (int i = 0; i < line_data.size(); i++) {
-					if (line_data[i].shader->uuid == shader->uuid && line_data[i].count < MAX_SINGLE_LINE_BATCH_SIZE) {
-						currentBatch = &line_data[i];
-					}
-				}
-
-				if (!currentBatch) {
-					AddNewBatch_L;
-					currentBatch->shader = shader;
-				}
-			}
-
-			for (int i = 0; i < line.vertices.size(); i += 2) {
-
-				int offset_vert = currentBatch->count * 4 + i;
-				auto& offset_vert_ = BATCH_DATA[offset_vert + 0];
-
-				offset_vert_.color = line.color[i];
-				offset_vert_.position = line.vertices[i];
-			}
-			// currentBatch->count;
-		}
+		currentBatch->count = line.points.size();
 	}
 	
 	void Renderer::RenderQuad(ImQuad& quad, uint64_t shader) {

@@ -1,7 +1,7 @@
 Version: 0.0.5a
 Objects:
   - Name: Camera
-    UUID: 6766312016880778426
+    UUID: 8455860751664480519
     Transform:
       position: [0, 0]
       rotation: 0
@@ -13,7 +13,7 @@ Objects:
         RenderToImage: true
         ClearColor: [0, 0, 0]
   - Name: Box
-    UUID: 18343107561375245423
+    UUID: 7017412320249647404
     Transform:
       position: [0, 5]
       rotation: 0
@@ -38,7 +38,7 @@ Objects:
           UUID: 3256165952321071056
         Color: [0.5, 0.5, 0.5]
   - Name: Floor
-    UUID: 12088754378454500420
+    UUID: 5741526735833102373
     Transform:
       position: [0, -5]
       rotation: 0
@@ -63,7 +63,7 @@ Objects:
           UUID: 3256165952321071056
         Color: [1, 0, 0]
   - Name: Line
-    UUID: 4061205425225984179
+    UUID: 2019828882072768343
     Transform:
       position: [0, 0]
       rotation: 0
@@ -71,6 +71,7 @@ Objects:
     Components:
       - IsNative: true
         Name: SC::LineRenderer
+        Thickness: 1
         Material:
           UUID: 3256165952321071056
         Points:

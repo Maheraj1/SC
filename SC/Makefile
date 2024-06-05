@@ -6,7 +6,7 @@ include ../ext/ext.mk
 CXX = clang++
 # Options: OpenGL, Metal, *DX11
 # `*` Not supported
-RENDERER = OpenGL
+RENDERER = Metal
 FRAMEWORKS = 
 OTHER_ARGS = -g3
 VERSION = -std=c++20
@@ -43,9 +43,9 @@ ifeq ($(UNAME_S), Darwin)
 	ifeq ($(RENDERER), Metal)
 		FRAMEWORKS += -framework Metal -framework QuartzCore -framework Foundation
 		DEFINES += -DGLFW_EXPOSE_NATIVE_COCOA
-		SRC += $(wildcard $(SRC_DIR)/Window/Metal/*.mm)
-		SRC += $(wildcard $(SRC_DIR)/Renderer/Metal/*.mm)
-		SRC += $(wildcard $(SRC_DIR)/Input/Metal/*.mm)
+		SRC += $(wildcard $(SRC_DIR)/Window/Metal/*.mm) $(wildcard $(SRC_DIR)/Window/Metal/*.m)
+		SRC += $(wildcard $(SRC_DIR)/Renderer/Metal/*.mm) $(wildcard $(SRC_DIR)/Renderer/Metal/*.m)
+		SRC += $(wildcard $(SRC_DIR)/Input/Metal/*.mm) $(wildcard $(SRC_DIR)/Input/Metal/*.m)
 	endif
 endif
 
@@ -67,7 +67,12 @@ LDFLAGS  = $(VERSION) $(LIB_DIR) $(FRAMEWORKS) $(LIBS) -fPIC $(WARNS) $(EXT_LDFL
 
 %.o: src/**/**/%.mm
 	@$(CXX) -o $@ $< $(CXXFLAGS) -ObjC++ -fobjc-weak -fobjc-arc
-	@printf "\e[33mCompiled $@: \e[34m$<\e[0m\n"
+	@printf "\e[33mCompiled (Obj-C++) $@: \e[34m$<\e[0m\n"
+
+%.o: src/**/**/%.m
+	@$(CXX) -o $@ $< $(CXXFLAGS) -ObjC
+	@printf "\e[33mCompiled (Obj-C) $@: \e[34m$<\e[0m\n"
+
 
 %.o: src/**/%.cpp
 	@$(CXX) -o $@ $< $(CXXFLAGS)

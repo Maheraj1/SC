@@ -6,14 +6,29 @@
 #include "Renderer.h"
 
 namespace SC {
+		
+	struct Point: public IEditorObject, public Serialization::SerializableObject {
+		Vector2f position;
+		Color color;
+
+		Point();
+		Point(Vector2f position, Color color);
+		virtual ~Point() = default;
+		void Serialize() const override;
+		void DeSerialize() override;
+
+		#ifdef SC_EDITOR_IMPL
+		virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
+		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
+		#endif
+	};
+
 	class LineRenderer: public Renderer {
 	  public:
 		LineRenderer();
 		~LineRenderer();
 
 		virtual uint64_t GetCID() override;
-
-		struct Point;
 		
 	private:
 		void Serialize() const override;
@@ -30,25 +45,9 @@ namespace SC {
 		#endif
 	
 	public:
+		float thickness;
 		ResourceReference<Material> material;
 		SerializableVector<Point> points;
-
-		struct Point: public IEditorObject, public Serialization::SerializableObject {
-
-			Vector2f position;
-			Color color;
-
-			Point();
-			Point(Vector2f position, Color color);
-			virtual ~Point() = default;
-			void Serialize() const override;
-			void DeSerialize() override;
-
-			#ifdef SC_EDITOR_IMPL
-			virtual void OnIGUI(Editor::EditorDrawData& dcmd) override;
-			virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
-			#endif
-		};
 
 		friend class Internal::Renderer;
 	};

@@ -23,7 +23,7 @@ namespace SC::Internal
 		Renderer::SetMVP(view*proj);
 
 		// Render current scene
-		Renderer::Render();
+		Renderer::Render(data.clear_color);
 	}
 
 	uint32_t SceneRenderer::Render(const CameraData& data) {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core/Core.h"
-#include "Vector2.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-volatile"

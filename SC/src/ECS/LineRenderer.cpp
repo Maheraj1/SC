@@ -16,17 +16,23 @@ namespace SC {
 	void LineRenderer::PreRender() {
 		Renderer::mat = material.obj;
 		Internal::ImLine line;
-		// line.color
+		line.IsStripped = true;
+		line.points = points.data;
+		line.thickness = thickness;
+
+		Internal::Renderer::RenderLine(line);
 	}
 
 	void LineRenderer::Serialize() const
 	{
+		SC_ADD_PARAM<float>(this->thickness, "Thickness");
 		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
 		SC_ADD_PARAM<SerializableObj>((SerializableObj*)&points, "Points");
 	}
 
 	void LineRenderer::DeSerialize()
 	{	
+		SC_GET_PARAM<float>(this->thickness, "Thickness");
 		SC_GET_PARAM<SerializableObj>((SerializableObj*)&this->material, "Material");
 		SC_GET_PARAM<SerializableObj>((SerializableObj*)&points, "Points");
 	}
@@ -34,41 +40,43 @@ namespace SC {
 	#ifdef SC_EDITOR_IMPL
 
 	void LineRenderer::OnIGUI(Editor::EditorDrawData& dcmd) {
+		dcmd.DrawFloat(thickness, "Thickness");
 		dcmd.DrawList(points->data(), "Points", points->size(), Editor::EditorType::Custom, sizeof(Point));
 	}
 
 	void LineRenderer::PostIGUI(Editor::EditorDrawData& dcmd) {
-		points.data = *((std::vector<Point>*)(dcmd.data[0].data));
+		thickness = *((float*)dcmd.data[0].data);
+		// points.data = *((std::vector<Point>*)(dcmd.data[1].data));
 	}
 
 	#endif
 
 	GET_CID_IMPL(LineRenderer);
 
-	LineRenderer::Point::Point() 
+	Point::Point() 
 	:position(), color()
 	{ }
 
-	LineRenderer::Point::Point(Vector2f position, Color color) 
+	Point::Point(Vector2f position, Color color) 
 	:position(position), color(color)
 	{ }
 
-	void LineRenderer::Point::Serialize() const {
+	void Point::Serialize() const {
 		SC_ADD_PARAMETER(position);
 		SC_ADD_PARAMETER(color);
 	}
 
-	void LineRenderer::Point::DeSerialize() {
+	void Point::DeSerialize() {
 		SC_GET_PARAMETER(position);
 		SC_GET_PARAMETER(color);
 	}
 
-	void LineRenderer::Point::OnIGUI(Editor::EditorDrawData& dcmd) {
+	void Point::OnIGUI(Editor::EditorDrawData& dcmd) {
 		dcmd.DrawVector2(position, "Position");
 		dcmd.DrawColor	(color, "Color");
 	}
 
-	void LineRenderer::Point::PostIGUI(Editor::EditorDrawData& dcmd) {
+	void Point::PostIGUI(Editor::EditorDrawData& dcmd) {
 		position = *((Vector2f*)dcmd.data[0].data);
 		color = *((Color*)dcmd.data[1].data);
 	}

@@ -123,8 +123,8 @@ fragment float4 f_sprite(
 	}
 
 
-	void Renderer::Render() {
-
+	void Renderer::Render(Color color) {
+		return;
 		id<MTLCommandBuffer> cb = [commandQueue commandBuffer];
 
 		auto drawable = [layer nextDrawable];
@@ -135,7 +135,7 @@ fragment float4 f_sprite(
 		MTLRenderPassColorAttachmentDescriptor* cd = rpd.colorAttachments[0];
 		cd.texture = drawable.texture;
 		cd.loadAction = MTLLoadActionClear;
-		cd.clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
+		cd.clearColor = MTLClearColorMake(color.r, color.g, color.b, 1.0);
 		cd.storeAction = MTLStoreActionStore;
 
 

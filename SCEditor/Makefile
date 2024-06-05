@@ -1,7 +1,7 @@
 include ../ext/ext.mk
 
 COMPILER = clang++
-RENDERER = OpenGL
+RENDERER = Metal
 
 OBJ_NAME = SCEditor
 OBJ_PATH = bin/$(OBJ_NAME)_
@@ -12,7 +12,7 @@ OBJ = $(addsuffix .o, $(notdir $(basename $(SRC))))
 DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DSC_USE__asm__ -DSC_EDITOR_IMPL -DSC_DEBUG
 VERSION = -std=c++20
 OTHER_ARGS = -g3 -Wall -Wno-undefined-var-template -Wno-deprecated-volatile
-LIBS = -lSC -limgui-glfw-opengl -lglfw -limguizmo
+LIBS = -lSC -limgui-glfw-metal -lglfw -limguizmo
 LIB_DIR = -L. $(EXT_LDFLAGS)
 
 %.o: src/%.cpp
