@@ -154,8 +154,7 @@ namespace YAML {
 	};
 }
 
-namespace SC::Serialization 
-{
+namespace SC::Serialization {
 	YAML::Emitter* SerializedData::emt = nullptr;
 	YAML::Node* SerializedData::currentNode = nullptr;
 

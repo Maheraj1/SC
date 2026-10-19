@@ -29,10 +29,10 @@ namespace SC::Internal
 
 	bool Renderer::WireFrameMode = false;
 
-	static uint VBO, EBO;
-	static unsigned int VBO_Line_Strip;
-	static unsigned int Current_VBO;
-	static unsigned int UBO_MVP;
+	static uint s_VBO, s_EBO;
+	static unsigned int s_VBO_Line_Strip;
+	static unsigned int s_Current_VBO;
+	static unsigned int s_UBO_MVP;
 
 	static Matrix4 proj;
 
@@ -41,7 +41,7 @@ namespace SC::Internal
 		std::array<Vector2f, Renderer::MAX_BATCH_COUNT> texCoords;
 	};
 
-	void Renderer::Render() {
+	void Renderer::Render(Color clearColor) {
 		if (WireFrameMode) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		} else {
@@ -51,8 +51,8 @@ namespace SC::Internal
 		/// Quad Rendering
 
 		GLCall(glBindVertexArray(VAO));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_EBO));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, s_VBO));
 
 		for (const BatchQuad &quad_dat : quad_data) {
 			if (quad_dat.count <= 0) continue;
@@ -82,7 +82,7 @@ namespace SC::Internal
 
 		GLCall(glBindVertexArray(VAO_Line_Strip));
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-		GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, s_VBO_Line_Strip));
 
 		for (const BatchLineStrip& line_strip : line_strip_data) {
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(line_strip.data), line_strip.data.data()));
@@ -96,23 +96,23 @@ namespace SC::Internal
 
 	void Renderer::Init() {	
 		// Create Uniform buffer for ModelViewProjection it will store the product of View and Projection
-		glGenBuffers(1, &UBO_MVP);
-		glBindBuffer(GL_UNIFORM_BUFFER, UBO_MVP);
+		glGenBuffers(1, &s_UBO_MVP);
+		glBindBuffer(GL_UNIFORM_BUFFER, s_UBO_MVP);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix4), NULL, GL_DYNAMIC_DRAW);
-		glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO_MVP, 0, sizeof(Matrix4));
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, s_UBO_MVP, 0, sizeof(Matrix4));
 		
 		/// Quad Buffers
 
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
 
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
+		glGenBuffers(1, &s_VBO);
+		glGenBuffers(1, &s_EBO);
 		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * 6 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, s_VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData_Quad) * 4 * MAX_BATCH_COUNT, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
@@ -137,8 +137,8 @@ namespace SC::Internal
 		glGenVertexArrays(1, &VAO_line_Strip);
 		glBindVertexArray(VAO_line_Strip);
 		
-		glGenBuffers(1, &VBO_Line_Strip);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO_Line_Strip);
+		glGenBuffers(1, &s_VBO_Line_Strip);
+		glBindBuffer(GL_ARRAY_BUFFER, s_VBO_Line_Strip);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData_Line) * MAX_LINE_SIZE, nullptr, GL_DYNAMIC_DRAW);
 
 		// position
@@ -273,7 +273,7 @@ void main() {
 
 	void Renderer::SetMVP(Matrix4 _proj) {
 		proj = _proj;
-		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, UBO_MVP));
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, s_UBO_MVP));
 		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix4), glm::value_ptr(_proj)));
 	}
 

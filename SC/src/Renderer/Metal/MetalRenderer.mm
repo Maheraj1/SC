@@ -31,7 +31,7 @@ namespace SC::Internal {
 	static id<MTLBuffer> vertex_buffer;
 	static id<MTLBuffer> index_buffer;
 
-	static id<MTLRenderPipelineState> RenderPiplineState_ErrorShader;
+	static id<MTLRenderPipelineState> RenderPipelineState_ErrorShader;
 
 	static matrix_float4x4 mvp_mat;
 
@@ -88,7 +88,7 @@ fragment float4 f_error(
 		rpd.fragmentFunction = [error_shader newFunctionWithName:@"f_error"];
 		rpd.colorAttachments[0].pixelFormat = layer.pixelFormat;
 
-		RenderPiplineState_ErrorShader = [gpu newRenderPipelineStateWithDescriptor:rpd error:nullptr];
+		RenderPipelineState_ErrorShader = [gpu newRenderPipelineStateWithDescriptor:rpd error:nullptr];
 
 		
 
@@ -123,7 +123,7 @@ fragment float4 f_sprite(
 	}
 
 
-	void Renderer::Render(Color color) {
+	void Renderer::Render(Color clearColor) {
 		return;
 		id<MTLCommandBuffer> cb = [commandQueue commandBuffer];
 
@@ -135,11 +135,11 @@ fragment float4 f_sprite(
 		MTLRenderPassColorAttachmentDescriptor* cd = rpd.colorAttachments[0];
 		cd.texture = drawable.texture;
 		cd.loadAction = MTLLoadActionClear;
-		cd.clearColor = MTLClearColorMake(color.r, color.g, color.b, 1.0);
+		cd.clearColor = MTLClearColorMake(clearColor.r, clearColor.g, clearColor.b, 1.0);
 		cd.storeAction = MTLStoreActionStore;
 
 
-		for (auto&& batch: batchData) {
+		for (auto&& batch: quad_data) {
 			id<MTLRenderCommandEncoder> rce = [cb renderCommandEncoderWithDescriptor:rpd];
 
 			[rce setVertexBuffer:mvp_buffer offset:0 atIndex:0];
@@ -152,7 +152,7 @@ fragment float4 f_sprite(
 			memcpy(indices, batch.indices.data(), sizeof(batch.indices));
 
 			// TODO: set this to the actual shader
-			[rce setRenderPipelineState: RenderPiplineState_ErrorShader];
+			[rce setRenderPipelineState: RenderPipelineState_ErrorShader];
 
 			//TODO: set textures using setFragmentTextures
 

@@ -41,5 +41,8 @@
         "ucid"
     ],
 	"omnisharp.useModernNet": false,
-	"omnisharp.projectLoadTimeout": 120,   
+    "omnisharp.projectLoadTimeout": 120,
+    "editor.fontFamily": "Menlo, Monaco, 'Courier New', monospace, MesloLGMDZ Nerd Font Mono",
+    "cmake.sourceDirectory": "/Users/maheraj/Dev/cpp/SC/SC",
+    
 }

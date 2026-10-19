@@ -1,6 +1,5 @@
 #include "Engine/ECS/LineRenderer.h"
 #include "Engine/Core/Base.h"
-#include "Engine/ECS/IEditorObject.h"
 #include "Engine/ECS/IScript.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Serialization/SerializedData.h"
@@ -15,10 +14,11 @@ namespace SC {
 
 	void LineRenderer::PreRender() {
 		Renderer::mat = material.obj;
-		Internal::ImLine line;
-		line.IsStripped = true;
-		line.points = points.data;
-		line.thickness = thickness;
+		Internal::ImLine line {
+			.points = points.data,
+			.thickness = thickness,
+			.IsStripped = true,
+		};
 
 		Internal::Renderer::RenderLine(line);
 	}

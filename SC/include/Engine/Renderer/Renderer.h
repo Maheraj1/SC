@@ -5,6 +5,7 @@
 #include "Engine/ECS/Transform.h"
 #include "glm/detail/qualifier.hpp"
 #include "glm/fwd.hpp"
+#include <memory>
 
 //* Graphics API Batch Type
 #ifndef SC_RENDERER_OpenGL
@@ -20,6 +21,7 @@
 namespace SC {
 	class Texture;
 	class Shader;
+	struct Point;
 }
 
 namespace SC::Internal
@@ -29,8 +31,6 @@ namespace SC::Internal
 	struct BatchLineStrip;
 	struct BatchLine;
 
-	struct Point;
-
 	struct ImQuad {
 		Transform transform;
 		Color color;
@@ -38,7 +38,7 @@ namespace SC::Internal
 	};
 
 	struct ImLine {
-		std::vector<Point> points;
+		std::vector<std::unique_ptr<Point>>& points;
 		
 		// Only for stripped lines
 		float thickness = 5.0f;
@@ -67,7 +67,7 @@ namespace SC::Internal
 		static Vector2i Resolution;
 		
 		static void Init();
-		static void Render(Color color = {0, 0, 0});
+		static void Render(Color clearColor = {0, 0, 0});
 		static void CleanUp();
 
 		static void RenderQuad(ImQuad& quad, Shader* shader);

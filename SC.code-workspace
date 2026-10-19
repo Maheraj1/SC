@@ -1,8 +1,15 @@
 {
-    "folders": [
-        {
-            "path": "."
-        }
+    "folders": [ {
+            "path": "SC"
+        }, {
+            "path": "SandBox"
+        }, {
+            "path": "SCEditor"
+        }, {
+            "path": "SC-ScriptCore"
+        },{
+	    "path": "vendor"
+	}
     ],
     "settings": {
         "files.associations": {

@@ -1,5 +1,6 @@
 #include "Engine/Scene/SceneSerializer.h"
 #include "Engine/Debug/Debug.h"
+#include "Engine/ECS/Entity.h"
 #include "Engine/ECS/IScript.h"
 #include "Engine/ECS/MonoCSScript.h"
 #include "Engine/Physics/Physics.h"

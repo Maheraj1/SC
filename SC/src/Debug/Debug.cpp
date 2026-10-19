@@ -1,15 +1,10 @@
 #include "Engine/Debug/Debug.h"
-#include "Engine/Math/Math.h"
 #include "Engine/Core/Base.h"
 #include <cstdarg>
 #include <cstdio>
-#include <ostream>
-#include <sstream>
 #include <string>
-#include <xlocale/_stdio.h>
 
-namespace SC
-{
+namespace SC {
     std::function<void(std::string, LogLevel loglevel)> Debug::editorLogCallbackFunc;
     std::function<void(std::string)> Debug::buildcallbackFunc;
 

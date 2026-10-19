@@ -4,6 +4,7 @@
 #include "Engine/Serialization/SerializableVector.h"
 #include "Engine/Serialization/SerializedData.h"
 #include "Renderer.h"
+#include <memory>
 
 namespace SC {
 		
@@ -47,7 +48,7 @@ namespace SC {
 	public:
 		float thickness;
 		ResourceReference<Material> material;
-		SerializableVector<Point> points;
+		SerializableVector<std::unique_ptr<Point>> points;
 
 		friend class Internal::Renderer;
 	};

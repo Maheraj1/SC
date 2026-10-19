@@ -1,5 +1,6 @@
 #include "Engine/Core/Application.h"
 #include "Engine/ECS/IScript.h"
+#include "Engine/ECS/LineRenderer.h"
 #include "Engine/Math/Math.h"
 #include "Engine/Debug/Debug.h"
 #include "Engine/ECS/Entity.h"
@@ -146,8 +147,8 @@ namespace SC::Internal {
 		currentBatch->thickness = line.thickness;
 
 		for (int i = 0; i < line.points.size(); i++) {
-			currentBatch->data[i].position = line.points[i].position;
-			currentBatch->data[i].color    = line.points[i].color;
+			currentBatch->data[i].position = line.points[i]->position;
+			currentBatch->data[i].color    = line.points[i]->color;
 		}
 
 		currentBatch->count = line.points.size();

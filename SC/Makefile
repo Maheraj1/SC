@@ -1,12 +1,12 @@
 include ../ext/ext.mk
 
 # We have to use static version of glfw and dynamic version of yaml-cpp, ImGui and Box2D
-# Run the Makefile in external folder to compile ImGui with right configrations it will move the dyanmic libs to lib folder of SC and put the dynamic lib in bin folder also
-# Change this accoding to your choice
+# Run the Makefile in external folder to compile ImGui with right configurations it will move the dynamic libs to lib folder of SC and put the dynamic lib in bin folder also
+# Change this according to your choice
 CXX = clang++
 # Options: OpenGL, Metal, *DX11
 # `*` Not supported
-RENDERER = Metal
+RENDERER = OpenGL
 FRAMEWORKS = 
 OTHER_ARGS = -g3
 VERSION = -std=c++20
@@ -23,7 +23,7 @@ DEFINES = -DSC_RENDERER_$(RENDERER) -DGLFW_INCLUDE_NONE -DSC_WINDOW_API_GLFW -DS
 INCLUDE_DIR = -Iinclude $(EXT_CFLAGS) -I$(MONO_INCLUDE)
 
 LIBS = -lglfw -lyaml-cpp -lglad -lstbi -lbox2d -lmonosgen-2.0
-LIB_DIR = -Llib -L$(MONO_LIB)
+LIB_DIR = -Llib -L/opt/homebrew/lib #-L$(MONO_LIB)
 OBJ_NAME = libSC
 OBJ = 
 SRC_COUNT = $(words $(SRC))
@@ -39,7 +39,7 @@ ifeq ($(UNAME_S), Darwin)
 		SRC += $(wildcard $(SRC_DIR)/Input/OpenGL/*.cpp)
 	endif
 
-	# TODO Add Metal Spport	
+	# TODO Add Metal Support	
 	ifeq ($(RENDERER), Metal)
 		FRAMEWORKS += -framework Metal -framework QuartzCore -framework Foundation
 		DEFINES += -DGLFW_EXPOSE_NATIVE_COCOA
@@ -89,7 +89,7 @@ base:
 	@printf "\e[32mBuilding \e[35m$(SRC_COUNT) files\e[32m on\e[36m $(BUILD_TYPE)\e[32m Configration\e[0m\n\n"
 
 DL: $(OBJS)
-	@$(CXX) -shared $^ -o $(OBJ) $(LDFLAGS) $(OTHER_ARGS)
+	$(CXX) -shared $^ -o $(OBJ) $(LDFLAGS) $(OTHER_ARGS)
 	@printf "\n\e[35mBuilt $(SRC_COUNT) Sources files\e[0m\n"
 
 	@mv $(OBJ) bin/$(OBJ)

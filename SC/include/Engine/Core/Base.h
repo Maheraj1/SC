@@ -7,15 +7,19 @@
 #include <memory>
 
 #ifdef SC_DEBUG
+	#define SC_ASSERT_S(x, s) if (!(x)) {Debug::Error(s); SC_ASSERT(x);}
 	#if defined(SC_PLATFORM_WINDOWS)
 		#define SC_ASSERT(x) if (!(x)) __debugbreak()
-		#define SC_ASSERT_S(x, s) if (!(x)) {Debug::Error(s); SC_ASSERT(x);}
-	#else
-		#define SC_ASSERT(x) if (!(x)) __asm__("int $3")
-		#define SC_ASSERT_S(x, s) if (!(x)) {Debug::Error(s); SC_ASSERT(x);}
+	#elif defined(SC_PLATFORM_OSX)
+		#if defined(__arm64__) || defined(__aarch64__)
+    		#define SC_ASSERT(x) if (!(x)) __asm__("brk #0")
+		#elif defined(__x86_64__) || defined(_M_X64)
+			#define SC_ASSERT(x) if (!(x)) __asm__("int $3")
+		#endif
 	#endif
 #else
 	#define SC_ASSERT(x)
+	#define SC_ASSERT_S(x, s)
 #endif
 #ifdef SC_DEBUG
 	#define SC_LOG(x, y, z) SC::Debug::Log(x, __FILE__, __LINE__, y, z)

@@ -4,9 +4,7 @@
 #include "Engine/Core/Base.h"
 
 #ifdef SC_DEBUG
-#define GLCall(x) SC::Internal::OpenGL::GLClearErrors();\
-x;\
-SC_ASSERT(SC::Internal::OpenGL::GLLogCall(#x, __FILE__, __LINE__))
+#define GLCall(x) SC::Internal::OpenGL::GLClearErrors();x;SC_ASSERT(SC::Internal::OpenGL::GLLogCall(#x, __FILE__, __LINE__))
 #else
 	#define GLCall(x) x
 #endif
