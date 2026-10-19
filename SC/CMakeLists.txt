@@ -43,11 +43,35 @@ add_definitions(
     -DSC_SHARED
 )
 
-file(GLOB_RECURSE SC_SOURCES
+# Collect all source files
+file(GLOB_RECURSE SC_ALL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.m
 )
+
+# Filter out renderer backend sources (added conditionally below)
+list(FILTER SC_ALL_SOURCES EXCLUDE REGEX "src/(Window|Renderer|Input)/(Metal|OpenGL)/")
+
+# Add the selected renderer backend
+if(SC_RENDERER STREQUAL "Metal")
+    file(GLOB SC_BACKEND_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Window/Metal/*.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/*.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/*.m
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Input/Metal/*.mm
+    )
+elseif(SC_RENDERER STREQUAL "OpenGL")
+    file(GLOB SC_BACKEND_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Window/OpenGL/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/OpenGL/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Input/OpenGL/*.cpp
+    )
+else()
+    message(FATAL_ERROR "Invalid SC_RENDERER '${SC_RENDERER}'. Must be 'Metal' or 'OpenGL'.")
+endif()
+
+set(SC_SOURCES ${SC_ALL_SOURCES} ${SC_BACKEND_SOURCES})
 
 if(APPLE)
     if(SC_RENDERER STREQUAL "OpenGL")
@@ -72,8 +96,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../vendor/glm
     ${CMAKE_CURRENT_SOURCE_DIR}/../ext/include/glad
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ext/include/stbi
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ext/include/box2d
 )
 
 set(MONO_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -81,8 +103,6 @@ include_directories(${MONO_INCLUDE})
 
 link_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/lib
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ext/lib/glad
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ext/lib/stbi
     ${CMAKE_CURRENT_SOURCE_DIR}/../ext/lib/ImLog
     ${CMAKE_CURRENT_SOURCE_DIR}/../ext/lib/imgui-glfw-opengl
     /opt/homebrew/lib
@@ -98,8 +118,6 @@ set_target_properties(SC PROPERTIES
 target_link_libraries(SC PRIVATE
     glfw
     yaml-cpp
-    glad
-    stbi
     box2d
     imgui
     imguizmo
@@ -111,20 +129,22 @@ if(WIN32)
     target_link_libraries(SC PRIVATE opengl32 user32 gdi32 shell32 kernel32)
 endif()
 
-set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Window/Metal/MetalWindow.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalFrameBuffer.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalRenderer.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalShader.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalTexture.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Input/Metal/MetalInput.mm
-    PROPERTIES COMPILE_FLAGS "-ObjC++ -fobjc-weak -fobjc-arc"
-)
+if(SC_RENDERER STREQUAL "Metal")
+    set_source_files_properties(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Window/Metal/MetalWindow.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalFrameBuffer.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalRenderer.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalShader.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalTexture.mm
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Input/Metal/MetalInput.mm
+        PROPERTIES COMPILE_FLAGS "-ObjC++ -fobjc-weak -fobjc-arc"
+    )
 
-set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalTexture.m
-    PROPERTIES COMPILE_FLAGS "-ObjC"
-)
+    set_source_files_properties(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer/Metal/MetalTexture.m
+        PROPERTIES COMPILE_FLAGS "-ObjC"
+    )
+endif()
 
 add_custom_command(TARGET SC POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:SC> ${CMAKE_CURRENT_SOURCE_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}SC${CMAKE_SHARED_LIBRARY_SUFFIX}

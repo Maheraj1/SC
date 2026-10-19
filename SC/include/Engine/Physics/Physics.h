@@ -1,10 +1,10 @@
 #pragma once
 
+#include "box2d/box2d.h"
+
 #include "Engine/Core/Application.h"
 #include "Engine/Core/Core.h"
 #include "Engine/Math/Math.h"
-
-class b2World;
 
 namespace SC {
 
@@ -15,11 +15,11 @@ namespace SC {
 		public:
 			static Vector2f gravity;
 			/**
-			 * @brief Get the Physics World object as b2World (box2d)
+			 * @brief Get the Physics World object as b2WorldId (box2d)
 			 * 
-			 * @return b2World* 
+			 * @return b2WorldId 
 			 */
-			static b2World* GetPhysicsWorld();
+			static b2WorldId GetPhysicsWorld();
 		private:
 			static void Init();
 			static void Update();
@@ -28,7 +28,7 @@ namespace SC {
 			static void UpdateData();
 			static void UpdatePositions();
 			static std::vector<RigidBody*> rigidBodies;
-			static b2World* world;
+			static b2WorldId world;
 		
 		friend class Application;
 		friend class RigidBody;

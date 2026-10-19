@@ -2,10 +2,6 @@
 #include "Engine/Math/Math.h"
 #include "Engine/Core/Time.h"
 #include "Engine/Physics/RigidBody.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_draw.h"
-#include "box2d/b2_math.h"
-#include "box2d/b2_world.h"
 #include "box2d/box2d.h"
 #include <vector>
 #include "Engine/Scene/SceneManager.h"
@@ -15,23 +11,25 @@ namespace SC {
 	// Class static variables
 	Vector2f Physics::gravity = Vector2f(0.0f, -10.0f);
 	std::vector<RigidBody*> Physics::rigidBodies;
-	b2World* Physics::world = nullptr;
+	b2WorldId Physics::world = b2_nullWorldId;
 
 	void Physics::Init()
 	{
-		if (world != nullptr) delete world;
-		world = new b2World(ToBox2dVector2(Physics::gravity));
+		if (b2World_IsValid(world)) b2DestroyWorld(world);
+		b2WorldDef def = b2DefaultWorldDef();
+		def.gravity = ToBox2dVector2(Physics::gravity);
+		world = b2CreateWorld(&def);
 	}
 
 	void Physics::Step(float dt)
 	{
-		world->Step(dt, 6, 2);
+		b2World_Step(world, dt, 6);
 	}
 
 	void Physics::ShutDown() { 
-		if (world == nullptr) return;
-		delete world;
-		world = nullptr;
+		if (!b2World_IsValid(world)) return;
+		b2DestroyWorld(world);
+		world = b2_nullWorldId;
 	}
 
 	void Physics::UpdateData()
@@ -48,13 +46,15 @@ namespace SC {
 		for (int i = 0; i < objs.size(); i++) {
 			RigidBody* rb = (RigidBody*)objs[i]->GetComponent(rb_cid);
 			if (rb == nullptr) continue;
-			objs[i]->transform.position = FromBox2dVector2(rb->body->GetPosition());
-			objs[i]->transform.rotation = glm::degrees(rb->body->GetAngle());
+			b2Pos pos = b2Body_GetPosition(rb->body);
+			objs[i]->transform.position = Vector2f((float)pos.x, (float)pos.y);
+			b2Rot rot = b2Body_GetRotation(rb->body);
+			objs[i]->transform.rotation = glm::degrees(b2Rot_GetAngle(rot));
 		}
             
 	}
 
-	b2World* Physics::GetPhysicsWorld()
+	b2WorldId Physics::GetPhysicsWorld()
 	{
 		return world;
 	}

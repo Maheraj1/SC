@@ -2,12 +2,7 @@
 #include "Engine/Core/Event.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Physics/RigidBody.h"
-#include "box2d/b2_collision.h"
-#include "box2d/b2_circle_shape.h"
-#include "box2d/b2_shape.h"
-#include "box2d/b2_world.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_body.h"
+#include "box2d/box2d.h"
 
 namespace SC {
 	void CircleCollider::Start()
@@ -15,29 +10,27 @@ namespace SC {
 		rb = (RigidBody*)entity->GetComponent(ComponentID<RigidBody>::cid);
 		if (rb == nullptr) return;
 
-		// Vector2f pos = entity->transform.position;
-		shape = new b2CircleShape();
-		shape->m_radius = size;
-
-		b2FixtureDef def;
+		b2ShapeDef def = b2DefaultShapeDef();
 		def.density = Density;
-		def.friction = Friction;
-		def.restitution = Restitution;
-		def.restitutionThreshold = RestitutionThreshold;
+		def.material.friction = Friction;
+		def.material.restitution = Restitution;
 		def.isSensor = IsTrigger;
-		def.shape = shape;
-		fixture = rb->body->CreateFixture(&def);
+
+		b2Circle circ = {{0.0f, 0.0f}, size};
+		circle = circ;
+		fixture = b2CreateCircleShape(rb->body, &def, &circle);
 		rb->OnApplyParameters += [&](EventArgs e) {ApplyParameters();};
 	}
 
 	void CircleCollider::ApplyParameters()
 	{
-		fixture->SetDensity(Density);
-		fixture->SetFriction(Friction);
-		fixture->SetRestitution(Restitution);
-		fixture->SetRestitutionThreshold(RestitutionThreshold);
-		fixture->SetSensor(IsTrigger);
-		shape->m_radius = size;
+		b2Shape_SetDensity(fixture, Density, true);
+		b2Shape_SetFriction(fixture, Friction);
+		b2Shape_SetRestitution(fixture, Restitution);
+
+		b2Circle circ = {{0.0f, 0.0f}, size};
+		circle = circ;
+		b2Shape_SetCircle(fixture, &circle);
 	}
 
 	void CircleCollider::Serialize() const

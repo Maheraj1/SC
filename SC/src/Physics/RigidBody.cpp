@@ -3,30 +3,21 @@
 #include "Engine/ECS/Entity.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Serialization/SerializedData.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_math.h"
-#include "box2d/b2_shape.h"
 #include "box2d/box2d.h"
 
 namespace SC {
 
 	void RigidBody::Awake()
 	{
-		b2BodyDef def;
+		b2BodyDef def = b2DefaultBodyDef();
 		Vector2f pos = entity->transform.position;
-		def.position.Set(pos.x, pos.y);
-		def.angle = glm::radians(entity->transform.rotation);
+		def.position = b2Vec2(pos.x, pos.y);
+		def.rotation = b2MakeRot(glm::radians(entity->transform.rotation));
 		def.type = (b2BodyType)type;
 
-		body = Physics::world->CreateBody(&def);
-		b2MassData MDat;
-		MDat.mass = mass;
-		MDat.I = 0;
-		MDat.center.Set(pos.x, pos.y);
-		body->SetMassData(&MDat);
+		body = b2CreateBody(Physics::world, &def);
 
-		body->SetTransform(ToBox2dVector2(entity->transform.position), glm::radians(entity->transform.rotation));
+		b2Body_SetTransform(body, b2Vec2(entity->transform.position.x, entity->transform.position.y), b2MakeRot(glm::radians(entity->transform.rotation)));
 		physicsID = Physics::rigidBodies.size();
 		Physics::rigidBodies.push_back(this);
 	}
@@ -34,8 +25,8 @@ namespace SC {
 	RigidBody::RigidBody() { }
 
 	RigidBody::~RigidBody() {
-		if (!body) return;
-		Physics::world->DestroyBody(body);
+		if (!b2Body_IsValid(body)) return;
+		b2DestroyBody(body);
 		int rmid = -1;
 		
 		for (int i = 0; Physics::rigidBodies.size(); i++) {
@@ -46,7 +37,7 @@ namespace SC {
 		}
 
 		Physics::rigidBodies.erase(Physics::rigidBodies.begin() + rmid);
-		body = nullptr;
+		body = b2_nullBodyId;
 	}
 
 	void RigidBody::OnDestroy() {
@@ -62,7 +53,7 @@ namespace SC {
 	void RigidBody::ApplyParameters()
 	{
 		Vector2f pos = entity->transform.position;
-		body->SetTransform(ToBox2dVector2(pos), glm::radians(entity->transform.rotation));
+		b2Body_SetTransform(body, b2Vec2(pos.x, pos.y), b2MakeRot(glm::radians(entity->transform.rotation)));
 		
 		OnApplyParameters({});
 	}

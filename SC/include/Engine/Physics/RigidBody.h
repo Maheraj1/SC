@@ -1,10 +1,10 @@
 #pragma once
 
+#include "box2d/box2d.h"
+
 #include "Engine/Core/Core.h"
 #include "Engine/Core/Event.h"
 #include "Engine/ECS/NativeScript.h"
-
-class b2Body;
 
 namespace SC {
 	class Application;
@@ -33,7 +33,7 @@ namespace SC {
 		virtual void PostIGUI(Editor::EditorDrawData& dcmd) override;
 		#endif
 	private:
-		b2Body* body;
+		b2BodyId body;
 		int physicsID;
 		EventHandler<> OnApplyParameters;
 

@@ -3,10 +3,7 @@
 #include "Engine/ECS/IScript.h"
 #include "Engine/Physics/Physics.h"
 #include "Engine/Physics/RigidBody.h"
-#include "box2d/b2_polygon_shape.h"
-#include "box2d/b2_world.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_body.h"
+#include "box2d/box2d.h"
 
 namespace SC {
 	void BoxCollider::Start()
@@ -14,29 +11,27 @@ namespace SC {
 		rb = (RigidBody*)entity->GetComponent(ComponentID<RigidBody>::cid);
 		if (rb == nullptr) return;
 
-		// Vector2f pos = entity->transform.position;
-		shape = new b2PolygonShape();
-		shape->SetAsBox(size.x+offset.x, size.y+offset.y);
-
-		b2FixtureDef def;
+		b2ShapeDef def = b2DefaultShapeDef();
 		def.density = Density;
-		def.friction = Friction;
-		def.restitution = Restitution;
-		def.restitutionThreshold = RestitutionThreshold;
+		def.material.friction = Friction;
+		def.material.restitution = Restitution;
 		def.isSensor = IsTrigger;
-		def.shape = shape;
-		fixture = rb->body->CreateFixture(&def);
+
+		b2Polygon poly = b2MakeBox(size.x + offset.x, size.y + offset.y);
+		shape = poly;
+		fixture = b2CreatePolygonShape(rb->body, &def, &shape);
 		rb->OnApplyParameters += [&](EventArgs e){ApplyParameters();};
 	}
 
 	void BoxCollider::ApplyParameters()
 	{
-		fixture->SetDensity(Density);
-		fixture->SetFriction(Friction);
-		fixture->SetRestitution(Restitution);
-		fixture->SetRestitutionThreshold(RestitutionThreshold);
-		fixture->SetSensor(IsTrigger);
-		shape->SetAsBox(size.x+offset.x, size.y+offset.y);
+		b2Shape_SetDensity(fixture, Density, true);
+		b2Shape_SetFriction(fixture, Friction);
+		b2Shape_SetRestitution(fixture, Restitution);
+
+		b2Polygon poly = b2MakeBox(size.x + offset.x, size.y + offset.y);
+		shape = poly;
+		b2Shape_SetPolygon(fixture, &shape);
 	}
 
 	void BoxCollider::Serialize() const

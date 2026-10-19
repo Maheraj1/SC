@@ -1,11 +1,10 @@
 #pragma once
 
+#include "box2d/box2d.h"
+
 #include "Engine/Math/Math.h"
 #include "Engine/ECS/NativeScript.h"
 #include "Collider.h"
-
-class b2Fixture;
-class b2CircleShape;
 
 namespace SC {
 	class RigidBody;
@@ -35,7 +34,7 @@ namespace SC {
 			void DeSerialize() override;
 
 			RigidBody* rb;
-			b2Fixture* fixture;
-			b2CircleShape* shape;
+			b2ShapeId fixture;
+			b2Circle circle;
 	};
 }
