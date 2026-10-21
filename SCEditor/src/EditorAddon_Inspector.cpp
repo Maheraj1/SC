@@ -1,6 +1,8 @@
 #include "Editor/EditorAddon.h"
 #include "Engine/ECS/IEditorObject.h"
 #include "Engine/ECS/IScript.h"
+#include "Engine/ECS/Entity.h"
+#include "Engine/ECS/Renderer.h"
 #include "imgui.h"
 
 #pragma region Defines

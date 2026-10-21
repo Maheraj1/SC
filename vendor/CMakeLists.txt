@@ -1,25 +1,33 @@
 # vendor/CMakeLists.txt
-# Builds the ./vendor repositories as CMake targets:
+# Standalone build for the ./vendor repositories:
 #   SHARED: box2d, imgui, ImGuizmo, yaml-cpp
 #   STATIC: glfw
 #
-# Include this from your top-level CMakeLists.txt:
+# Build this in its OWN build directory (e.g. ../vendor/build). Vendor is NOT
+# part of the SC build tree anymore, so `make clean` on the SC project never
+# removes vendor build artifacts:
 #
-#   include(${CMAKE_CURRENT_LIST_DIR}/vendor/CMakeLists.txt)
+#   cd ../vendor && cmake -S . -B build && cmake --build build
+#   cmake -S SC -B build -DVENDOR_BUILD_DIR=../vendor/build
 #
-# The top-level project must require CMake >= 3.22 (box2d's requirement).
+# Then SC links against the imported vendor targets below.
 
-set(VENDOR_DIR "${CMAKE_CURRENT_LIST_DIR}")
+cmake_minimum_required(VERSION 3.22)
+project(Vendor LANGUAGES C CXX)
 
-# ------------------------------------------------------------------
-# Global settings
-# ------------------------------------------------------------------
+# Suppress the per-config debug postfix (e.g. box2d -> box2dd, yaml-cpp ->
+# yaml-cppd) so imported target locations stay valid for both Debug and
+# Release builds of SC.
+set(CMAKE_DEBUG_POSTFIX "")
+
+set(VENDOR_SRC_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
 # Static libs linked into shared libs need PIC (e.g. glfw static -> SC shared).
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Keep vendor artifacts together so they don't pollute the app's output tree.
-set(VENDOR_LIB_DIR  "${CMAKE_CURRENT_BINARY_DIR}/vendor/lib")
-set(VENDOR_BIN_DIR  "${CMAKE_CURRENT_BINARY_DIR}/vendor/bin")
+# Keep vendor artifacts together, outside the app's output tree.
+set(VENDOR_LIB_DIR  "${CMAKE_CURRENT_BINARY_DIR}/lib")
+set(VENDOR_BIN_DIR  "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${VENDOR_LIB_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  "${VENDOR_LIB_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${VENDOR_BIN_DIR}")
@@ -36,7 +44,7 @@ set(BOX2D_DOCS OFF)
 set(BOX2D_UNIT_TESTS OFF)
 set(BOX2D_PROFILE OFF)
 set(BOX2D_VALIDATE OFF)
-add_subdirectory("${VENDOR_DIR}/box2d" "${VENDOR_BIN_DIR}/box2d")
+add_subdirectory("${VENDOR_SRC_DIR}/box2d" "${CMAKE_CURRENT_BINARY_DIR}/box2d")
 
 set(BUILD_SHARED_LIBS OFF)
 
@@ -48,7 +56,7 @@ set(GLFW_BUILD_TESTS OFF)
 set(GLFW_BUILD_DOCS OFF)
 set(GLFW_INSTALL OFF)
 set(GLFW_LIBRARY_TYPE STATIC)
-add_subdirectory("${VENDOR_DIR}/glfw" "${VENDOR_BIN_DIR}/glfw")
+add_subdirectory("${VENDOR_SRC_DIR}/glfw" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
 
 # ------------------------------------------------------------------
 # yaml-cpp — SHARED
@@ -58,13 +66,13 @@ set(YAML_CPP_BUILD_TOOLS OFF)
 set(YAML_CPP_BUILD_TESTS OFF)
 set(YAML_CPP_INSTALL OFF)
 set(YAML_CPP_FORMAT_SOURCE OFF)
-add_subdirectory("${VENDOR_DIR}/yaml-cpp" "${VENDOR_BIN_DIR}/yaml-cpp")
+add_subdirectory("${VENDOR_SRC_DIR}/yaml-cpp" "${CMAKE_CURRENT_BINARY_DIR}/yaml-cpp")
 
 # ------------------------------------------------------------------
 # imgui — SHARED (vendor/imgui has no root CMakeLists.txt)
 # Core four files only (no imgui_demo.cpp).
 # ------------------------------------------------------------------
-set(IMGUI_DIR "${VENDOR_DIR}/imgui")
+set(IMGUI_DIR "${VENDOR_SRC_DIR}/imgui")
 add_library(imgui SHARED
     "${IMGUI_DIR}/imgui.cpp"
     "${IMGUI_DIR}/imgui_draw.cpp"
@@ -76,7 +84,7 @@ target_include_directories(imgui PUBLIC "${IMGUI_DIR}")
 # ------------------------------------------------------------------
 # ImGuizmo — SHARED (vendor/ImGuizmo's root CMakeLists hardcodes STATIC)
 # ------------------------------------------------------------------
-set(IMGUIZMO_DIR "${VENDOR_DIR}/ImGuizmo")
+set(IMGUIZMO_DIR "${VENDOR_SRC_DIR}/ImGuizmo")
 add_library(imguizmo SHARED
     "${IMGUIZMO_DIR}/src/ImGuizmo.cpp"
     "${IMGUIZMO_DIR}/src/GraphEditor.cpp"
@@ -90,29 +98,3 @@ target_include_directories(imguizmo PUBLIC
     "${IMGUI_DIR}"          # ImGuizmo includes <imgui.h>
 )
 target_link_libraries(imguizmo PUBLIC imgui)
-
-# ------------------------------------------------------------------
-# Convenience aliases (guarded because box2d and yaml-cpp create theirs already)
-# ------------------------------------------------------------------
-if(NOT TARGET box2d::box2d)
-    add_library(box2d::box2d ALIAS box2d)
-endif()
-if(NOT TARGET glfw::glfw)
-    add_library(glfw::glfw ALIAS glfw)
-endif()
-if(NOT TARGET yaml-cpp::yaml-cpp)
-    add_library(yaml-cpp::yaml-cpp ALIAS yaml-cpp)
-endif()
-if(NOT TARGET imgui::imgui)
-    add_library(imgui::imgui ALIAS imgui)
-endif()
-if(NOT TARGET imguizmo::imguizmo)
-    add_library(imguizmo::imguizmo ALIAS imguizmo)
-endif()
-
-# ------------------------------------------------------------------
-# Restore output dirs so the app's own targets keep default locations
-# ------------------------------------------------------------------
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  "")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "")

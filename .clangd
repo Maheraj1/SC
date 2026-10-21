@@ -1,0 +1,7 @@
+# clangd configuration for Scandium (SC)
+#
+# Points clangd at the CMake-generated compile_commands.json so it gets the
+# correct compiler flags (clang++, c++20, include paths, defines).
+
+CompileFlags:
+  Database: build

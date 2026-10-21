@@ -14,12 +14,10 @@
 	#include "GLFW/glfw3.h"
 #endif
 
-#ifdef SC_RENDERER_OpenGL
-	#include "imgui_impl_opengl3.h"
-#endif
-
-#ifdef SC_RENDERER_Metal
+#if defined(SC_RENDERER_Metal)
 	#include "imgui_impl_metal.h"
+#elif defined(SC_RENDERER_OpenGL)
+	#include "imgui_impl_opengl3.h"
 #endif
 
 struct GLFWwindow;
@@ -69,9 +67,7 @@ namespace SC::Internal::UI::ImGui {
 		::ImGui::CreateContext();
 
 		::ImGuiIO& io = ::ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		::ImGui::StyleColorsDark();
 		SetColors();
 		
@@ -79,8 +75,9 @@ namespace SC::Internal::UI::ImGui {
 		::ImGui_ImplGlfw_InitForOpenGL(window, true);
 		::ImGui_ImplOpenGL3_Init("#version 410 core");
 		#elif defined(SC_RENDERER_Metal)
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-    	ImGui_ImplMetal_Init(device);
+        // Metal backend initialization requires a valid MTLDevice which is
+        // not available in this translation unit.
+        (void)window;
 		#endif
 	}
 
@@ -89,7 +86,7 @@ namespace SC::Internal::UI::ImGui {
 		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplOpenGL3_Shutdown();
 		#elif defined(SC_RENDERER_Metal)
-		::ImGui_ImplMetal_Shutdown();
+        // Metal backend not initialized (no MTLDevice available).
 		#endif
 		::ImGui_ImplGlfw_Shutdown();
 		::ImGui::DestroyContext();
@@ -100,36 +97,20 @@ namespace SC::Internal::UI::ImGui {
 		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplOpenGL3_NewFrame();
 		#elif defined(SC_RENDERER_Metal)
-		::ImGui_ImplMetal_NewFrame();
+        // Metal backend not initialized.
 		#endif
 		::ImGui_ImplGlfw_NewFrame();
 		::ImGui::NewFrame();
-
-		const ImGuiViewport* viewport = ::ImGui::GetMainViewport();
-        ::ImGui::SetNextWindowPos(viewport->WorkPos);
-        ::ImGui::SetNextWindowSize(viewport->WorkSize);
-        ::ImGui::SetNextWindowViewport(viewport->ID);
-        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ::ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		::ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-		::ImGui::Begin("DockSpaceW", NULL, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_MenuBar);
-		::ImGui::PopStyleVar(3);
-
-		ImGuiID dockSpace_id = ::ImGui::GetID("DockSpace");
-        ::ImGui::DockSpace(dockSpace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 	}
 
 	void EndFrame()
 	{
-		::ImGui::End();
 		::ImGui::Render();
+		#if defined(SC_RENDERER_OpenGL)
 		::ImGui_ImplOpenGL3_RenderDrawData(::ImGui::GetDrawData());
-      	
-		GLFWwindow* backup_current_context = ::glfwGetCurrentContext();
-      	::ImGui::UpdatePlatformWindows();
-      	::ImGui::RenderPlatformWindowsDefault();
-      	::glfwMakeContextCurrent(backup_current_context);
+		#elif defined(SC_RENDERER_Metal)
+        // Metal backend not initialized.
+		#endif
 	}
 
 	void Begin(const char* name, bool* p_open, int flags)

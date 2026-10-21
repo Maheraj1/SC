@@ -7,8 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace SC
-{
+namespace SC {
     enum class LogLevel {
         Message,
         Info,
@@ -19,8 +18,7 @@ namespace SC
     /**
      * @brief Enum with number for colored text output
      */
-    enum class DebugLogColor: int
-    {
+    enum class DebugLogColor: int {
         None           = 0,
         Black          = 30,
         Red            = 31,
@@ -43,8 +41,7 @@ namespace SC
     /**
      * @brief Enum with number for colored background text output
      */
-    enum class DebugLogBackGroundColor: int
-    {
+    enum class DebugLogBackGroundColor: int {
         None           = 0,
         Black          = 40,
         Red            = 41,
@@ -80,8 +77,7 @@ namespace SC
     /**
      * @brief struct with Debugging and Logging methods
      */
-    struct Debug
-    {
+    struct Debug {
         /**
          * @brief Method for logging text with colors
          * 
